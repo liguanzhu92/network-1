@@ -8,7 +8,6 @@ void search(char *file_name, char *str, FILE *in, FILE *out) {
     int matches = 0;
     char buffer[BUFF_SIZE];
 
-    // today is jan 21st 
     //go through each lines to find matches
     while(fgets(buffer, BUFF_SIZE, in) != NULL) {
         const char *temp = buffer;
