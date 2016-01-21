@@ -1,0 +1,4 @@
+1. How to build it?
+    Simply run make
+2. How to play with it?
+    ./count <input-filename> <search-string> <output-filename>
