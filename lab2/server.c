@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     char                buf_in[BUFFER_SIZE];            /* buffer for holding read data */
     char                buf_out[BUFFER_SIZE]    = "You have connected to the server!";
     FILE*               fp;
-    unsigned int        file_size               = 0;
+    long        file_size               = 0;
     char*               file_name;
 
     if(argc != 2) {
@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
         perror("Error receiving message from client");
         exit(1);
     }
-    memcpy(&file_size, buf_in, FILE_SIZE_LENGTH);
+    memcpy(buf_in, &file_size, FILE_SIZE_LENGTH);
     bzero(buf_in, FILE_SIZE_LENGTH);
 
     /* get file name */
@@ -81,8 +81,8 @@ int main(int argc, char** argv) {
         perror("Error receiving message from client");
         exit(1);
     }
-    strncpy(file_name, buf_in, FILE_NAME_LENGTH);
-    printf("File name: %s, size: %u\n", file_name, file_size);
+    strncpy(buf_in, file_name, FILE_NAME_LENGTH);
+    printf("File name: %s, size: %ld\n", file_name, file_size);
     bzero(buf_in, FILE_NAME_LENGTH);
 
     /* receive file */

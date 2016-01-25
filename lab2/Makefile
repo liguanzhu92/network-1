@@ -2,14 +2,17 @@
 
 CC = gcc
 OBJSRV = server.c
+OBJCLI = client.c
 CFLAGS =
 # setup for system
 LIBS =
 
-all: ftps
+all: ftps ftpc
 
 ftps:	$(OBJSRV)
 	$(CC) $(CFLAGS) -o $@ $(OBJSRV) $(LIBS)
+ftpc:	$(OBJCLI)
+	$(CC) $(CFLAGS) -o ../$@ $(OBJCLI) $(LIBS)
 
 clean:
-	rm ftps
+	rm ftps ftpc
