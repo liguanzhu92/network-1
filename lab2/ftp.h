@@ -1,6 +1,5 @@
-//
-// Created by Xu on 1/25/2016.
-//
+// CODED BY GUANZHU Li (li.5328) & JiABEi XU (xu.1717) 
+/* ftp.h for some constants */
 
 #ifndef LAB2_FTP_H
 #define LAB2_FTP_H

@@ -1,6 +1,6 @@
+// CODED BY GUANZHU Li (li.5328) & JiABEi XU (xu.1717) 
 /* server.c using TCP */
 
-/* Server for accepting an Internet stream connection on port 1040 */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -16,11 +16,11 @@ main(int argc, char** argv) {
     int                 sock;                           /* initial socket descriptor */
     int                 msgsock;                        /* accepted socket descriptor,
                                                          * each client connection has a
-                                                         * unique socket descriptor*/
-    struct sockaddr_in  sin_addr;                       /* structure for socket name setup */
-    struct sockaddr_in  cin_addr;
+                                                         * unique socket descriptor */
+    struct sockaddr_in  sin_addr;                       /* structure for server socker addr */
+    struct sockaddr_in  cin_addr;						/* structure for client socket addr */
     int                 addr_len;
-    struct in_addr     cip_addr;
+    struct in_addr     	cip_addr;						/* structure for client ip address */
     char                buf_in[BUFFER_SIZE];            /* buffer for holding read data */
     char                buf_out[BUFFER_SIZE]    = "You have connected to the server!";
     FILE*               fp;
