@@ -21,10 +21,10 @@ main(int argc, char *argv[]) {
   int                 	addr_len;
   FILE*               	fp;
   long        	file_size               = 0;
-  char*					file_name;
   const char*   		IP_ADDR 				= argv[1];
   const char*			PORT 					= argv[2];
   const char*   		FILE_NAME 				= argv[3];
+  struct in_addr sip_addr;
 
 
 
@@ -90,13 +90,13 @@ main(int argc, char *argv[]) {
   bzero(buf_out, FILE_SIZE_LENGTH);
 
   /* send file name */
-  strncpy(buf_out, file_name, FILE_NAME_LENGTH);
+  strncpy(buf_out, FILE_NAME, strlen(FILE_NAME));
   if(send(sock, buf_out, FILE_NAME_LENGTH, 0) < 0) 
   {
   	perror("Error sending message from client");
   	exit(1);
   }
-  printf("File name: %s, size: %ld\n", file_name, file_size);
+  printf("File name: %s, size: %ld\n", buf_out, file_size);
   bzero(buf_out, FILE_NAME_LENGTH);
 
   /*send file */
@@ -107,14 +107,15 @@ main(int argc, char *argv[]) {
   	send(sock, buf_out, current_len, 0);
     bzero(buf_out, BUFFER_SIZE);
   }
-  if(current_len < 0) {
+  /*if(current_len < 0) {
   	perror("Error sending file to server");
   	exit(1);
-  }
+  }*/
   fclose(fp);
 
     /* print confirmation msg */
-  printf("Sent %s to server %s: %d/n", file_name, inet_ntoa(IP_ADDR), PORT);
+  memcpy(&sip_addr, &sin_addr.sin_addr, IP_ADDR_LENGTH);
+  printf("Sent %s to server %s: %s\n", FILE_NAME, inet_addr(IP_ADDR), PORT);
 
     /* close all connections and remove socket file */
   close(sock);

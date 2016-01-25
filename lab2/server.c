@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
         perror("Error receiving message from client");
         exit(1);
     }
-    memcpy(buf_in, &file_size, FILE_SIZE_LENGTH);
+    memcpy(&file_size, buf_in, FILE_SIZE_LENGTH);
     bzero(buf_in, FILE_SIZE_LENGTH);
 
     /* get file name */
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
         perror("Error receiving message from client");
         exit(1);
     }
-    strncpy(buf_in, file_name, FILE_NAME_LENGTH);
+    strncpy(file_name, buf_in, FILE_NAME_LENGTH);
     printf("File name: %s, size: %ld\n", file_name, file_size);
     bzero(buf_in, FILE_NAME_LENGTH);
 
@@ -95,15 +95,15 @@ int main(int argc, char** argv) {
     while((current_len = recv(msgsock, buf_in, BUFFER_SIZE, 0)) > 0) {
         fwrite(buf_in, sizeof(char), current_len, fp);
     }
-    if(current_len < 0) {
+    /*if(current_len < 0) {
         perror("Error transferring file from client");
         exit(1);
-    }
+    }*/
     fclose(fp);
 
     /* print confirmation msg */
     memcpy(&cip_addr, &cin_addr.sin_addr, IP_ADDR_LENGTH);
-    printf("Received %s from client %s: %d/n", file_name, inet_ntoa(cip_addr), ntohs(cin_addr.sin_port));
+    printf("Received %s from client %s: %d\n", file_name, inet_ntoa(cip_addr), ntohs(cin_addr.sin_port));
 
     /* close all connections and remove socket file */
     close(msgsock);
