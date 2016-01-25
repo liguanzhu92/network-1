@@ -61,8 +61,8 @@ main(int argc, char *argv[]) {
   	exit(1);
   }
   
-  /* reveive a message */
-  if(recv(sock, buf_in, strlen(buf_in), 0) < 0) 
+  /* receive a message */
+  if(recv(sock, buf_in, BUFFER_SIZE, 0) < 0)
   {
   	perror("Error sending message to client");
   	exit(1);
