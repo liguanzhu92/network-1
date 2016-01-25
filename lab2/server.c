@@ -12,12 +12,12 @@
 #include "ftp.h"
 
 /* server program called with no argument */
-main(int argc, char** argv) {
+int main(int argc, char** argv) {
     int                 sock;                           /* initial socket descriptor */
     int                 msgsock;                        /* accepted socket descriptor,
                                                          * each client connection has a
                                                          * unique socket descriptor */
-    struct sockaddr_in  sin_addr;                       /* structure for server socker addr */
+    struct sockaddr_in  sin_addr;                       /* structure for server socket addr */
     struct sockaddr_in  cin_addr;						/* structure for client socket addr */
     int                 addr_len;
     struct in_addr     	cip_addr;						/* structure for client ip address */
@@ -36,7 +36,7 @@ main(int argc, char** argv) {
 
     /*initialize socket connection in unix domain*/
     if((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
-        perror("error opening datagram socket");
+        perror("error opening TCP socket");
         exit(1);
     }
 
@@ -46,13 +46,13 @@ main(int argc, char** argv) {
     sin_addr.sin_port           = htons(atoi(argv[1]));
 
     /* bind socket name to socket */
-    if(bind(sock, (struct sockaddr *)&sin_addr, sizeof(struct sockaddr_in)) < 0) {
+    if(bind(sock, (struct sockaddr *)&sin_addr, sizeof(struct sockaddr)) < 0) {
         perror("error binding stream socket");
         exit(1);
     }
 
     /* listen for socket connection and set max opened socket connections to 5 */
-    listen(sock, 5);
+    listen(sock, OPENED_CONNECTIONS);
 
     /* accept a (1) connection in socket msgsocket */
     addr_len = sizeof(cin_addr);
@@ -102,10 +102,12 @@ main(int argc, char** argv) {
     fclose(fp);
 
     /* print confirmation msg */
-    memcpy(&cip_addr, &cin_addr.sin_addr.s_addr, 4);
+    memcpy(&cip_addr, &cin_addr.sin_addr, IP_ADDR_LENGTH);
     printf("Received %s from client %s: %d/n", file_name, inet_ntoa(cip_addr), ntohs(cin_addr.sin_port));
 
     /* close all connections and remove socket file */
     close(msgsock);
     close(sock);
+    
+    return 0;
 }
