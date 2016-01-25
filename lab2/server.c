@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 
     /* get file size */
     bzero(buf_in, BUFFER_SIZE);
-    if(recv(msgsock, buf_in, FILE_SIZE_LENGTH + 1, 0) < 0) {
+    if(recv(msgsock, buf_in, FILE_SIZE_LENGTH, 0) < 0) {
         perror("Error receiving message from client");
         exit(1);
     }
@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
     bzero(buf_in, FILE_SIZE_LENGTH);
 
     /* get file name */
-    if(recv(msgsock, buf_in, FILE_NAME_LENGTH + 1, 0) < 0) {
+    if(recv(msgsock, buf_in, FILE_NAME_LENGTH, 0) < 0) {
         perror("Error receiving message from client");
         exit(1);
     }
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
         exit(1);
     }
     int current_len = 0;
-    while((current_len = recv(msgsock, buf_in, BUFFER_SIZE + 1, 0)) > 0) {
+    while((current_len = recv(msgsock, buf_in, BUFFER_SIZE, 0)) > 0) {
         fwrite(buf_in, sizeof(char), current_len, fp);
     }
     if(current_len < 0) {
@@ -108,6 +108,6 @@ int main(int argc, char** argv) {
     /* close all connections and remove socket file */
     close(msgsock);
     close(sock);
-    
+
     return 0;
 }
