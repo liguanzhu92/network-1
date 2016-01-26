@@ -13,7 +13,7 @@ all: ftps ftpc
 ftps:	$(OBJSRV)
 	$(CC) $(CFLAGS) -o $@ $(OBJSRV) $(LIBS)
 ftpc:	$(OBJCLI)
-	$(CC) $(CFLAGS) -o ../$@ $(OBJCLI) $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $(OBJCLI) $(LIBS)
 
 clean:
 	rm ftps ftpc
