@@ -48,6 +48,10 @@ int main(int argc, char *argv[])
 
     /* construct name of socket to send to */
     hp = gethostbyname(HOST_NAME);
+    if(hp == 0) {
+        fprintf(stderr, "%s: unknown host\n", argv[1]);
+        exit(2);
+    }
     bcopy((void *) hp->h_addr, (void *) &sin_addr.sin_addr, hp->h_length);
     sin_addr.sin_family = AF_INET;
     sin_addr.sin_port   = htons(atoi(PORT));
@@ -69,8 +73,8 @@ int main(int argc, char *argv[])
     /* send file size */
     fp = fopen(FILE_NAME, "rb");
     if (fp == NULL) {
-        perror("Error:");
-        exit(1);
+        perror("Error");
+        exit(-1);
     }
     /*calculate the file size*/
     if (stat(FILE_NAME, &st) >= 0) {
