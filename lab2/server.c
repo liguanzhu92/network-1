@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     char                buf_in[BUFFER_SIZE];            /* buffer for holding read data */
     char                buf_out[BUFFER_SIZE]    = "You have connected to the server!";
     FILE*               fp;
-    long        file_size               = 0;
+    unsigned long        file_size               = 0;
     char               file_name[FILE_NAME_LENGTH];
 
     if(argc != 2) {
@@ -74,6 +74,7 @@ int main(int argc, char** argv) {
         exit(1);
     }
     memcpy(&file_size, buf_in, FILE_SIZE_LENGTH);
+    file_size = ntohl(file_size);
     bzero(buf_in, FILE_SIZE_LENGTH);
 
     /* get file name */

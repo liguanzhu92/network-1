@@ -11,23 +11,24 @@
 #include <sys/unistd.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <sys/stat.h>
 #include "ftp.h"
 
 /* client program called with host name where server is run */
-main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
     int sock;                     /* initial socket descriptor */
     struct sockaddr_in sin_addr; /* structure for socket name
                                  * setup */
     char buf_in[BUFFER_SIZE];
     char buf_out[BUFFER_SIZE];     /* message to set to server */
-    int addr_len;
     FILE *fp;
-    long file_size = 0;
+    unsigned long file_size = 0;
     const char *HOST_NAME = argv[1];
     const char *PORT = argv[2];
     const char *FILE_NAME = argv[3];
     struct in_addr sip_addr;
     struct hostent *hp;
+    struct stat st;
 
 
     if (argc != 4) {
@@ -53,7 +54,6 @@ main(int argc, char *argv[]) {
     sin_addr.sin_family = AF_INET;
     sin_addr.sin_port = htons(atoi(PORT));
 
-
     /* establish connection with server */
     if (connect(sock, (struct sockaddr *) &sin_addr, sizeof(struct sockaddr_in)) < 0) {
         close(sock);
@@ -74,9 +74,9 @@ main(int argc, char *argv[]) {
         perror("Error:");
         exit(1);
     }
-    fseek(fp, 0, SEEK_END);
-    file_size = htonl((int) ftell(fp));//file size;
-    fseek(fp, 0, SEEK_SET);
+    if(stat(FILE_NAME, &st) >= 0){
+        file_size = htonl(st.st_size);
+    }
     bzero(buf_out, BUFFER_SIZE);
     memcpy(buf_out, &file_size, FILE_SIZE_LENGTH);
     if (send(sock, buf_out, FILE_SIZE_LENGTH, 0) < 0) {
@@ -114,4 +114,5 @@ main(int argc, char *argv[]) {
 
     /* close all connections and remove socket file */
     close(sock);
+    return 0;
 }
