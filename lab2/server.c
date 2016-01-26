@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
     char                buf_out[BUFFER_SIZE]    = "You have connected to the server!";
     FILE*               fp;
     long        file_size               = 0;
-    char*               file_name;
+    char               file_name[FILE_NAME_LENGTH];
 
     if(argc != 2) {
         printf("Usage : ftps <local-port>");
