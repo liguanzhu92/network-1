@@ -1,12 +1,10 @@
+// CODED BY GUANZHU Li (li.5328) & JiABEi XU (xu.1717)
 /* client.c using TCP */
 
-/* Client for connecting to Internet stream server waiting on port 1040 */
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
 #include <string.h>
 #include <sys/unistd.h>
 #include <arpa/inet.h>
@@ -16,19 +14,18 @@
 
 /* client program called with host name where server is run */
 int main(int argc, char *argv[]) {
-    int sock;                     /* initial socket descriptor */
-    struct sockaddr_in sin_addr; /* structure for socket name
-                                 * setup */
-    char buf_in[BUFFER_SIZE];
-    char buf_out[BUFFER_SIZE];     /* message to set to server */
-    FILE *fp;
-    unsigned long file_size = 0;
-    const char *HOST_NAME = argv[1];
-    const char *PORT = argv[2];
-    const char *FILE_NAME = argv[3];
-    struct in_addr sip_addr;
-    struct hostent *hp;
-    struct stat st;
+    int                sock;                       /* initial socket descriptor */
+    struct sockaddr_in sin_addr;       /* structure for socket name setup */
+    char               buf_in[BUFFER_SIZE];
+    char               buf_out[BUFFER_SIZE];       /* message to set to server */
+    FILE               *fp;
+    unsigned long      file_size  = 0;
+    const char         *HOST_NAME = argv[1];
+    const char         *PORT      = argv[2];
+    const char         *FILE_NAME = argv[3];
+    struct in_addr     sip_addr;
+    struct hostent     *hp;
+    struct stat        st;
 
 
     if (argc != 4) {
@@ -38,7 +35,7 @@ int main(int argc, char *argv[]) {
 
     /* initialize socket connection in unix domain */
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        perror("error openting datagram socket");
+        perror("error opening datagram socket");
         exit(1);
     }
 
@@ -50,9 +47,9 @@ int main(int argc, char *argv[]) {
 
     /* construct name of socket to send to */
     hp = gethostbyname(HOST_NAME);
-    bcopy((void *)hp->h_addr, (void *)&sin_addr.sin_addr, hp->h_length);
+    bcopy((void *) hp->h_addr, (void *) &sin_addr.sin_addr, hp->h_length);
     sin_addr.sin_family = AF_INET;
-    sin_addr.sin_port = htons(atoi(PORT));
+    sin_addr.sin_port   = htons(atoi(PORT));
 
     /* establish connection with server */
     if (connect(sock, (struct sockaddr *) &sin_addr, sizeof(struct sockaddr_in)) < 0) {
@@ -68,13 +65,13 @@ int main(int argc, char *argv[]) {
     }
     printf("%s\n", buf_in);
 
-    /*send file*/
+    /* send file size */
     fp = fopen(FILE_NAME, "rb");
     if (fp == NULL) {
         perror("Error:");
         exit(1);
     }
-    if(stat(FILE_NAME, &st) >= 0){
+    if (stat(FILE_NAME, &st) >= 0) {
         file_size = htonl(st.st_size);
     }
     bzero(buf_out, BUFFER_SIZE);
@@ -95,8 +92,7 @@ int main(int argc, char *argv[]) {
     printf("File name: %s, size: %ld\n", buf_out, file_size);
     bzero(buf_out, FILE_NAME_LENGTH);
 
-    /*send file */
-
+    /* send file */
     int current_len = 0;
     while ((current_len = fread(buf_out, 1, BUFFER_SIZE, fp)) > 0) {
         send(sock, buf_out, current_len, 0);

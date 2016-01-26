@@ -1,3 +1,4 @@
+# CODED BY GUANZHU Li (li.5328) & JiABEi XU (xu.1717)
 # Makefile for client and server
 
 CC = gcc
