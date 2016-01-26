@@ -47,6 +47,10 @@ int main(int argc, char *argv[]) {
 
     /* construct name of socket to send to */
     hp = gethostbyname(HOST_NAME);
+    if(hp == 0) {
+        fprintf(stderr, "%s: unknown host\n", argv[1]);
+        exit(2);
+    }
     bcopy((void *) hp->h_addr, (void *) &sin_addr.sin_addr, hp->h_length);
     sin_addr.sin_family = AF_INET;
     sin_addr.sin_port   = htons(atoi(PORT));
