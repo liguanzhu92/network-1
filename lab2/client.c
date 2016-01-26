@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
         perror("Error sending message from client");
         exit(1);
     }
-    printf("File name: %s, size: %ld\n", buf_out, file_size);
+    printf("File name: %s, size: %ld\n", buf_out, ntohl(file_size));
     bzero(buf_out, FILE_NAME_LENGTH);
 
     /*send file */
