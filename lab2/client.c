@@ -72,8 +72,8 @@ int main(int argc, char *argv[]) {
     /* send file size */
     fp = fopen(FILE_NAME, "rb");
     if (fp == NULL) {
-        perror("Error:");
-        exit(1);
+        perror("Error");
+        exit(-1);
     }
     if (stat(FILE_NAME, &st) >= 0) {
         file_size = htonl(st.st_size);
