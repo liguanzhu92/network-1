@@ -10,6 +10,7 @@
 #include <string.h>
 #include <sys/unistd.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 #include "ftp.h"
 
 /* client program called with host name where server is run */
@@ -22,10 +23,11 @@ main(int argc, char *argv[]) {
     int addr_len;
     FILE *fp;
     long file_size = 0;
-    const char *IP_ADDR = argv[1];
+    const char *HOST_NAME = argv[1];
     const char *PORT = argv[2];
     const char *FILE_NAME = argv[3];
     struct in_addr sip_addr;
+    struct hostent *hp;
 
 
     if (argc != 4) {
@@ -46,9 +48,9 @@ main(int argc, char *argv[]) {
     }
 
     /* construct name of socket to send to */
-
+    hp = gethostbyname(HOST_NAME);
+    bcopy((void *)hp->h_addr, (void *)&sin_addr.sin_addr, hp->h_length);
     sin_addr.sin_family = AF_INET;
-    sin_addr.sin_addr.s_addr = inet_addr(IP_ADDR);
     sin_addr.sin_port = htons(atoi(PORT));
 
 
