@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
     /* receive file */
     fp = fopen(file_name, "w+");
     if (fp == NULL) {
-        perror("Error:");
+        perror("Error");
         exit(1);
     }
     int current_len = 0;

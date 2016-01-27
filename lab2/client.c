@@ -13,21 +13,21 @@
 #include "ftp.h"
 
 /* client program called with host name where server is run */
-int main(int argc, char *argv[]) {
-    int                sock;                       /* initial socket descriptor */
-    struct sockaddr_in sin_addr;       /* structure for socket name setup */
-    char               buf_in[BUFFER_SIZE];
-    char               buf_out[BUFFER_SIZE];       /* message to set to server */
-    FILE               *fp;
-    unsigned long      file_size  = 0;
-    const char         *HOST_NAME = argv[1];
-    const char         *PORT      = argv[2];
-    const char         *FILE_NAME = argv[3];
-    struct in_addr     sip_addr;
-    struct hostent     *hp;
-    struct stat        st;
+int main(int argc, char **argv) {
+    int                sock;                    /* initial socket descriptor */
+    struct sockaddr_in sin_addr;                /* structure for socket name setup */
+    char               buf_in[BUFFER_SIZE];     /* message received from sever */
+    char               buf_out[BUFFER_SIZE];    /* message sent to server */
+    FILE               *fp;                     /* file sent to server */
+    unsigned long      file_size  = 0;          /* initialize file size */
+    const char         *HOST_NAME = argv[1];    /* host name */
+    const char         *PORT      = argv[2];    /* port number */
+    const char         *FILE_NAME = argv[3];    /* file name */
+    struct in_addr     sip_addr;                /* structure for server ip address */
+    struct hostent     *hp;                     /* structure host information */
+    struct stat        st;                      /* structure file information */
 
-
+    /* Improper useage */
     if (argc != 4) {
         printf("Usage : ftpc <remote-IP> <remote-port> <local-file-to-transfer>");
         exit(1);
@@ -47,6 +47,10 @@ int main(int argc, char *argv[]) {
 
     /* construct name of socket to send to */
     hp = gethostbyname(HOST_NAME);
+    if (hp == 0) {
+        fprintf(stderr, "%s: unknown host\n", argv[1]);
+        exit(2);
+    }
     bcopy((void *) hp->h_addr, (void *) &sin_addr.sin_addr, hp->h_length);
     sin_addr.sin_family = AF_INET;
     sin_addr.sin_port   = htons(atoi(PORT));
@@ -68,9 +72,10 @@ int main(int argc, char *argv[]) {
     /* send file size */
     fp = fopen(FILE_NAME, "rb");
     if (fp == NULL) {
-        perror("Error:");
-        exit(1);
+        perror("Error");
+        exit(-1);
     }
+    /* calculate the file size */
     if (stat(FILE_NAME, &st) >= 0) {
         file_size = htonl(st.st_size);
     }
@@ -96,7 +101,6 @@ int main(int argc, char *argv[]) {
     int current_len = 0;
     while ((current_len = fread(buf_out, 1, BUFFER_SIZE, fp)) > 0) {
         send(sock, buf_out, current_len, 0);
-        bzero(buf_out, BUFFER_SIZE);
     }
     /*if(current_len < 0) {
         perror("Error sending file to server");
