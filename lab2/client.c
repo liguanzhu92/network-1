@@ -13,22 +13,21 @@
 #include "ftp.h"
 
 /* client program called with host name where server is run */
-int main(int argc, char *argv[]) 
-{
-    int                sock;     /* initial socket descriptor */
-    struct sockaddr_in sin_addr; /* structure for socket name setup */
-    char               buf_in[BUFFER_SIZE]; /*message received from sever*/
-    char               buf_out[BUFFER_SIZE]; /* message sent to server */
-    FILE               *fp; /*file sent to server*/
-    unsigned long      file_size  = 0; /*initialize file size*/
-    const char         *HOST_NAME = argv[1]; /*host name*/
-    const char         *PORT      = argv[2]; /*port number*/
-    const char         *FILE_NAME = argv[3]; /*file name*/
-    struct in_addr     sip_addr; /*structure for server ip address*/
-    struct hostent     *hp; /*structure host information*/
-    struct stat        st;  /*structure file information*/
+int main(int argc, char **argv) {
+    int                sock;                    /* initial socket descriptor */
+    struct sockaddr_in sin_addr;                /* structure for socket name setup */
+    char               buf_in[BUFFER_SIZE];     /* message received from sever */
+    char               buf_out[BUFFER_SIZE];    /* message sent to server */
+    FILE               *fp;                     /* file sent to server */
+    unsigned long      file_size  = 0;          /* initialize file size */
+    const char         *HOST_NAME = argv[1];    /* host name */
+    const char         *PORT      = argv[2];    /* port number */
+    const char         *FILE_NAME = argv[3];    /* file name */
+    struct in_addr     sip_addr;                /* structure for server ip address */
+    struct hostent     *hp;                     /* structure host information */
+    struct stat        st;                      /* structure file information */
 
-    /*Improper useage*/
+    /* Improper useage */
     if (argc != 4) {
         printf("Usage : ftpc <remote-IP> <remote-port> <local-file-to-transfer>");
         exit(1);
@@ -48,7 +47,7 @@ int main(int argc, char *argv[])
 
     /* construct name of socket to send to */
     hp = gethostbyname(HOST_NAME);
-    if(hp == 0) {
+    if (hp == 0) {
         fprintf(stderr, "%s: unknown host\n", argv[1]);
         exit(2);
     }
@@ -76,7 +75,7 @@ int main(int argc, char *argv[])
         perror("Error");
         exit(-1);
     }
-    /*calculate the file size*/
+    /* calculate the file size */
     if (stat(FILE_NAME, &st) >= 0) {
         file_size = htonl(st.st_size);
     }
