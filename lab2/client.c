@@ -62,13 +62,6 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    /* receive a message */
-    if (recv(sock, buf_in, BUFFER_SIZE, 0) < 0) {
-        perror("Error sending message to client");
-        exit(1);
-    }
-    printf("%s\n", buf_in);
-
     /* send file size */
     fp = fopen(FILE_NAME, "rb");
     if (fp == NULL) {
@@ -81,7 +74,7 @@ int main(int argc, char **argv) {
     }
     bzero(buf_out, BUFFER_SIZE);
     memcpy(buf_out, &file_size, FILE_SIZE_LENGTH);
-    if (send(sock, buf_out, FILE_SIZE_LENGTH, 0) < 0) {
+    if (send(sock, buf_out, FILE_SIZE_LENGTH, MSG_WAITALL) < 0) {
         perror("Error sending message from client");
         exit(1);
     }
@@ -90,7 +83,7 @@ int main(int argc, char **argv) {
 
     /* send file name */
     strncpy(buf_out, FILE_NAME, strlen(FILE_NAME));
-    if (send(sock, buf_out, FILE_NAME_LENGTH, 0) < 0) {
+    if (send(sock, buf_out, FILE_NAME_LENGTH, MSG_WAITALL) < 0) {
         perror("Error sending message from client");
         exit(1);
     }
