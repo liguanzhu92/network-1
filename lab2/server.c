@@ -61,10 +61,10 @@ int main(int argc, char **argv) {
     }
 
     /* send hello msg to client */
-    if (send(msgsock, buf_out, strlen(buf_out) + 1, 0) < 0) {
+    /*if (send(msgsock, buf_out, strlen(buf_out) + 1, 0) < 0) {
         perror("Error sending message to client");
         exit(1);
-    }
+    }*/
 
     /* get file size */
     bzero(buf_in, BUFFER_SIZE);
@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     bzero(buf_in, FILE_SIZE_LENGTH);
 
     /* get file name */
-    if (recv(msgsock, buf_in, FILE_NAME_LENGTH, 0) < 0) {
+    if (recv(msgsock, buf_in, FILE_NAME_LENGTH, MSG_WAITALL) < 0) {
         perror("Error receiving message from client");
         exit(1);
     }
