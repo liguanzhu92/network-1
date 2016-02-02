@@ -1,0 +1,6 @@
+1. How to build it?
+    Just run make.
+2. How to play with it?
+    server: ftps <local-port>
+    client: ftpc <remote-IP> <remote-port> <local-file-to-transfer>
+    if everything goes well, you should see the file in the same directory of ftps on the server. 
