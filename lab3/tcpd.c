@@ -1,4 +1,5 @@
 #include "tcpd.h"
+#include "troll.h"
 
 main(int argc, char **argv) {
     if(argc == 2) {

@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     unsigned long      file_size  = 0;          /* initialize file size */
     const char         *HOST_NAME = argv[1];    /* host name */
     const char         *PORT      = argv[2];    /* port number */
-    const char         *TCPD_PORT = argv[3];
+    const char         *TCPD_PT   = argv[3];
     const char         *FILE_NAME = argv[4];    /* file name */
     struct in_addr     sip_addr;                /* structure for server ip address */
     struct hostent     *hp;                     /* structure host information */
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
     sin_addr.sin_port   = htons(atoi(PORT));
 
     tcpd_addr.sin_family = AF_INET;
-    tcpd_addr.sin_port = htons(atoi(TCPD_PORT));
+    tcpd_addr.sin_port = htons(atoi(TCPD_PT));
     tcpd_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     /* establish connection with server *//*
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
     }
     bzero(message.contents, BUFFER_SIZE);
     memcpy(message.contents, &file_size, FILE_SIZE_LENGTH);
-    if (SEND(sock, message, FILE_SIZE_LENGTH, MSG_WAITALL) < 0) {
+    if (SEND(sock, message.contents, FILE_SIZE_LENGTH, MSG_WAITALL) < 0) {
         perror("Error sending message from client");
         exit(1);
     }
