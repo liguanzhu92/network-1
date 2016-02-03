@@ -14,7 +14,7 @@
 /* server program called with no argument */
 int main(int argc, char **argv) {
     int                sock;                           /* initial socket descriptor */
-                                                         /* each client connection has a
+    int                tcpd_sock;                                     /* each client connection has a
                                                          * unique socket descriptor */
     char               *buf_in[BUFFER_SIZE];
     struct sockaddr_in sin_addr;                       /* structure for server socket addr */
@@ -39,6 +39,8 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
+    tcpd_sock = sock;
+
     /* construct name of socket to send to */
     sin_addr.sin_family      = AF_INET;
     sin_addr.sin_addr.s_addr = INADDR_ANY;
@@ -59,6 +61,16 @@ int main(int argc, char **argv) {
         perror("Error sending message to client");
         exit(1);
     }*/
+
+    printf("Registering with TCPD...\n");
+
+    //Registering with TCPD and sending port number for receiving datagrams
+    if(SEND(tcpd_sock, argv[1], sizeof(argv[1]), 0) < 0) {
+        perror("Error sending datagram message");
+        exit(1);
+    }
+
+    printf("Registered, waiting for datagrams...\n");
 
     /* get file size */
     bzero(buf_in, BUFFER_SIZE);
