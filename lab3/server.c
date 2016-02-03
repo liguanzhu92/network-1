@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
     int                sock;                           /* initial socket descriptor */
     int                tcpd_sock;                                     /* each client connection has a
                                                          * unique socket descriptor */
-    char               *buf_in[BUFFER_SIZE];
+    char               buf_in[BUFFER_SIZE];
     struct sockaddr_in sin_addr;                       /* structure for server socket addr */
     struct sockaddr_in cin_addr;                        /* structure for client socket addr */
     struct sockaddr_in tcpd_addr;
