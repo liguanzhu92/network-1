@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     printf("TCP server waiting for remote connection from clients ...\n");
 
     /*initialize socket connection in unix domain*/
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("error opening datagram socket");
         exit(1);
     }
