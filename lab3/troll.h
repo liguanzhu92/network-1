@@ -1,4 +1,4 @@
-
+#include <arpa/inet.h>
 #ifndef TROLL_H
 #define TROLL_H
 

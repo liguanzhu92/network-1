@@ -16,7 +16,7 @@ ftps:	$(OBJSRV)
 ftpc:	$(OBJCLI)
 	$(CC) $(CFLAGS) -o $@ $(OBJCLI) $(LIBS)
 tcpd:   $(OBJTCPD)
-    $(CC) $(CFLAGS) -o $@ $(OBJTCPD) $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $(OBJTCPD) $(LIBS)
 
 clean:
 	rm ftps ftpc tcpd
