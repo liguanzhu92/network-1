@@ -22,7 +22,6 @@ int main(int argc, char **argv) {
     unsigned long      file_size  = 0;          /* initialize file size */
     const char         *HOST_NAME = argv[1];    /* host name */
     const char         *PORT      = argv[2];    /* port number */
-    const char         *TCPD_PT   = argv[3];
     const char         *FILE_NAME = argv[4];    /* file name */
     struct in_addr     sip_addr;                /* structure for server ip address */
     struct hostent     *hp;                     /* structure host information */
@@ -30,8 +29,8 @@ int main(int argc, char **argv) {
     struct TCPD_MSG    message;
 
     /* Improper useage */
-    if (argc != 5) {
-        printf("Usage : ftpc <remote-IP> <remote-port> <tcpd-port> <local-file-to-transfer>");
+    if (argc != 4) {
+        printf("Usage : ftpc <remote-IP> <remote-port> <local-file-to-transfer>");
         exit(1);
     }
 
@@ -55,10 +54,6 @@ int main(int argc, char **argv) {
     bcopy((void *) hp->h_addr, (void *) &sin_addr.sin_addr, hp->h_length);
     sin_addr.sin_family = AF_INET;
     sin_addr.sin_port   = htons(atoi(PORT));
-
-    tcpd_addr.sin_family = AF_INET;
-    tcpd_addr.sin_port = htons(atoi(TCPD_PT));
-    tcpd_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     /* establish connection with server *//*
     if (connect(sock, (struct sockaddr *) &sin_addr, sizeof(struct sockaddr_in)) < 0) {

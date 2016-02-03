@@ -2,14 +2,15 @@
 #include "troll.h"
 
 main(int argc, char **argv) {
-    if(argc == 2) {
-        tcpd_server(argc, argv);
-    } else if(argc == 3) {
-        tcpd_client(argc, argv);
-    } else {
-        printf("Usage(server): %s <local-port>, or\n", argv[0]);
-        printf("Usage(client): %s <local-port> <troll-port>\n", argv[0]);
+    if(argc != 2) {
+        printf("Usage(server): %s -s, or\n", argv[0]);
+        printf("Usage(client): %s -c\n", argv[0]);
         exit(1);
+    }
+    if(strcmp(argv[1], "-s")) {
+        tcpd_server(argc, argv);
+    } else if(strcmp(argv[1], "-c")) {
+        tcpd_client(argc, argv);
     }
 
 }
@@ -134,11 +135,11 @@ void tcpd_client(int argc, char **argv) {
     //Constructing socket name for receiving
     my_addr.sin_family = AF_INET;
     my_addr.sin_addr.s_addr = INADDR_ANY;			//Listen to any IP address
-    my_addr.sin_port = htons(atoi(argv[1]));
+    my_addr.sin_port = htons(TCPD_PORT);
 
     //Constructing socket name of the troll to send to
     troll.sin_family = AF_INET;
-    troll.sin_port = htons(atoi(argv[2]));
+    troll.sin_port = htons(TROLL_PORT);
     troll.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     //Binding socket name to socket
@@ -162,7 +163,7 @@ void tcpd_client(int argc, char **argv) {
     while(1) {
 
         //Receiving from ftpc
-        int rec = recvfrom(sock,&message, sizeof(message), 0, (struct sockaddr *)&my_addr, &len);
+        int rec = recvfrom(sock, &message, sizeof(message), 0, (struct sockaddr *)&my_addr, &len);
 
         if(rec<0){
             perror("Error receiving datagram");
@@ -171,10 +172,10 @@ void tcpd_client(int argc, char **argv) {
             exit(1);
         }
 
-        printf("Received data, sending to troll --> %d\n",count);
+        printf("Received data, sending to troll --> %d\n", count);
 
         //Sending to troll
-        int s = sendto(troll_sock,&message,sizeof(message),0, (struct sockaddr *)&troll, sizeof(troll));
+        int s = sendto(troll_sock, &message, sizeof(message), 0, (struct sockaddr *)&troll, sizeof(troll));
 
         if (s < 0)
         {
