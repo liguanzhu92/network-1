@@ -16,7 +16,7 @@ main(int argc, char **argv) {
 }
 
 void tcpd_server() {
-    tcpd_msg           tcpd_msg;
+    TcpdMessage           tcpd_msg;
     NetMessage         troll_msg;
     int                sock, srv_sock;
     struct sockaddr_in my_addr, server_addr;
@@ -87,7 +87,7 @@ void tcpd_server() {
 }
 
 void tcpd_client() {
-    tcpd_msg           message;                                //Packet format accepted by troll
+    TcpdMessage           message;                                //Packet format accepted by troll
     NetMessage         troll_message;
     int                sock, troll_sock;                               //Initial socket descriptors
     struct sockaddr_in troll, my_addr, ftps_addr;                    //Structures for server and tcpd socket name setup

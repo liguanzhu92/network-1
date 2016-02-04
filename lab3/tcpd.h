@@ -15,10 +15,10 @@
 #define TROLL_PORT 7000
 #define MAXBUF 1000
 #define HEADER_LENTH 16
-typedef struct TCPD_MSG {
+typedef struct TcpdMessage {
     struct sockaddr_in header;
     char contents[MAXBUF];
-} tcpd_msg;
+} TcpdMessage;
 
 int SEND(int socket, const void *buffer, size_t len, int flags);
 int RECV(int socket, void *buffer, size_t length, int flags);

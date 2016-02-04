@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     struct in_addr  sip_addr;                /* structure for server ip address */
     struct hostent  *hp;                     /* structure host information */
     struct stat     st;                      /* structure file information */
-    struct tcpd_msg message;
+    struct TcpdMessage message;
 
     /* Improper useage */
     if (argc != 4) {
