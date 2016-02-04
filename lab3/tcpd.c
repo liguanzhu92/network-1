@@ -116,7 +116,7 @@ void tcpd_client() {
     //Constructing socket name of the troll to send to
     troll.sin_family      = AF_INET;
     troll.sin_port        = htons(TROLL_PORT);
-    troll.sin_addr.s_addr = inet_addr(LOCAL_HOST);
+    troll.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     //Binding socket name to socket
     printf("Binding socket to socket name...\n");
