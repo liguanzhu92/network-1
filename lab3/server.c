@@ -99,7 +99,8 @@ int main(int argc, char **argv) {
 
     /* print confirmation msg */
     memcpy(&cip_addr, &cin_addr.sin_addr, IP_ADDR_LENGTH);
-    printf("Received %s from client %s: %d\n", file_name, inet_ntoa(cip_addr), ntohs(cin_addr.sin_port));
+    //printf("Received %s from client %s: %d\n", file_name, inet_ntoa(cip_addr), ntohs(cin_addr.sin_port));
+    printf("Received %s from client.\n", file_name);
 
     /* close all connections and remove socket file */
     close(msgsock);
