@@ -69,6 +69,7 @@ void tcpd_server(int argc, char **argv) {
 
         bcopy(&troll_msg.msg_contents, &tcpd_msg, rec - 16);
         server_addr = tcpd_msg.header;
+	server_addr.sin_family = AF_INET;
         server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
         ////Sending to ftps
         int s = sendto(srv_sock, tcpd_msg.contents, sizeof(tcpd_msg.contents), 0, (struct sockaddr *) &server_addr,
