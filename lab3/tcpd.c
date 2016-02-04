@@ -163,11 +163,6 @@ void tcpd_client(int argc, char **argv) {
     //Counter to count number of datagrams forwarded
     int count = 0;
 
-    ftps_addr = message.header;
-    ftps_addr.sin_port = htons(TCPD_PORT);
-    ftps_addr.sin_family = htons(AF_INET);
-    ftps_addr.sin_addr.s_addr = inet_addr("164.107.113.18");
-    troll_message.msg_header = ftps_addr;
     bzero(troll_message.msg_contents, MAXBUF + 16);
 
     //Always keep on listening and sending
@@ -175,6 +170,9 @@ void tcpd_client(int argc, char **argv) {
 
         //Receiving from ftpc
         int rec = recvfrom(sock, &message, sizeof(message), 0, (struct sockaddr *)&my_addr, &len);
+        ftps_addr = message.header;
+        ftps_addr.sin_port = htons(TCPD_PORT);
+        troll_message.msg_header = ftps_addr;
 
         if(rec<0){
             perror("Error receiving datagram");
