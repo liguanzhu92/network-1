@@ -26,8 +26,8 @@ int main(int argc, char **argv) {
     unsigned long      file_size            = 0;
     char               file_name[FILE_NAME_LENGTH];
 
-    if (argc != 3) {
-        printf("Usage : ftps <local-port> <tcpd-port>");
+    if (argc != 2) {
+        printf("Usage : ftps <local-port>");
         exit(1);
     }
 
@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 
     tcpd_addr.sin_family     = AF_INET;
     tcpd_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    tcpd_addr.sin_port       = htons(atoi(argv[2]));
+    tcpd_addr.sin_port       = htons(TCPD_PORT);
 
     /* bind socket name to socket */
     if (bind(sock, (struct sockaddr *) &sin_addr, sizeof(struct sockaddr)) < 0) {
