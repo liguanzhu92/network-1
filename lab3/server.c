@@ -58,16 +58,6 @@ int main(int argc, char **argv) {
         exit(1);
     }*/
 
-    printf("Registering with TCPD...\n");
-
-    //Registering with TCPD and sending port number for receiving datagrams
-    if(SEND(sock, argv[1], sizeof(argv[1]), 0) < 0) {
-        perror("Error sending datagram message");
-        exit(1);
-    }
-
-    printf("Registered, waiting for datagrams...\n");
-
     /* get file size */
     bzero(buf_in, BUFFER_SIZE);
     if (RECV(sock, buf_in, FILE_SIZE_LENGTH, 0) < 0) {
