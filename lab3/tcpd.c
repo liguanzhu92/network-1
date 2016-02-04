@@ -16,12 +16,11 @@ main(int argc, char **argv) {
 }
 
 void tcpd_server() {
-    TcpdMessage           tcpd_msg;
+    TcpdMessage        tcpd_msg;
     NetMessage         troll_msg;
     int                sock, srv_sock;
     struct sockaddr_in my_addr, server_addr;
 
-    printf("Setting up socket...\n");
     if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("Error openting datagram socket");
         exit(1);
@@ -37,12 +36,11 @@ void tcpd_server() {
     my_addr.sin_port        = htons(TCPD_PORT_S);
 
     //Binding socket name to socket
-    printf("Binding socket to socket name...\n");
     if (bind(sock, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in)) < 0) {
         perror("Error binding stream socket");
         exit(1);
     }
-    printf("Socket name binded, waiting...\n");
+    printf("Socket binded, wait for troll data...\n");
 
     //To hold the length of my_addr
     int len = sizeof(my_addr);
@@ -64,7 +62,7 @@ void tcpd_server() {
 
         bcopy(&troll_msg.msg_contents, &tcpd_msg, rec - HEADER_LENTH);
         server_addr = tcpd_msg.header;
-	    server_addr.sin_family = AF_INET;
+        server_addr.sin_family      = AF_INET;
         server_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
         ////Sending to ftps
         int s = sendto(srv_sock, tcpd_msg.contents, rec - HEADER_LENTH * 2, 0, (struct sockaddr *) &server_addr,
@@ -78,7 +76,7 @@ void tcpd_server() {
             exit(1);
         }
 
-        printf("Received and sent --> %d\n", count);
+        printf("Received from troll and sent to server --> %d\n", count);
 
         //Incrementing counter
         count++;
@@ -87,17 +85,12 @@ void tcpd_server() {
 }
 
 void tcpd_client() {
-    TcpdMessage           message;                                //Packet format accepted by troll
+    TcpdMessage        message;                                //Packet format accepted by troll
     NetMessage         troll_message;
     int                sock, troll_sock;                               //Initial socket descriptors
     struct sockaddr_in troll, my_addr, ftps_addr;                    //Structures for server and tcpd socket name setup
 
-    //If there are more or less than 3 arguments show error
-    //First argument: exec file         Second argument: local tcpd port number
-    //Third argument: local troll port number
-
     //Initialize socket for UDP in linux
-    printf("Setting up socket...\n");
     if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("Error openting datagram socket");
         exit(1);
@@ -118,14 +111,13 @@ void tcpd_client() {
     troll.sin_addr.s_addr = inet_addr(LOCAL_HOST);
 
     //Binding socket name to socket
-    printf("Binding socket to socket name...\n");
     if (bind(sock, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in)) < 0) {
         perror("Error binding stream socket");
         close(sock);
         close(troll_sock);
         exit(1);
     }
-    printf("Socket name binded, waiting...\n");
+    printf("Socket name binded, waiting for client ...\n");
 
     //To hold the length of my_addr
     int len = sizeof(my_addr);
@@ -151,7 +143,7 @@ void tcpd_client() {
             exit(1);
         }
 
-        printf("Received data, sending to troll --> %d\n", count);
+        printf("Received data from client, sending to troll --> %d\n", count);
 
         bcopy((char *) &message, &troll_message.msg_contents, rec);
         //puts(message.contents);

@@ -18,13 +18,13 @@ int main(int argc, char **argv) {
     int                sock;                    /* initial socket descriptor */
     struct sockaddr_in sin_addr;                /* structure for socket name setup */
     FILE               *fp;                     /* file sent to server */
-    unsigned long   file_size  = 0;          /* initialize file size */
-    const char      *HOST_NAME = argv[1];    /* host name */
-    const char      *PORT      = argv[2];    /* port number */
-    const char      *FILE_NAME = argv[3];    /* file name */
-    struct in_addr  sip_addr;                /* structure for server ip address */
-    struct hostent  *hp;                     /* structure host information */
-    struct stat     st;                      /* structure file information */
+    unsigned long      file_size  = 0;          /* initialize file size */
+    const char         *HOST_NAME = argv[1];    /* host name */
+    const char         *PORT      = argv[2];    /* port number */
+    const char         *FILE_NAME = argv[3];    /* file name */
+    struct in_addr     sip_addr;                /* structure for server ip address */
+    struct hostent     *hp;                     /* structure host information */
+    struct stat        st;                      /* structure file information */
     struct TcpdMessage message;
 
     /* Improper useage */
@@ -75,8 +75,7 @@ int main(int argc, char **argv) {
     }
     bzero(message.contents, BUFFER_SIZE);
     memcpy(message.contents, &file_size, FILE_SIZE_LENGTH);
-    //sprintf(message.contents, "%ld", st.st_size);
-    if (SEND(sock, (char*)&message, FILE_SIZE_LENGTH + 16, 0) < 0) {
+    if (SEND(sock, (char *) &message, FILE_SIZE_LENGTH + 16, 0) < 0) {
         perror("Error sending message from client");
         exit(1);
     }
@@ -85,7 +84,7 @@ int main(int argc, char **argv) {
 
     /* send file name */
     strncpy(message.contents, FILE_NAME, strlen(FILE_NAME));
-    if (SEND(sock, (char*)&message, FILE_NAME_LENGTH + 16, 0) < 0) {
+    if (SEND(sock, (char *) &message, FILE_NAME_LENGTH + 16, 0) < 0) {
         perror("Error sending message from client");
         exit(1);
     }
@@ -95,7 +94,7 @@ int main(int argc, char **argv) {
     /* send file */
     int current_len = 0;
     while ((current_len = fread(message.contents, 1, BUFFER_SIZE, fp)) > 0) {
-        SEND(sock, (char*)&message, current_len + 16, 0);
+        SEND(sock, (char *) &message, current_len + 16, 0);
         usleep(10000);
     }
     fclose(fp);

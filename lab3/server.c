@@ -13,17 +13,15 @@
 
 /* server program called with no argument */
 int main(int argc, char **argv) {
-    int                sock;                           /* initial socket descriptor */
-                                                        /* each client connection has a
-                                                         * unique socket descriptor */
+    int                sock;                            /* initial socket descriptor */
     int                msgsock;
     int                addr_len;
     char               buf_in[BUFFER_SIZE];
-    struct sockaddr_in sin_addr;                       /* structure for server socket addr */
+    struct sockaddr_in sin_addr;                        /* structure for server socket addr */
     struct sockaddr_in cin_addr;                        /* structure for client socket addr */
     struct in_addr     cip_addr;                        /* structure for client ip address */
     FILE               *fp;
-    unsigned long      file_size            = 0;
+    unsigned long      file_size = 0;
     char               file_name[FILE_NAME_LENGTH];
 
     if (argc != 2) {
@@ -88,14 +86,14 @@ int main(int argc, char **argv) {
         exit(1);
     }
     int current_len = 0;
-    int count = 0;
+    int count       = 0;
     while ((current_len = RECV(sock, buf_in, BUFFER_SIZE, 0)) > 0) {
-	count += current_len;
+        count += current_len;
         fwrite(buf_in, sizeof(char), current_len, fp);
-	    //fprintf(stderr, "%d", count);
-	    if(count == file_size) {
-	        break;
-	    }
+        //fprintf(stderr, "%d", count);
+        if (count == file_size) {
+            break;
+        }
     }
     fclose(fp);
 
