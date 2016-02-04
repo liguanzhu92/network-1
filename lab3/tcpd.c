@@ -17,6 +17,7 @@ main(int argc, char **argv) {
 
 void tcpd_server(int argc, char **argv) {
     TCPD_MSG tcpd_msg;
+    NetMessage troll_msg;
     int sock, srv_sock;
     struct sockaddr_in my_addr, server_addr;
     char buff[MAXBUF];
@@ -81,10 +82,8 @@ void tcpd_server(int argc, char **argv) {
 
         //Always keep on listening and sending
         while(1) {
-            puts("1");
             //Receiving from troll
-            int rec = recvfrom(sock,&tcpd_msg, sizeof(tcpd_msg), 0, (struct sockaddr *)&my_addr, &len);
-	    puts("2");
+            int rec = recvfrom(sock,&troll_msg, sizeof(troll_msg), 0, (struct sockaddr *)&my_addr, &len);
 
             if(rec < 0){
                 perror("Error receiving datagram");
@@ -93,6 +92,7 @@ void tcpd_server(int argc, char **argv) {
                 exit(1);
             }
 
+            bcopy(&troll_msg.msg_contents, &tcpd_msg, rec - 16);
             ////Sending to ftps
             int s = sendto(srv_sock,tcpd_msg.contents,sizeof(tcpd_msg.contents),0, (struct sockaddr *)&server_addr, sizeof(server_addr));
 
@@ -103,7 +103,6 @@ void tcpd_server(int argc, char **argv) {
                 close(srv_sock);
                 exit(1);
             }
-	    puts("cool");
 
             printf("Received and sent --> %d\n",count);
 
