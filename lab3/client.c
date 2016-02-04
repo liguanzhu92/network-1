@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     unsigned long      file_size  = 0;          /* initialize file size */
     const char         *HOST_NAME = argv[1];    /* host name */
     const char         *PORT      = argv[2];    /* port number */
-    const char         *FILE_NAME = argv[4];    /* file name */
+    const char         *FILE_NAME = argv[3];    /* file name */
     struct in_addr     sip_addr;                /* structure for server ip address */
     struct hostent     *hp;                     /* structure host information */
     struct stat        st;                      /* structure file information */
