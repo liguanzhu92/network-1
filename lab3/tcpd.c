@@ -1,4 +1,5 @@
 #include "tcpd.h"
+#include "troll.h"
 
 main(int argc, char **argv) {
     if(argc != 2) {
@@ -114,9 +115,10 @@ void tcpd_server(int argc, char **argv) {
 }
 
 void tcpd_client(int argc, char **argv) {
-    TCPD_MSG message;									//Packet format accepted by troll
+    TCPD_MSG message;								//Packet format accepted by troll
+    NetMessage troll_message;
     int sock, troll_sock;                               //Initial socket descriptors
-    struct sockaddr_in troll, my_addr;					//Structures for server and tcpd socket name setup
+    struct sockaddr_in troll, my_addr, ftps_addr;					//Structures for server and tcpd socket name setup
 
     //If there are more or less than 3 arguments show error
     //First argument: exec file         Second argument: local tcpd port number
@@ -161,6 +163,11 @@ void tcpd_client(int argc, char **argv) {
     //Counter to count number of datagrams forwarded
     int count = 0;
 
+    ftps_addr = message.header;
+    ftps_addr.sin_port = htons(TCPD_PORT);
+    troll_message.msg_header = ftps_addr;
+    bzero(troll_message.msg_contents, MAXBUF);
+
     //Always keep on listening and sending
     while(1) {
 
@@ -176,8 +183,9 @@ void tcpd_client(int argc, char **argv) {
 
         printf("Received data, sending to troll --> %d\n", count);
 
+        bcopy((char*)&message, &troll_message.msg_contents, sizeof(rec));
         //Sending to troll
-        int s = sendto(troll_sock, &message, sizeof(message), 0, (struct sockaddr *)&troll, sizeof(troll));
+        int s = sendto(troll_sock, &troll_message, sizeof(rec), 0, (struct sockaddr *)&troll, sizeof(troll));
 
         if (s < 0)
         {
