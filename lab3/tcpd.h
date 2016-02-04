@@ -23,6 +23,6 @@ typedef struct TCPD_MSG {
 int SEND(int socket, const void *buffer, size_t len, int flags);
 int RECV(int socket, void *buffer, size_t length, int flags);
 int CONNECT(int socket, const struct sockaddr *address, socklen_t address_len);
-int ACCEPT(int socket, struct sockaddr *restrict address, socklen_t *restrict address_len);
+int ACCEPT(int socket, void *address, socklen_t *address_len);
 void tcpd_server();
 void tcpd_client();
