@@ -75,8 +75,8 @@ int main(int argc, char **argv) {
         file_size = htonl(st.st_size);
     }
     bzero(message.contents, BUFFER_SIZE);
-    //memcpy(message.contents, &file_size, FILE_SIZE_LENGTH);
-    sprintf(message.contents, "%ld", st.st_size);
+    memcpy(message.contents, &file_size, FILE_SIZE_LENGTH);
+    //sprintf(message.contents, "%ld", st.st_size);
     if (SEND(sock, (char*)&message, FILE_SIZE_LENGTH + 16, 0) < 0) {
         perror("Error sending message from client");
         exit(1);

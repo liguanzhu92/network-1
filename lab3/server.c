@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 
     /* get file size */
     bzero(buf_in, BUFFER_SIZE);
-    if (RECV(sock, buf_in, FILE_SIZE_LENGTH, 0) < 0) {
+    if (RECV(sock, buf_in, FILE_SIZE_LENGTH, MSG_WAITALL) < 0) {
         perror("Error receiving message from client");
         exit(1);
     }
@@ -78,14 +78,22 @@ int main(int argc, char **argv) {
     bzero(buf_in, FILE_NAME_LENGTH);
 
     /* receive file */
-    fp = fopen(file_name, "w+");
+    char dest[30] = "recv/";
+    strcat(dest, file_name);
+    fp = fopen(dest, "w+");
     if (fp == NULL) {
         perror("Error");
         exit(1);
     }
     int current_len = 0;
+    int count = 0;
     while ((current_len = RECV(sock, buf_in, BUFFER_SIZE, 0)) > 0) {
+	count += current_len;
         fwrite(buf_in, sizeof(char), current_len, fp);
+	//fprintf(stderr, "%d", count);
+	if(count == file_size) {
+	    break;
+	}
     }
     /*if(current_len < 0) {
         perror("Error transferring file from client");
