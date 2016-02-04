@@ -33,7 +33,7 @@ void tcpd_server(int argc, char **argv) {
     //Constructing socket name for receiving
     my_addr.sin_family = AF_INET;
     my_addr.sin_addr.s_addr = INADDR_ANY;			//Listen to any IP address
-    my_addr.sin_port = htons(TCPD_PORT_S);
+    my_addr.sin_port = htons(TCPD_PORT);
 
     //Constructing socket name for sending to ftps
     server_addr.sin_family = AF_INET;
@@ -57,6 +57,7 @@ void tcpd_server(int argc, char **argv) {
     while(1) {
 
         //Receiving from ftps for the port number
+	puts("ok");
         int rec = recvfrom(sock,&buff, MAXBUF, 0, (struct sockaddr *)&my_addr, &len);
 
         if(rec < 0) {
