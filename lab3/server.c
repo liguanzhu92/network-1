@@ -13,9 +13,11 @@
 
 /* server program called with no argument */
 int main(int argc, char **argv) {
-    int                sock;                           /* initial socket descriptor */     
+    int                sock;                           /* initial socket descriptor */
                                                         /* each client connection has a
                                                          * unique socket descriptor */
+    int                msgsock;
+    int                addr_len;
     char               buf_in[BUFFER_SIZE];
     struct sockaddr_in sin_addr;                       /* structure for server socket addr */
     struct sockaddr_in cin_addr;                        /* structure for client socket addr */
@@ -45,6 +47,16 @@ int main(int argc, char **argv) {
     /* bind socket name to socket */
     if (bind(sock, (struct sockaddr *) &sin_addr, sizeof(struct sockaddr)) < 0) {
         perror("error binding stream socket");
+        exit(1);
+    }
+
+    /* listen for socket connection and set max opened socket connections to 5 */
+    listen(sock, OPENED_CONNECTIONS);
+
+    /* accept a (1) connection in socket msgsocket */
+    addr_len     = sizeof(cin_addr);
+    if ((msgsock = ACCEPT(sock, (struct sockaddr *) &cin_addr, &addr_len)) == -1) {
+        perror("Error connecting stream socket");
         exit(1);
     }
 
@@ -80,15 +92,11 @@ int main(int argc, char **argv) {
     while ((current_len = RECV(sock, buf_in, BUFFER_SIZE, 0)) > 0) {
 	count += current_len;
         fwrite(buf_in, sizeof(char), current_len, fp);
-	//fprintf(stderr, "%d", count);
-	if(count == file_size) {
-	    break;
-	}
+	    //fprintf(stderr, "%d", count);
+	    if(count == file_size) {
+	        break;
+	    }
     }
-    /*if(current_len < 0) {
-        perror("Error transferring file from client");
-        exit(1);
-    }*/
     fclose(fp);
 
     /* print confirmation msg */
@@ -96,6 +104,7 @@ int main(int argc, char **argv) {
     printf("Received %s from client %s: %d\n", file_name, inet_ntoa(cip_addr), ntohs(cin_addr.sin_port));
 
     /* close all connections and remove socket file */
+    close(msgsock);
     close(sock);
 
     return 0;

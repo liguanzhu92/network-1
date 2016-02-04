@@ -18,14 +18,14 @@ int main(int argc, char **argv) {
     int                sock;                    /* initial socket descriptor */
     struct sockaddr_in sin_addr;                /* structure for socket name setup */
     FILE               *fp;                     /* file sent to server */
-    unsigned long      file_size  = 0;          /* initialize file size */
-    const char         *HOST_NAME = argv[1];    /* host name */
-    const char         *PORT      = argv[2];    /* port number */
-    const char         *FILE_NAME = argv[3];    /* file name */
-    struct in_addr     sip_addr;                /* structure for server ip address */
-    struct hostent     *hp;                     /* structure host information */
-    struct stat        st;                      /* structure file information */
-    struct TCPD_MSG    message;
+    unsigned long   file_size  = 0;          /* initialize file size */
+    const char      *HOST_NAME = argv[1];    /* host name */
+    const char      *PORT      = argv[2];    /* port number */
+    const char      *FILE_NAME = argv[3];    /* file name */
+    struct in_addr  sip_addr;                /* structure for server ip address */
+    struct hostent  *hp;                     /* structure host information */
+    struct stat     st;                      /* structure file information */
+    struct tcpd_msg message;
 
     /* Improper useage */
     if (argc != 4) {
@@ -54,12 +54,12 @@ int main(int argc, char **argv) {
     sin_addr.sin_family = htons(AF_INET);
     sin_addr.sin_port   = htons(atoi(PORT));
 
-    /* establish connection with server *//*
-    if (connect(sock, (struct sockaddr *) &sin_addr, sizeof(struct sockaddr_in)) < 0) {
+
+    if (CONNECT(sock, (struct sockaddr *) &sin_addr, sizeof(struct sockaddr_in)) < 0) {
         close(sock);
         perror("error connecting stream socket");
         exit(1);
-    }*/
+    }
 
     message.header = sin_addr;
 
@@ -98,10 +98,6 @@ int main(int argc, char **argv) {
         SEND(sock, (char*)&message, current_len + 16, 0);
         usleep(10000);
     }
-    /*if(current_len < 0) {
-        perror("Error sending file to server");
-        exit(1);
-    }*/
     fclose(fp);
 
     /* print confirmation msg */

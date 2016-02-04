@@ -22,3 +22,11 @@ int RECV(int socket, void *buffer, size_t len, int flags) {
     }
     return ret;
 }
+
+int CONNECT(int socket, const struct sockaddr *address, socklen_t address_len) {
+    return 0;
+}
+
+int ACCEPT(int socket, struct sockaddr *restrict address, socklen_t *restrict address_len) {
+    return 0;
+}
