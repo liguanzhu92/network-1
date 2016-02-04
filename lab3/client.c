@@ -17,7 +17,6 @@
 int main(int argc, char **argv) {
     int                sock;                    /* initial socket descriptor */
     struct sockaddr_in sin_addr;                /* structure for socket name setup */
-    struct sockaddr_in tcpd_addr;
     FILE               *fp;                     /* file sent to server */
     unsigned long      file_size  = 0;          /* initialize file size */
     const char         *HOST_NAME = argv[1];    /* host name */

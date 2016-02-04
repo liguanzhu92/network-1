@@ -13,14 +13,12 @@
 
 /* server program called with no argument */
 int main(int argc, char **argv) {
-    int                sock;                           /* initial socket descriptor */
-    int                tcpd_sock;                                     /* each client connection has a
+    int                sock;                           /* initial socket descriptor */     
+                                                        /* each client connection has a
                                                          * unique socket descriptor */
     char               buf_in[BUFFER_SIZE];
     struct sockaddr_in sin_addr;                       /* structure for server socket addr */
     struct sockaddr_in cin_addr;                        /* structure for client socket addr */
-    struct sockaddr_in tcpd_addr;
-    int                addr_len;
     struct in_addr     cip_addr;                        /* structure for client ip address */
     FILE               *fp;
     unsigned long      file_size            = 0;
@@ -39,8 +37,6 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    tcpd_sock = sock;
-
     /* construct name of socket to send to */
     sin_addr.sin_family      = AF_INET;
     sin_addr.sin_addr.s_addr = INADDR_ANY;
@@ -51,12 +47,6 @@ int main(int argc, char **argv) {
         perror("error binding stream socket");
         exit(1);
     }
-
-    /* send hello msg to client */
-    /*if (send(msgsock, buf_out, strlen(buf_out) + 1, 0) < 0) {
-        perror("Error sending message to client");
-        exit(1);
-    }*/
 
     /* get file size */
     bzero(buf_in, BUFFER_SIZE);

@@ -8,14 +8,14 @@ main(int argc, char **argv) {
         exit(1);
     }
     if (strcmp(argv[1], "-s") == 0) {
-        tcpd_server(argc, argv);
+        tcpd_server();
     } else if (strcmp(argv[1], "-c") == 0) {
-        tcpd_client(argc, argv);
+        tcpd_client();
     }
 
 }
 
-void tcpd_server(int argc, char **argv) {
+void tcpd_server() {
     TCPD_MSG           tcpd_msg;
     NetMessage         troll_msg;
     int                sock, srv_sock;
@@ -66,7 +66,7 @@ void tcpd_server(int argc, char **argv) {
         bcopy(&troll_msg.msg_contents, &tcpd_msg, rec - 16);
         server_addr = tcpd_msg.header;
 	    server_addr.sin_family = AF_INET;
-        server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+        server_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
         ////Sending to ftps
         int s = sendto(srv_sock, tcpd_msg.contents, rec - 32, 0, (struct sockaddr *) &server_addr,
                        sizeof(server_addr));
@@ -87,7 +87,7 @@ void tcpd_server(int argc, char **argv) {
     }
 }
 
-void tcpd_client(int argc, char **argv) {
+void tcpd_client() {
     TCPD_MSG           message;                                //Packet format accepted by troll
     NetMessage         troll_message;
     int                sock, troll_sock;                               //Initial socket descriptors
@@ -116,7 +116,7 @@ void tcpd_client(int argc, char **argv) {
     //Constructing socket name of the troll to send to
     troll.sin_family      = AF_INET;
     troll.sin_port        = htons(TROLL_PORT);
-    troll.sin_addr.s_addr = inet_addr("127.0.0.1");
+    troll.sin_addr.s_addr = inet_addr(LOCAL_HOST);
 
     //Binding socket name to socket
     printf("Binding socket to socket name...\n");
