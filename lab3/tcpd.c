@@ -1,5 +1,4 @@
 #include "tcpd.h"
-#include "troll.h"
 
 main(int argc, char **argv) {
     if(argc != 2) {
@@ -34,7 +33,7 @@ void tcpd_server(int argc, char **argv) {
     //Constructing socket name for receiving
     my_addr.sin_family = AF_INET;
     my_addr.sin_addr.s_addr = INADDR_ANY;			//Listen to any IP address
-    my_addr.sin_port = htons(TCPD_PORT);    
+    my_addr.sin_port = htons(TCPD_PORT_S);
 
     //Constructing socket name for sending to ftps
     server_addr.sin_family = AF_INET;

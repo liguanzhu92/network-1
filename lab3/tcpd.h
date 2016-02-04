@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <string.h>
 #endif
+#define TCPD_PORT_S 3870
 #define TCPD_PORT 3860
 #define TROLL_PORT 3850
 #define MAXBUF 1000
