@@ -166,7 +166,7 @@ void tcpd_client(int argc, char **argv) {
     ftps_addr = message.header;
     ftps_addr.sin_port = htons(TCPD_PORT);
     troll_message.msg_header = ftps_addr;
-    bzero(troll_message.msg_contents, MAXBUF);
+    bzero(troll_message.msg_contents, MAXBUF + 16);
 
     //Always keep on listening and sending
     while(1) {
@@ -185,7 +185,7 @@ void tcpd_client(int argc, char **argv) {
 
         bcopy((char*)&message, &troll_message.msg_contents, sizeof(rec));
         //Sending to troll
-        int s = sendto(troll_sock, &troll_message, sizeof(rec), 0, (struct sockaddr *)&troll, sizeof(troll));
+        int s = sendto(troll_sock, &troll_message, sizeof(rec + 16), 0, (struct sockaddr *)&troll, sizeof(troll));
 
         if (s < 0)
         {
