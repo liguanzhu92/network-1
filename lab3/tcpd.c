@@ -165,6 +165,8 @@ void tcpd_client(int argc, char **argv) {
 
     ftps_addr = message.header;
     ftps_addr.sin_port = htons(TCPD_PORT);
+    ftps_addr.sin_family = htons(AF_INET);
+    ftps_addr.sin_addr.s_addr = inet_addr("164.107.113.18");
     troll_message.msg_header = ftps_addr;
     bzero(troll_message.msg_contents, MAXBUF + 16);
 
@@ -183,9 +185,9 @@ void tcpd_client(int argc, char **argv) {
 
         printf("Received data, sending to troll --> %d\n", count);
 
-        bcopy((char*)&message, &troll_message.msg_contents, sizeof(rec));
+        bcopy((char*)&message, &troll_message.msg_contents, rec);
         //Sending to troll
-        int s = sendto(troll_sock, &troll_message, sizeof(rec + 16), 0, (struct sockaddr *)&troll, sizeof(troll));
+        int s = sendto(troll_sock, &troll_message, rec + 16, 0, (struct sockaddr *)&troll, sizeof(troll));
 
         if (s < 0)
         {
