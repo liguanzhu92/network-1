@@ -13,7 +13,7 @@
 #include <string.h>
 #endif
 #define TCPD_PORT 3860
-#define TROLL_PORT 3870
+#define TROLL_PORT 3850
 #define MAXBUF 1000
 typedef struct TCPD_MSG {
     struct sockaddr_in header;

@@ -7,9 +7,9 @@ main(int argc, char **argv) {
         printf("Usage(client): %s -c\n", argv[0]);
         exit(1);
     }
-    if(strcmp(argv[1], "-s")) {
+    if(strcmp(argv[1], "-s") == 0) {
         tcpd_server(argc, argv);
-    } else if(strcmp(argv[1], "-c")) {
+    } else if(strcmp(argv[1], "-c") == 0) {
         tcpd_client(argc, argv);
     }
 
@@ -26,7 +26,7 @@ void tcpd_server(int argc, char **argv) {
         perror("Error openting datagram socket");
         exit(1);
     }
-    printf("Socket initialized \n");
+    printf("Server socket initialized \n");
 
     //Copying socket to send to ftps
     srv_sock = sock;
