@@ -13,7 +13,7 @@ int SEND(int socket, const void *buffer, size_t len, int flags) {
 int RECV(int socket, void *buffer, size_t len, int flags) {
     struct sockaddr_in srv_addr;
     srv_addr.sin_family = AF_INET;
-    srv_addr.sin_port = htons(TCPD_PORT);
+    srv_addr.sin_port = htons(TCPD_PORT_S);
     srv_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
     int srv_addr_length = sizeof(struct sockaddr_in);
     int ret;

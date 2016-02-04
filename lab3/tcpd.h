@@ -14,6 +14,7 @@
 #define TCPD_PORT 7100
 #define TROLL_PORT 7000
 #define MAXBUF 1000
+#define HEADER_LENTH 16
 typedef struct TCPD_MSG {
     struct sockaddr_in header;
     char contents[MAXBUF];
