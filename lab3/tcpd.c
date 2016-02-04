@@ -76,7 +76,7 @@ void tcpd_server() {
             exit(1);
         }
 
-        printf("Received from troll and sent to server --> %d\n", count);
+        printf("Received from troll ,sending to server --> %d\n", count);
 
         //Incrementing counter
         count++;
