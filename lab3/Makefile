@@ -2,8 +2,8 @@
 # Makefile for client and server
 
 CC = gcc
-OBJSRV = client.c tcpdio.c ftp.h tcpd.h
-OBJCLI = server.c tcpdio.c ftp.h tcpd.h
+OBJSRV = server.c tcpdio.c ftp.h tcpd.h
+OBJCLI = client.c tcpdio.c ftp.h tcpd.h
 OBJTCPD = tcpd.c tcpd.h troll.h
 CFLAGS =
 # setup for system
@@ -16,7 +16,7 @@ ftps:	$(OBJSRV)
 ftpc:	$(OBJCLI)
 	$(CC) $(CFLAGS) -o $@ $(OBJCLI) $(LIBS)
 tcpd:   $(OBJTCPD)
-    $(CC) $(CFLAGS) -o $@ $(OBJTCPD) $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $(OBJTCPD) $(LIBS)
 
 clean:
 	rm ftps ftpc tcpd
