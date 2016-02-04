@@ -4,7 +4,7 @@
 CC = gcc
 OBJSRV = server.c tcpdio.c ftp.h tcpd.h
 OBJCLI = client.c tcpdio.c ftp.h tcpd.h
-OBJTCPD = tcpd.c tcpd.h troll.h
+OBJTCPD = tcpd.c tcpd.h
 CFLAGS =
 # setup for system
 LIBS =

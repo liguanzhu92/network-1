@@ -80,9 +80,10 @@ void tcpd_server(int argc, char **argv) {
 
         //Always keep on listening and sending
         while(1) {
-
+            puts("1");
             //Receiving from troll
             int rec = recvfrom(sock,&tcpd_msg, sizeof(tcpd_msg), 0, (struct sockaddr *)&my_addr, &len);
+	    puts("2");
 
             if(rec < 0){
                 perror("Error receiving datagram");
@@ -101,6 +102,7 @@ void tcpd_server(int argc, char **argv) {
                 close(srv_sock);
                 exit(1);
             }
+	    puts("cool");
 
             printf("Received and sent --> %d\n",count);
 
