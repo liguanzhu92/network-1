@@ -34,7 +34,8 @@ void tcpd_server(int argc, char **argv) {
     //Constructing socket name for receiving
     my_addr.sin_family = AF_INET;
     my_addr.sin_addr.s_addr = INADDR_ANY;			//Listen to any IP address
-    my_addr.sin_port = htons(atoi(argv[1]));
+    my_addr.sin_port = htons(atoi(TCPD_PORT));
+    puts(htons(atoi(TCPD_PORT)));
 
     //Constructing socket name for sending to ftps
     server_addr.sin_family = AF_INET;
@@ -135,11 +136,11 @@ void tcpd_client(int argc, char **argv) {
     //Constructing socket name for receiving
     my_addr.sin_family = AF_INET;
     my_addr.sin_addr.s_addr = INADDR_ANY;			//Listen to any IP address
-    my_addr.sin_port = htons(TCPD_PORT);
+    my_addr.sin_port = htons(atoi(TCPD_PORT));
 
     //Constructing socket name of the troll to send to
     troll.sin_family = AF_INET;
-    troll.sin_port = htons(TROLL_PORT);
+    troll.sin_port = htons(atoi(TROLL_PORT));
     troll.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     //Binding socket name to socket
