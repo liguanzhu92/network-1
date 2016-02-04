@@ -75,17 +75,18 @@ int main(int argc, char **argv) {
         file_size = htonl(st.st_size);
     }
     bzero(message.contents, BUFFER_SIZE);
-    memcpy(message.contents, &file_size, FILE_SIZE_LENGTH);
-    if (SEND(sock, (char*)&message, FILE_SIZE_LENGTH, MSG_WAITALL) < 0) {
+    //memcpy(message.contents, &file_size, FILE_SIZE_LENGTH);
+    sprintf(message.contents, "%ld", st.st_size);
+    /*if (SEND(sock, (char*)&message, FILE_SIZE_LENGTH, 0) < 0) {    
         perror("Error sending message from client");
         exit(1);
     }
-
-    bzero(message.contents, FILE_SIZE_LENGTH);
+    puts(message.contents);
+    bzero(message.contents, FILE_SIZE_LENGTH);*/
 
     /* send file name */
     strncpy(message.contents, FILE_NAME, strlen(FILE_NAME));
-    if (SEND(sock, (char*)&message, FILE_NAME_LENGTH, MSG_WAITALL) < 0) {
+    if (SEND(sock, (char*)&message, FILE_NAME_LENGTH, 0) < 0) {
         perror("Error sending message from client");
         exit(1);
     }

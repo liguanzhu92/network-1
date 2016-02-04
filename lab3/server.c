@@ -59,14 +59,14 @@ int main(int argc, char **argv) {
     }*/
 
     /* get file size */
-    bzero(buf_in, BUFFER_SIZE);
+    /*bzero(buf_in, BUFFER_SIZE);
     if (RECV(sock, buf_in, FILE_SIZE_LENGTH, 0) < 0) {
         perror("Error receiving message from client");
         exit(1);
     }
     memcpy(&file_size, buf_in, FILE_SIZE_LENGTH);
     file_size = ntohl(file_size);
-    bzero(buf_in, FILE_SIZE_LENGTH);
+    bzero(buf_in, FILE_SIZE_LENGTH);*/
 
     /* get file name */
     if (RECV(sock, buf_in, FILE_NAME_LENGTH, MSG_WAITALL) < 0) {
