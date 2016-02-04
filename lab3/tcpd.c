@@ -37,10 +37,6 @@ void tcpd_server(int argc, char **argv) {
     my_addr.sin_addr.s_addr = INADDR_ANY;            //Listen to any IP address
     my_addr.sin_port        = htons(TCPD_PORT);
 
-    //Constructing socket name for sending to ftps
-    server_addr.sin_family      = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-
     //Binding socket name to socket
     printf("Binding socket to socket name...\n");
     if (bind(sock, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in)) < 0) {
@@ -69,12 +65,13 @@ void tcpd_server(int argc, char **argv) {
 
         bcopy(&troll_msg.msg_contents, &tcpd_msg, rec - 16);
         server_addr = tcpd_msg.header;
-	server_addr.sin_family = AF_INET;
+	    server_addr.sin_family = AF_INET;
         server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
         ////Sending to ftps
         int s = sendto(srv_sock, tcpd_msg.contents, sizeof(tcpd_msg.contents), 0, (struct sockaddr *) &server_addr,
                        sizeof(server_addr));
 
+        puts(tcpd_msg.contents);
         if (s < 0) {
             perror("Error sending datagram");
             close(sock);
@@ -158,6 +155,7 @@ void tcpd_client(int argc, char **argv) {
         printf("Received data, sending to troll --> %d\n", count);
 
         bcopy((char *) &message, &troll_message.msg_contents, rec);
+        puts(message.contents);
         //Sending to troll
         int s = sendto(troll_sock, &troll_message, rec + 16, 0, (struct sockaddr *) &troll, sizeof(troll));
 
