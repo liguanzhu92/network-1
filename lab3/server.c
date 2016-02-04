@@ -46,10 +46,6 @@ int main(int argc, char **argv) {
     sin_addr.sin_addr.s_addr = INADDR_ANY;
     sin_addr.sin_port        = htons(atoi(argv[1]));
 
-    tcpd_addr.sin_family     = AF_INET;
-    tcpd_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    tcpd_addr.sin_port       = htons(TCPD_PORT);
-
     /* bind socket name to socket */
     if (bind(sock, (struct sockaddr *) &sin_addr, sizeof(struct sockaddr)) < 0) {
         perror("error binding stream socket");
@@ -65,7 +61,7 @@ int main(int argc, char **argv) {
     printf("Registering with TCPD...\n");
 
     //Registering with TCPD and sending port number for receiving datagrams
-    if(SEND(tcpd_sock, argv[1], sizeof(argv[1]), 0) < 0) {
+    if(SEND(sock, argv[1], sizeof(argv[1]), 0) < 0) {
         perror("Error sending datagram message");
         exit(1);
     }
