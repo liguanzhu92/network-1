@@ -15,13 +15,13 @@ typedef struct linked_list {
     node *tail;
 } linked_list;*/
 
-    node* create_node(int seq_num, long time)
-    {
-    	node *new_node = NULL;
-    	new_node = (node*)malloc(sizeof(node));
-    	if (new_node != NULL)
-    	{
-    		new_node->time_left = 0;
+node* create_node(int seq_num, long time)
+{
+   	node *new_node = NULL;
+   	new_node = (node*)malloc(sizeof(node));
+   	if (new_node != NULL)
+   	{
+   		new_node->time_left = 0;
 		new_node->time = time; //default time
 		new_node->seq_num = seq_num; //default seq
 		new_node->prev = NULL;
@@ -181,7 +181,7 @@ int print_list(linked_list *list)
 	}
 }
 
-int is_expired(link_list *list)
+int is_expired(linked_list *list)
 {
 	if (list == NULL || list->head == NULL)
 		return FALSE;
