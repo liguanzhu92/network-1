@@ -21,7 +21,7 @@ typedef struct node {
 
 typedef struct link_list {
     int len;
-    node *head;
+    node *head; 
     node *tail;
 } link_list;
 
@@ -32,10 +32,10 @@ typedef struct time_message {
     long time;
 } time_message;
 
-node* create_node(int seq, long time);
-link_list* create_list();
+node* create_node(int seq_num, long time);
+linklist* create_list();
 int insert_node(link_list *list, node *insert_node);
-int cancel_node(link_list *list, int seq);
+int cancel_node(link_list *list, int seq_num);
 int remove_node(node *remove_node);
 int print_list(link_list *list);
 int is_expired(link_list *list);
