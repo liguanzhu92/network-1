@@ -1,0 +1,17 @@
+1. How to build it?
+    Just run make.
+2. How to play with it?
+    server(beta):
+    (1) run tcpd as daemon. 
+        tcpd -s & 
+    (2) run ftps.
+        ftps 1115
+    client: 
+    (1) ssh to new host, and run troll
+        troll 7000 -x0
+    (2) open a new terminal. run tcpd as daemon
+        tcpd -c &
+    (3) run ftpc
+        ftpc beta 1115 <local-file-to-transfer>
+
+   if everything goes well, the file will be saved in "recv" folder on server.
