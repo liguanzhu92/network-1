@@ -19,7 +19,7 @@ int main()
     struct sockaddr_in timer_send_addr;
     int new_buf_size = SOCK_BUF_SIZE;
 
-    link_list *time_list;
+    linked_list *time_list;
     if((sock_timer_recv = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
         perror("opening datagram socket for recv from tcpd_m1");
@@ -61,8 +61,7 @@ int main()
     {
         gettimeofday(&last_sleep, &time_zone);
         /* Receive msg from socket, block here if no msg available */
-        if(select(MAXFD, &fd_read_set, NULL, NULL, &timeout) < 0)
-        {
+        if(select(MAXFD, &fd_read_set, NULL, NULL, &timeout) < 0) {
             perror("select error");
             exit(0);
         }
@@ -106,9 +105,8 @@ int main()
             }
         }
 //                timeout.tv_usec = 1*1e5;
-        while (is_expired(time_list))
-        {
-            node *expire_node, *ptr;
+        while (is_expired(time_list)) {
+            node *expired_node, *ptr;
             long dtime;
             printf("-------------\n");
             printf("Have something expried:\n");
@@ -124,7 +122,7 @@ int main()
                 time_list->len--;
 
                 time_msg_send.seq_num = ptr->seq_num;
-                time_msg_send.action = EXPIRE;
+                time_msg_send.action = EXPIRED;
                 time_msg_send.time = 0;
                 //printf("\nBEGIN REMOVE NODE\n");
                 //cancel_node(time_list,expire_node);
@@ -144,10 +142,10 @@ int main()
                     perror("\nTIMER SEND ERROR\n");
                     exit(1);
                 }
-                expire_node = ptr;
+                expired_node = ptr;
                 dtime = ptr->time;
                 ptr = ptr->next;
-                remove_node(expire_node);
+                remove_node(expired_node);
 
             }
 
