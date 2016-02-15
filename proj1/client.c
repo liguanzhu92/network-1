@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     struct stat        st;                      /* structure file information */
     struct TcpdMessage message;
 
-    /* Improper useage */
+    /* Improper usage */
     if (argc != 4) {
         printf("Usage : ftpc <remote-IP> <remote-port> <local-file-to-transfer>");
         exit(1);

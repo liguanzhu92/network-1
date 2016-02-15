@@ -1,7 +1,7 @@
 #include "tcpd.h"
 #include "troll.h"
 
-main(int argc, char **argv) {
+int main(int argc, char **argv) {
     if (argc != 2) {
         printf("Usage(server): %s -s, or\n", argv[0]);
         printf("Usage(client): %s -c\n", argv[0]);
@@ -12,7 +12,7 @@ main(int argc, char **argv) {
     } else if (strcmp(argv[1], "-c") == 0) {
         tcpd_client();
     }
-
+    return 0;
 }
 
 void tcpd_server() {

@@ -14,7 +14,10 @@
 #define TCPD_PORT_S 3870
 #define TCPD_PORT 7100
 #define TROLL_PORT 7000
+#define TIMER_PORT_CLIENT 3880
+#define TIMER_PORT_SERVER 3890
 #define MAXBUF 1000
+#define SOCK_BUF_SIZE 128*1024
 #define HEADER_LENTH 16
 typedef struct TcpdMessage {
     struct sockaddr_in header;

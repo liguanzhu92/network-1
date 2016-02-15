@@ -33,8 +33,9 @@ typedef struct time_message {
 } time_message;
 
 node* create_node(int seq, long time);
-linklist* create_list();
-int insert_node(linklist *list, node *insert_node);
-int cancel_node(linklist *list, int seq);
+link_list* create_list();
+int insert_node(link_list *list, node *insert_node);
+int cancel_node(link_list *list, int seq);
 int remove_node(node *remove_node);
-int print_list(linklist *list);
+int print_list(link_list *list);
+int is_expired(link_list *list);
