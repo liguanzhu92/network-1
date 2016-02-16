@@ -19,6 +19,7 @@ int main() {
     int new_buf_size = SOCK_BUF_SIZE;
 
     linked_list *time_list;
+    // socket to receive from client
     if ((sock_timer_recv = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("opening datagram socket for recv from tcpd_m1");
     }
@@ -31,7 +32,7 @@ int main() {
         exit(ENOTCONN);
     }
     setsockopt(sock_timer_recv, SOL_SOCKET, SO_RCVBUF, &new_buf_size, sizeof(&new_buf_size));
-
+    // socket send to sever
     if ((sock_timer_send = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("sock_timer_send sock failed )");
     }
@@ -40,6 +41,7 @@ int main() {
     timer_send_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
 
     time_list = create_list();
+    //
     fd_set fd_read_set;
     struct timeval last_sleep, current_time;
     struct timezone time_zone;
@@ -120,7 +122,7 @@ int main() {
                 if (time_list->len <= 0) {
                     time_list->head = NULL;
                 }
-
+                // what is this?!!!!
                 send_again:
                 if (sendto(
                         sock_timer_send,
