@@ -94,6 +94,7 @@ int insert_node(linked_list *list, node *insert_node) {
         printf("This node has existed");
         return FALSE;
     }
+    return 0;
 }
 
 int cancel_node(linked_list *list, int seq_num) {
@@ -134,9 +135,9 @@ int cancel_node(linked_list *list, int seq_num) {
 int remove_node(node *remove_node) {
     if (remove_node != NULL) {
         free(remove_node);
-    }
-    else
+    } else {
         perror("remove_node error");
+    }
     return TRUE;
 }
 
@@ -163,6 +164,7 @@ int print_list(linked_list *list) {
         printf("sequence number:%d, time:%ld\n", seq_num, time);
         print_node = print_node->prev;
     }
+    return 0;
 }
 
 int is_expired(linked_list *list) {

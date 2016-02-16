@@ -49,7 +49,7 @@ int main() {
     FD_ZERO(&fd_read_set);
     FD_SET(sock_timer_recv, &fd_read_set);
 
-    while (1) {
+    while (TRUE) {
         gettimeofday(&last_sleep, &time_zone);
         /* Receive msg from socket, block here if no msg available */
         if (select(MAXFD, &fd_read_set, NULL, NULL, &timeout) < 0) {
@@ -59,7 +59,8 @@ int main() {
         gettimeofday(&current_time, &time_zone);
 
         /* delta_time: microseconds elapsed */
-        delta_time = 1e6 * (current_time.tv_sec - last_sleep.tv_sec) + (current_time.tv_usec - last_sleep.tv_usec);
+        delta_time =
+                (long) 1e6 * (current_time.tv_sec - last_sleep.tv_sec) + (current_time.tv_usec - last_sleep.tv_usec);
 
         if (time_list->head != NULL)
             time_list->head->time -= delta_time;
@@ -72,10 +73,10 @@ int main() {
                     0,
                     (struct sockaddr *) &timer_recv_addr,
                     &len) < 0) {
-                perror("recvfrom TCPD_M2 error");
+                perror("ERROR WHEN RECEIVE FROM TCPD CLIENT.");
                 exit(0);
             }
-            //print_list(time_list);
+
             if (time_msg_recv.action == CANCEL) { /* Cancel node*/
                 printf("\ncancel node: %d\n", time_msg_recv.seq_num);
                 printf("before cancel:\n");
@@ -95,7 +96,7 @@ int main() {
                 printf("-------------------------\n");
             }
         }
-//                timeout.tv_usec = 1*1e5;
+
         while (is_expired(time_list)) {
             node *expired_node, *ptr;
             long dtime = 0;
@@ -115,8 +116,7 @@ int main() {
                 time_msg_send.seq_num = ptr->seq_num;
                 time_msg_send.action = EXPIRED;
                 time_msg_send.time = 0;
-                //printf("\nBEGIN REMOVE NODE\n");
-                //cancel_node(time_list,expire_node);
+
                 if (time_list->len <= 0) {
                     time_list->head = NULL;
                 }
@@ -130,7 +130,7 @@ int main() {
                         (struct sockaddr *) &timer_send_addr,
                         sizeof(struct sockaddr_in)) < 0) {
                     if (errno == EINTR) goto send_again;
-                    perror("\nTIMER SEND ERROR\n");
+                    perror("\nERROR WHEN SEND TO TCPD SERVER\n");
                     exit(1);
                 }
                 expired_node = ptr;
