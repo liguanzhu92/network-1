@@ -99,15 +99,18 @@ int insert_node(linked_list *list, node *insert_node) {
 int cancel_node(linked_list *list, int seq_num) {
     // search the seq_num node
     node *temp_node = list->head;
-    while (temp_node->seq_num != seq_num)
-        temp_node = temp_node->next;
     list->len -= 1;
     if (temp_node == NULL) {
-        perror("does not exist this node");
+        perror("The list is empty");
         list->len += 1;
         return FALSE;
-
-    } else {
+    }
+    while (temp_node->seq_num != seq_num)
+        temp_node = temp_node->next;
+    if(temp_node == NULL){
+        perror("does not exist this node");
+        return FALSE;
+    }else{
         //head
         if (temp_node->prev == NULL) {
             //update pointer
