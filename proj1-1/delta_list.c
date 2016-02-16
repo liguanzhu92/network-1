@@ -142,13 +142,17 @@ int remove_node(node *remove_node) {
 
 int print_list(linked_list *list) {
     node *print_node = list->head;
+    if(print_node == NULL) {
+        printf("There is no node in the list.\n");
+        return 0;
+    }
     long time;
     int seq_num;
     printf("-------Ascending-------\n");
     for (int i = 0; i < list->len; ++i) {
         seq_num = print_node->seq_num;
         time = print_node->time;
-        printf("sequence number:%d, time:%d\n", seq_num, time);
+        printf("sequence number:%d, time:%ld\n", seq_num, time);
         print_node = print_node->next;
     }
     printf("-------descending-------\n");
@@ -156,7 +160,7 @@ int print_list(linked_list *list) {
     for (int i = 0; i < list->len; ++i) {
         seq_num = print_node->seq_num;
         time = print_node->time;
-        printf("sequence number:%d, time:%d\n", seq_num, time);
+        printf("sequence number:%d, time:%ld\n", seq_num, time);
         print_node = print_node->prev;
     }
 }
