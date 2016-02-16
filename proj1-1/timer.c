@@ -4,12 +4,11 @@
 #include "delta_list.h"
 
 struct timeval timeout = {
-        0,
+        (__time_t) 0,
         (__suseconds_t) (1 * 1e5),
 };
 
-int main()
-{
+int main() {
     //int sock_timer;
     int sock_timer_recv;
     int sock_timer_send;
@@ -20,44 +19,37 @@ int main()
     int new_buf_size = SOCK_BUF_SIZE;
 
     linked_list *time_list;
-    if((sock_timer_recv = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-    {
+    if ((sock_timer_recv = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("opening datagram socket for recv from tcpd_m1");
     }
     timer_recv_addr.sin_family = AF_INET;
     timer_recv_addr.sin_port = htons(TIMER_PORT_SERVER);
     timer_recv_addr.sin_addr.s_addr = INADDR_ANY;
 
-
-    if(bind(sock_timer_recv, (struct sockaddr *)&timer_recv_addr, sizeof(timer_recv_addr)) < 0)
-    {
+    if (bind(sock_timer_recv, (struct sockaddr *) &timer_recv_addr, sizeof(timer_recv_addr)) < 0) {
         perror("Timer send to tcpd socket Bind failed");
         exit(ENOTCONN);
     }
     setsockopt(sock_timer_recv, SOL_SOCKET, SO_RCVBUF, &new_buf_size, sizeof(&new_buf_size));
 
-    if((sock_timer_send = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-    {
+    if ((sock_timer_send = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("sock_timer_send sock failed )");
     }
     timer_send_addr.sin_family = AF_INET;
     timer_send_addr.sin_port = htons(TIMER_PORT_CLIENT);
     timer_send_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
 
-
-
     time_list = create_list();
     fd_set fd_read_set;
     struct timeval last_sleep, current_time;
     struct timezone time_zone;
-    int len = sizeof(timer_recv_addr);
+    socklen_t len = sizeof(timer_recv_addr);
     int MAXFD = sock_timer_recv + 1;
     long delta_time;
     FD_ZERO(&fd_read_set);
     FD_SET(sock_timer_recv, &fd_read_set);
 
-
-    while(1) {
+    while (1) {
         gettimeofday(&last_sleep, &time_zone);
         /* Receive msg from socket, block here if no msg available */
         if (select(MAXFD, &fd_read_set, NULL, NULL, &timeout) < 0) {
@@ -93,7 +85,7 @@ int main()
                 print_list(time_list);
                 printf("-------------------------\n");
             } else if (time_msg_recv.action == START) { /* Add node for timing */
-                printf("\nstart node: %d; time: %d\n", time_msg_recv.seq_num, time_msg_recv.time);
+                printf("\nstart node: %d; time: %ld\n", time_msg_recv.seq_num, time_msg_recv.time);
                 printf("before add:\n");
                 print_list(time_list);
                 node *new_node = create_node(time_msg_recv.seq_num, time_msg_recv.time);
@@ -106,7 +98,7 @@ int main()
 //                timeout.tv_usec = 1*1e5;
         while (is_expired(time_list)) {
             node *expired_node, *ptr;
-            long dtime;
+            long dtime = 0;
             printf("-------------\n");
             printf("Have something expried:\n");
             print_list(time_list);
