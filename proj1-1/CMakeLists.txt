@@ -9,5 +9,9 @@ set(TIMER_FILES
 set(TIMER_TEST_FILES
         timer_test.c delta_list.h)
 
+set(CHECK_SUM_FILES
+        check_sum.c)
+
 add_executable(timer ${TIMER_FILES})
 add_executable(timer_test ${TIMER_TEST_FILES})
+add_executable(check_sum ${CHECK_SUM_FILES})
