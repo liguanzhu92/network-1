@@ -15,7 +15,11 @@ set(TCPD_FILES
 set(TIMER_FILES
         timer.c delta_list.c delta_list.h)
 
+set(TIMER_TEST_FILES
+        timer_test.c delta_list.h)
+
 add_executable(ftpc ${FTPC_FILES})
 add_executable(ftps ${FTPS_FILES})
 add_executable(tcpd ${TCPD_FILES})
 add_executable(timer ${TIMER_FILES})
+add_executable(timer_test ${TIMER_TEST_FILES})
