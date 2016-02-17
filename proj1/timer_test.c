@@ -32,12 +32,12 @@ int main(int argc, char** argv) {
     start_timer(2, 1);
     start_timer(3, 2);
     start_timer(4, 3);
-    usleep(5*1e6);
+    sleep(5);
     cancel_timer(3);
     start_timer(5, 4);
-    usleep(5*1e6);
+    sleep(5);
     cancel_timer(4);
-    usleep(5*1e6);
+    sleep(5);
     return 0;
 }
 
