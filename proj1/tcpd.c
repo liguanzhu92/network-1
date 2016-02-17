@@ -63,16 +63,17 @@ void tcpd_server() {
 
         bcopy(&troll_msg.msg_contents, &tcpd_msg, rec - HEADER_LENTH);
         // compare the content
-        printf("tcpd_msg:%hu\n",ntohs(tcpd_msg.check_sum));
-        printf("local_msg:%hu\n",cal_crc(tcpd_msg.contents, rec - HEADER_LENTH * 2 - sizeof(unsigned short)));
-        /*if (tcpd_msg.check_sum != cal_crc(tcpd_msg.contents, rec - HEADER_LENTH - sizeof(unsigned short))){
+        unsigned short local_check_sum = cal_crc(tcpd_msg.contents, rec - HEADER_LENTH * 2 - sizeof(unsigned short));
+        printf("tcpd_msg:%hu\n", ntohs(tcpd_msg.check_sum));
+        printf("local_msg:%hu\n", local_check_sum);
+        if (ntohs(tcpd_msg.check_sum) != local_check_sum){
             printf("garbling detected!\n");
-        }*/
+        }
         server_addr = tcpd_msg.header;
         server_addr.sin_family      = AF_INET;
         server_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
         ////Sending to ftps
-        int s = sendto(srv_sock, tcpd_msg.contents, rec - HEADER_LENTH * 2, 0, (struct sockaddr *) &server_addr,
+        int s = sendto(srv_sock, tcpd_msg.contents, rec - HEADER_LENTH * 2 - sizeof(unsigned short), 0, (struct sockaddr *) &server_addr,
                        sizeof(server_addr));
 
         //puts(tcpd_msg.contents);
@@ -152,6 +153,8 @@ void tcpd_client() {
 
         printf("Received data from client, sending to troll --> %d\n", count);
 
+        message.check_sum = htons(cal_crc(message.contents, rec - HEADER_LENTH - sizeof(unsigned short)));
+        printf("check_sum: %hu\n", ntohs(message.check_sum));
         bcopy((char *) &message, &troll_message.msg_contents, rec);
         //puts(message.contents);
         //Sending to troll
