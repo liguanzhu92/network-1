@@ -3,17 +3,15 @@
 //
 #include "delta_list.h"
 
-void send_test_message(
-        int sock,
-        struct sockaddr_in sin_addr,
-        time_message time_message_send,
-        int seq_num,
-        int time,
-        int action);
+int sock;
+struct sockaddr_in sin_addr;
+time_message time_message_send;
+
+void _send_test_message(int seq_num, long time, int action);
+void start_timer(int time_in_sec, int seq_num);
+void cancel_timer(int seq_num);
 
 int main(int argc, char** argv) {
-    int sock;
-    struct sockaddr_in sin_addr;
     struct hostent *hp;
     if((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
@@ -31,27 +29,28 @@ int main(int argc, char** argv) {
     sin_addr.sin_port = htons(TIMER_PORT_SERVER);
     printf("PORT IS: %d\n", ntohs(sin_addr.sin_port));
 
-    time_message time_msg_send;
-
-    send_test_message(sock, sin_addr, time_msg_send, 1, 2*1e6, START);
-    send_test_message(sock, sin_addr, time_msg_send, 2, 3*1e6, START);
-    send_test_message(sock, sin_addr, time_msg_send, 3, 4*1e6, START);
+    start_timer(2, 1);
+    start_timer(3, 2);
+    start_timer(4, 3);
     usleep(5*1e6);
-    send_test_message(sock, sin_addr, time_msg_send, 3, 0, CANCEL);
-    send_test_message(sock, sin_addr, time_msg_send, 4, 5*1e6, START);
+    cancel_timer(3);
+    start_timer(5, 4);
     usleep(5*1e6);
-    send_test_message(sock, sin_addr, time_msg_send, 4, 0, CANCEL);
+    cancel_timer(4);
     usleep(5*1e6);
     return 0;
 }
 
-void send_test_message(
-        int sock,
-        struct sockaddr_in sin_addr,
-        time_message time_message_send,
-        int seq_num,
-        int time,
-        int action) {
+void start_timer(int time_in_sec, int seq_num) {
+    //TODO may have overflow here
+    _send_test_message(seq_num, time_in_sec * (long)1e6, START);
+}
+
+void cancel_timer(int seq_num) {
+    _send_test_message(seq_num, 0, CANCEL);
+}
+
+void _send_test_message(int seq_num, long time, int action) {
     /* Creat new packet*/
     time_message_send.seq_num = seq_num;
     time_message_send.time = time;
