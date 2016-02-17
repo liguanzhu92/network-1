@@ -108,7 +108,12 @@ int cancel_node(linked_list *list, int seq_num) {
         list->len += 1;
         return FALSE;
 
-    } else {
+    } else if ((temp_node->prev==NULL )&& (temp_node->next== NULL)){
+        list->head = NULL;
+        list->tail = NULL;
+        free(temp_node);
+        return  TRUE;
+    }else{
         //head
         if (temp_node->prev == NULL) {
             //update pointer
