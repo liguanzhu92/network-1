@@ -94,22 +94,25 @@ int insert_node(linked_list *list, node *insert_node) {
         printf("This node has existed");
         return FALSE;
     }
+    return 0;
 }
 
 int cancel_node(linked_list *list, int seq_num) {
     // search the seq_num node
     node *temp_node = list->head;
-    list->len -= 1;
-    if (temp_node == NULL) {
-        perror("The list is empty");
-        list->len += 1;
-        return FALSE;
-    }
     while (temp_node->seq_num != seq_num)
         temp_node = temp_node->next;
-    if(temp_node == NULL){
+    list->len -= 1;
+    if (temp_node == NULL) {
         perror("does not exist this node");
+        list->len += 1;
         return FALSE;
+
+    } else if ((temp_node->prev==NULL )&& (temp_node->next== NULL)){
+        list->head = NULL;
+        list->tail = NULL;
+        free(temp_node);
+        return  TRUE;
     }else{
         //head
         if (temp_node->prev == NULL) {
@@ -137,31 +140,36 @@ int cancel_node(linked_list *list, int seq_num) {
 int remove_node(node *remove_node) {
     if (remove_node != NULL) {
         free(remove_node);
-    }
-    else
+    } else {
         perror("remove_node error");
+    }
     return TRUE;
 }
 
 int print_list(linked_list *list) {
     node *print_node = list->head;
+    if(print_node == NULL) {
+        printf("There is no node in the list.\n");
+        return 0;
+    }
     long time;
     int seq_num;
-    printf("-------Ascending-------");
+    printf("-------Ascending-------\n");
     for (int i = 0; i < list->len; ++i) {
         seq_num = print_node->seq_num;
         time = print_node->time;
-        printf("sequence number:%d, time:%d\n", seq_num, time);
+        printf("sequence number:%d, time:%ld\n", seq_num, time);
         print_node = print_node->next;
     }
-    printf("-------descending-------");
+    printf("-------descending-------\n");
     print_node = list->tail;
-    for (int i = 0; i < list->len; --i) {
+    for (int i = 0; i < list->len; ++i) {
         seq_num = print_node->seq_num;
         time = print_node->time;
-        printf("sequence number:%d, time:%d\n", seq_num, time);
+        printf("sequence number:%d, time:%ld\n", seq_num, time);
         print_node = print_node->prev;
     }
+    return 0;
 }
 
 int is_expired(linked_list *list) {
