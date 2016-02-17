@@ -1,5 +1,6 @@
 #include "tcpd.h"
 #include "troll.h"
+#include "check_sum.h"
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -61,6 +62,12 @@ void tcpd_server() {
         }
 
         bcopy(&troll_msg.msg_contents, &tcpd_msg, rec - HEADER_LENTH);
+        // compare the content
+        printf("tcpd_msg:%hu\n",ntohs(tcpd_msg.check_sum));
+        printf("local_msg:%hu\n",cal_crc(tcpd_msg.contents, rec - HEADER_LENTH * 2 - sizeof(unsigned short)));
+        /*if (tcpd_msg.check_sum != cal_crc(tcpd_msg.contents, rec - HEADER_LENTH - sizeof(unsigned short))){
+            printf("garbling detected!\n");
+        }*/
         server_addr = tcpd_msg.header;
         server_addr.sin_family      = AF_INET;
         server_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);

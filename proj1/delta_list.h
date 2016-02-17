@@ -12,7 +12,7 @@
 #define EXPIRED 2
 
 typedef struct node {
-    int time_left;
+    long time_left;
     long time;
     int seq_num;
     struct node *prev;

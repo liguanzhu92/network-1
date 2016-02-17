@@ -21,7 +21,8 @@
 #define HEADER_LENTH 16
 typedef struct TcpdMessage {
     struct sockaddr_in header;
-    char               contents[MAXBUF];
+    char   contents[MAXBUF];
+    unsigned short check_sum;
 } TcpdMessage;
 
 int  SEND(int socket, const void *buffer, size_t len, int flags);

@@ -23,6 +23,7 @@ int main(int argc, char **argv) {
     FILE               *fp;
     unsigned long      file_size = 0;
     char               file_name[FILE_NAME_LENGTH];
+    struct stat st = {0};
 
     if (argc != 2) {
         printf("Usage : ftps <local-port>");
@@ -79,6 +80,9 @@ int main(int argc, char **argv) {
 
     /* receive file */
     char dest[30] = "recv/";
+    if (stat(dest, &st) == -1) {
+        mkdir(dest, 0700);
+    }
     strcat(dest, file_name);
     fp = fopen(dest, "w+");
     if (fp == NULL) {

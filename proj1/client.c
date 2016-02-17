@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include "ftp.h"
 #include "tcpd.h"
+#include "check_sum.h"
 
 /* client program called with host name where server is run */
 int main(int argc, char **argv) {
@@ -75,7 +76,10 @@ int main(int argc, char **argv) {
     }
     bzero(message.contents, BUFFER_SIZE);
     memcpy(message.contents, &file_size, FILE_SIZE_LENGTH);
-    if (SEND(sock, (char *) &message, FILE_SIZE_LENGTH + 16, 0) < 0) {
+    message.check_sum = htons(cal_crc(message.contents, FILE_SIZE_LENGTH));
+    //printf("file size:%hu\n", cal_crc(message.contents, FILE_SIZE_LENGTH));
+
+    if (SEND(sock, (char *) &message, FILE_SIZE_LENGTH + HEADER_LENTH + sizeof(unsigned short), 0) < 0) {
         perror("Error sending message from client");
         exit(1);
     }
@@ -84,19 +88,25 @@ int main(int argc, char **argv) {
 
     /* send file name */
     strncpy(message.contents, FILE_NAME, strlen(FILE_NAME));
-    if (SEND(sock, (char *) &message, FILE_NAME_LENGTH + 16, 0) < 0) {
+    message.check_sum = htons(cal_crc(message.contents, FILE_NAME_LENGTH));
+    //printf("file name:%hu\n", ntohs(message.check_sum));
+
+    if (SEND(sock, (char *) &message, FILE_NAME_LENGTH + HEADER_LENTH + sizeof(unsigned short), 0) < 0) {
         perror("Error sending message from client");
         exit(1);
     }
-    printf("File name: %s, size: %ld\n", message.contents, ntohl(file_size));
+    printf("File name: %s, size: %d\n", message.contents, ntohl(file_size));
     bzero(message.contents, FILE_NAME_LENGTH);
 
     /* send file */
     int current_len = 0;
     while ((current_len = fread(message.contents, 1, BUFFER_SIZE, fp)) > 0) {
-        SEND(sock, (char *) &message, current_len + 16, 0);
+        message.check_sum = htons(cal_crc(message.contents, current_len));
+        //printf("file content:%hu\n", ntohs(message.check_sum));
+        SEND(sock, (char *) &message, current_len + HEADER_LENTH + sizeof(unsigned short), 0);
         usleep(10000);
     }
+
     fclose(fp);
 
     /* print confirmation msg */
