@@ -59,7 +59,7 @@ int main() {
             exit(0);
         }
         gettimeofday(&current_time, &time_zone);
-
+        //what does  he do?
         /* delta_time: microseconds elapsed */
         delta_time =
                 (long) 1e6 * (current_time.tv_sec - last_sleep.tv_sec) + (current_time.tv_usec - last_sleep.tv_usec);
@@ -83,19 +83,21 @@ int main() {
                 printf("\ncancel node: %d\n", time_msg_recv.seq_num);
                 printf("before cancel:\n");
                 print_list(time_list);
-                cancel_node(time_list, time_msg_recv.seq_num);
-                printf("after cancel:\n");
-                print_list(time_list);
-                printf("-------------------------\n");
+                if (cancel_node(time_list, time_msg_recv.seq_num)) {
+                    printf("after cancel:\n");
+                    print_list(time_list);
+                    printf("-------------------------\n");
+                }
             } else if (time_msg_recv.action == START) { /* Add node for timing */
                 printf("\nstart node: %d; time: %ld\n", time_msg_recv.seq_num, time_msg_recv.time);
                 printf("before add:\n");
                 print_list(time_list);
                 node *new_node = create_node(time_msg_recv.seq_num, time_msg_recv.time);
-                insert_node(time_list, new_node);
-                printf("after add:\n");
-                print_list(time_list);
-                printf("-------------------------\n");
+                if (insert_node(time_list, new_node)) {
+                    printf("after add:\n");
+                    print_list(time_list);
+                    printf("-------------------------\n");
+                }
             }
         }
 
@@ -122,7 +124,7 @@ int main() {
                 if (time_list->len <= 0) {
                     time_list->head = NULL;
                 }
-                // what is this?!!!!
+
                 send_again:
                 if (sendto(
                         sock_timer_send,

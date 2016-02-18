@@ -44,18 +44,33 @@ linked_list *create_list() {
 }
 
 int insert_node(linked_list *list, node *insert_node) {
-    //increase list length
-    list->len += 1;
     node *temp_head = list->head;
     node *temp_tail = list->tail;
     long temp_time = insert_node->time;
+    int temp_seq = insert_node->seq_num;
+    //increase list length
+    list->len += 1;
     //if the list is empty, insert head
     if (list->head == NULL) {
         list->head = insert_node;
         list->tail = insert_node;
         return TRUE;
     }
-    //find the proper location accroding to the insert_node->time
+    //check the node seq
+    for (; temp_seq != temp_head->seq_num ; temp_head = temp_head->next) {
+        if (temp_head->next==NULL)
+            break;
+    }
+
+    if (temp_seq == temp_head->seq_num ){
+        printf("this node has existed\n");
+        list->len -= 1;
+        return FALSE;
+    }
+    //find the proper location according to the insert_node->time
+    //reset temp head
+    temp_head = list->head;
+
     //compare head
     if (temp_time < temp_head->time) {
         insert_node->next = temp_head;
@@ -78,37 +93,34 @@ int insert_node(linked_list *list, node *insert_node) {
     while (temp_node->time < temp_time)
         temp_node = temp_node->next;
 
-    if (temp_node->time != temp_time) {
-        //insert the node
-        insert_node->next = temp_node->next;
-        temp_node->next->prev = insert_node;
-        insert_node->prev = temp_node;
-        temp_node->next = insert_node;
-        //update time_left
-        temp_node->next->time_left = temp_node->next->time - temp_time;
-        insert_node->time_left = temp_time - temp_node->time;
-        return TRUE;
-    }
+    //insert the node
+    temp_node->prev->next = insert_node;
+    insert_node->next = temp_node;
+    insert_node->prev = temp_node->prev;
+    temp_node->prev = insert_node;
+    //update time_left
+    insert_node->time_left = temp_time - insert_node->prev->time;
+    temp_node->time_left= temp_node->time - temp_time;
+
     printf("Successfully insert node %d\n", insert_node->seq_num);
-    if (temp_node->time == temp_time) {
-        printf("This node has existed");
-        return FALSE;
-    }
-    return 0;
+
+    return TRUE;
 }
 
 int cancel_node(linked_list *list, int seq_num) {
     // search the seq_num node
     node *temp_node = list->head;
-    while (temp_node->seq_num != seq_num)
-        temp_node = temp_node->next;
-    list->len -= 1;
-    if (temp_node == NULL) {
-        perror("does not exist this node");
-        list->len += 1;
+    for (;temp_node != NULL; temp_node = temp_node->next) {
+        if (temp_node->seq_num == seq_num)
+            break;
+    }
+    if(temp_node == NULL){
+        printf("this node does not exist\n");
         return FALSE;
+    }
 
-    } else if ((temp_node->prev==NULL )&& (temp_node->next== NULL)){
+    list->len -= 1;
+    if ((temp_node->prev==NULL )&& (temp_node->next== NULL)){
         list->head = NULL;
         list->tail = NULL;
         free(temp_node);
