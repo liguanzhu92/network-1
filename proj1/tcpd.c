@@ -52,7 +52,7 @@ void tcpd_server() {
     //Always keep on listening and sending
     while (1) {
         //Receiving from troll
-        int rec = recvfrom(sock, &troll_msg, sizeof(troll_msg), 0, (struct sockaddr *) &my_addr, &len);
+        int rec = (int)recvfrom(sock, &troll_msg, sizeof(troll_msg), 0, (struct sockaddr *) &my_addr, &len);
 
         if (rec < 0) {
             perror("Error receiving datagram");
@@ -62,18 +62,16 @@ void tcpd_server() {
         }
 
         bcopy(&troll_msg.msg_contents, &tcpd_msg, rec - HEADER_LENTH);
-        // compare the content
-        unsigned short local_check_sum = cal_crc(tcpd_msg.contents, rec - HEADER_LENTH * 2 - sizeof(unsigned short));
-        printf("tcpd_msg:%hu\n", ntohs(tcpd_msg.check_sum));
-        printf("local_msg:%hu\n", local_check_sum);
-        if (ntohs(tcpd_msg.check_sum) != local_check_sum){
-            printf("garbling detected!\n");
-        }
+
         server_addr = tcpd_msg.header;
         server_addr.sin_family      = AF_INET;
         server_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
         ////Sending to ftps
-        int s = sendto(srv_sock, tcpd_msg.contents, rec - HEADER_LENTH * 2 - sizeof(unsigned short), 0, (struct sockaddr *) &server_addr,
+        int s = (int)sendto(srv_sock,
+                       tcpd_msg.contents,
+                       rec - HEADER_LENTH * 2 - sizeof(unsigned int),
+                       0,
+                       (struct sockaddr *) &server_addr,
                        sizeof(server_addr));
 
         //puts(tcpd_msg.contents);
@@ -85,6 +83,14 @@ void tcpd_server() {
         }
 
         printf("Received from troll ,sending to server --> %d\n", count);
+        // compare the content
+        unsigned int local_check_sum = cal_crc((void *)&tcpd_msg + sizeof(unsigned int), (unsigned char)(rec - HEADER_LENTH - sizeof(unsigned int)));
+        printf("tcpd_check_sum:%u\n", ntohl(tcpd_msg.check_sum));
+        printf("local_check_sum:%u\n", local_check_sum);
+        if (ntohl(tcpd_msg.check_sum) != local_check_sum){
+            printf("%sgarbling detected!\n", "\x1B[33m");
+            printf("%s", "\x1B[0m");
+        }
 
         //Incrementing counter
         count++;
@@ -133,7 +139,7 @@ void tcpd_client() {
     //Counter to count number of datagrams forwarded
     int count = 0;
 
-    bzero(troll_message.msg_contents, MAXBUF + HEADER_LENTH);
+    bzero(troll_message.msg_contents, sizeof(message));
 
     //Always keep on listening and sending
     while (1) {
@@ -153,8 +159,9 @@ void tcpd_client() {
 
         printf("Received data from client, sending to troll --> %d\n", count);
 
-        message.check_sum = htons(cal_crc(message.contents, rec - HEADER_LENTH - sizeof(unsigned short)));
-        printf("check_sum: %hu\n", ntohs(message.check_sum));
+        message.check_sum = htonl(cal_crc((void *) &message + sizeof(unsigned int), (unsigned char)(rec - sizeof(unsigned int))));
+        //message.check_sum = htons(cal_crc(message.contents, rec - HEADER_LENTH - sizeof(unsigned short)));
+        printf("check_sum: %u\n", ntohl(message.check_sum));
         bcopy((char *) &message, &troll_message.msg_contents, rec);
         //puts(message.contents);
         //Sending to troll

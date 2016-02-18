@@ -10,7 +10,7 @@ set(FTPS_FILES
         server.c tcpdio.c ftp.h tcpd.h)
 
 set(TCPD_FILES
-        tcpd.c tcpd.h troll.h)
+        tcpd.c tcpd.h troll.h check_sum.h)
 
 set(TIMER_FILES
         timer.c delta_list.c delta_list.h)

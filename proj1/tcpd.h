@@ -20,8 +20,8 @@
 #define SOCK_BUF_SIZE 128*1024
 #define HEADER_LENTH 16
 typedef struct TcpdMessage {
+    unsigned int check_sum;
     struct sockaddr_in header;
-    unsigned short check_sum;
     char   contents[MAXBUF];
 } TcpdMessage;
 

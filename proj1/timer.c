@@ -41,7 +41,7 @@ int main() {
     timer_send_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
 
     time_list = create_list();
-    //
+    //a
     fd_set fd_read_set;
     struct timeval last_sleep, current_time;
     struct timezone time_zone;
