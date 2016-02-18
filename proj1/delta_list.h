@@ -11,6 +11,8 @@
 #define START 1
 #define EXPIRED 2
 
+#define DEFAULT_TIMEOUT 10
+
 typedef struct node {
     long time_left;
     long time;

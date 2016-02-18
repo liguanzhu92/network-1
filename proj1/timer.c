@@ -4,8 +4,8 @@
 #include "delta_list.h"
 
 struct timeval timeout = {
-        (__time_t) 0,
-        (__suseconds_t) (1 * 1e5),
+        (__time_t) 10,
+        (__suseconds_t) 0,
 };
 
 int main() {
@@ -59,7 +59,7 @@ int main() {
             exit(0);
         }
         gettimeofday(&current_time, &time_zone);
-        //what does  he do?
+
         /* delta_time: microseconds elapsed */
         delta_time =
                 (long) 1e6 * (current_time.tv_sec - last_sleep.tv_sec) + (current_time.tv_usec - last_sleep.tv_usec);
@@ -151,18 +151,16 @@ int main() {
             }
         }
 
-        if (time_list->len != 0) {
-            printf("--------------------------\n");
-            printf("After removed expired nodes: \n");
-            print_list(time_list);
-            printf("--------------------------\n");
-            if (time_list->head == NULL) {
-                timeout.tv_sec = 1;
-                timeout.tv_usec = 0;
-            } else {
-                timeout.tv_sec = time_list->head->time / 1000000;
-                timeout.tv_usec = time_list->head->time % 1000000;
-            }
+        printf("--------------------------\n");
+        printf("After removed expired nodes: \n");
+        print_list(time_list);
+        printf("--------------------------\n");
+        if (time_list->head == NULL) {
+            timeout.tv_sec = DEFAULT_TIMEOUT;
+            timeout.tv_usec = 0;
+        } else {
+            timeout.tv_sec = time_list->head->time / (int) 1e6;
+            timeout.tv_usec = time_list->head->time % (int) 1e6;
         }
 
         FD_ZERO(&fd_read_set);
