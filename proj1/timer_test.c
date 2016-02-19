@@ -7,7 +7,7 @@ int sock;
 struct sockaddr_in sin_addr;
 time_message time_message_send;
 
-void _send_test_message(int seq_num, long time, int action);
+void _send_test_message(int seq_num, long time, enum packet_action action);
 void start_timer(float time_in_sec, int seq_num);
 void cancel_timer(int seq_num);
 
@@ -64,12 +64,11 @@ void cancel_timer(int seq_num) {
     _send_test_message(seq_num, 0, CANCEL);
 }
 
-void _send_test_message(int seq_num, long time, int action) {
+void _send_test_message(int seq_num, long time, enum packet_action action) {
     /* Creat new packet*/
     time_message_send.seq_num = seq_num;
     time_message_send.time = time;
     time_message_send.action = action;
-
 
     /* Send msg to timer*/
     if(sendto(

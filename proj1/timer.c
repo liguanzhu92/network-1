@@ -3,11 +3,6 @@
 //
 #include "delta_list.h"
 
-struct timeval timeout = {
-        (__time_t) 10,
-        (__suseconds_t) 0,
-};
-
 int main() {
     //int sock_timer;
     int sock_timer_recv;
@@ -17,6 +12,10 @@ int main() {
     struct sockaddr_in timer_recv_addr;
     struct sockaddr_in timer_send_addr;
     int new_buf_size = SOCK_BUF_SIZE;
+    struct timeval timeout = { /* default timeout */
+            (__time_t) 10,
+            (__suseconds_t) 0,
+    };
 
     linked_list *time_list;
     // socket to receive from client
@@ -79,24 +78,23 @@ int main() {
                 exit(0);
             }
 
-            if (time_msg_recv.action == CANCEL) { /* Cancel node*/
-                printf("\ncancel node: %d\n", time_msg_recv.seq_num);
-                printf("before cancel:\n");
-                print_list(time_list);
-                if (cancel_node(time_list, time_msg_recv.seq_num)) {
-                    printf("after cancel:\n");
-                    print_list(time_list);
-                    printf("-------------------------\n");
-                }
-            } else if (time_msg_recv.action == START) { /* Add node for timing */
-                printf("\nstart node: %d; time: %ld\n", time_msg_recv.seq_num, time_msg_recv.time);
-                printf("before add:\n");
+            if (time_msg_recv.action == START) { /* Add a new node */
+                printf("\n%sstart node: %d; time: %ld\xC2\xB5s%s\n",
+                       "\x1B[33m", time_msg_recv.seq_num, time_msg_recv.time, "\x1B[0m");
+                printf("BEFORE ADD:\n");
                 print_list(time_list);
                 node *new_node = create_node(time_msg_recv.seq_num, time_msg_recv.time);
                 if (insert_node(time_list, new_node)) {
-                    printf("after add:\n");
+                    printf("AFTER ADD:\n");
                     print_list(time_list);
-                    printf("-------------------------\n");
+                }
+            } else if (time_msg_recv.action == CANCEL) { /* Cancel node*/
+                printf("\n%scancel node: %d%s\n", "\x1B[33m", time_msg_recv.seq_num, "\x1B[0m");
+                printf("BEFORE CANCEL:\n");
+                print_list(time_list);
+                if (cancel_node(time_list, time_msg_recv.seq_num)) {
+                    printf("AFTER CANCEL:\n");
+                    print_list(time_list);
                 }
             }
         }
@@ -104,10 +102,8 @@ int main() {
         while (is_expired(time_list)) {
             node *expired_node, *ptr;
             long dtime = 0;
-            printf("-------------\n");
-            printf("Have something expried:\n");
+            printf("SOMETHING EXPIRED:\n");
             print_list(time_list);
-            printf("-------------\n");
 
             for (ptr = time_list->head; ptr != NULL;) {
                 if (ptr->time > 0)
@@ -150,11 +146,8 @@ int main() {
                 time_list->head->time += dtime;
             }
         }
-
-        printf("--------------------------\n");
-        printf("After removed expired nodes: \n");
+        printf("AFTER REMOVED EXPIRED NODES: \n");
         print_list(time_list);
-        printf("--------------------------\n");
         if (time_list->head == NULL) {
             timeout.tv_sec = DEFAULT_TIMEOUT;
             timeout.tv_usec = 0;

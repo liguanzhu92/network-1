@@ -1,5 +1,4 @@
-// CODED BY GUANZHU Li (li.5328) & JiABEi XU (xu.1717)
-/* client.c using TCP */
+/* client.c using TCPD */
 
 #include "tcpd.h"
 

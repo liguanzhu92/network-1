@@ -11,9 +11,6 @@
 
 #define TRUE 1
 #define FALSE 0
-#define CANCEL 0
-#define START 1
-#define EXPIRED 2
 
 #define DEFAULT_TIMEOUT 10
 
@@ -31,10 +28,15 @@ typedef struct linked_list {
     node *tail;
 } linked_list;
 
-/* Packet data struct */
+enum packet_action {
+    START,
+    CANCEL,
+    EXPIRED
+};
+
 typedef struct time_message {
     int seq_num;
-    int action;
+    enum packet_action action;
     long time;
 } time_message;
 

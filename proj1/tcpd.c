@@ -90,8 +90,7 @@ void tcpd_server() {
         printf("tcpd_check_sum:%hu\n", tcpd_check_sum);
         printf("local_check_sum:%hu\n", local_check_sum);
         if (tcpd_check_sum != local_check_sum){
-            printf("%sgarbling detected!\n", "\x1B[33m");
-            printf("%s", "\x1B[0m");
+            printf("%sgarbling detected!%s\n", "\x1B[33m", "\x1B[0m");
         }
 
         //Incrementing counter
