@@ -1,6 +1,10 @@
 //
 // Created by xu on 2/16/16.
 //
+
+#ifndef CHECK_SUM_H
+#define CHECK_SUM_H
+
 unsigned short cal_crc(unsigned char *ptr, unsigned char len) {
     unsigned short crc;
     unsigned char da;
@@ -48,3 +52,4 @@ unsigned short cal_crc(unsigned char *ptr, unsigned char len) {
     return (crc);
 }
 
+#endif

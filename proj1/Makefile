@@ -2,10 +2,10 @@
 # Makefile for client and server
 
 CC = gcc
-OBJSRV = server.c tcpdio.c ftp.h tcpd.h
-OBJCLI = client.c tcpdio.c ftp.h tcpd.h
+OBJSRV = server.c tcpdio.c tcpd.h
+OBJCLI = client.c tcpdio.c tcpd.h
 OBJTCPD = tcpd.c tcpd.h troll.h check_sum.h
-OBJTIMER = timer.c delta_list.c delta_list.h
+OBJTIMER = timer.c delta_list.c delta_list.h tcpd.h
 OBJTIMER_TEST = timer_test.c delta_list.h
 
 CFLAGS =

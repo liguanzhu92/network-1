@@ -4,16 +4,16 @@ project(proj1)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(FTPC_FILES
-        client.c tcpdio.c ftp.h tcpd.h)
+        client.c tcpdio.c tcpd.h)
 
 set(FTPS_FILES
-        server.c tcpdio.c ftp.h tcpd.h)
+        server.c tcpdio.c tcpd.h)
 
 set(TCPD_FILES
         tcpd.c tcpd.h troll.h check_sum.h)
 
 set(TIMER_FILES
-        timer.c delta_list.c delta_list.h)
+        timer.c delta_list.c delta_list.h tcpd.h)
 
 set(TIMER_TEST_FILES
         timer_test.c delta_list.h)

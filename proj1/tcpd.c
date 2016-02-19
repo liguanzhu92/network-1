@@ -61,7 +61,7 @@ void tcpd_server() {
             exit(1);
         }
 
-        bcopy(&troll_msg.msg_contents, &tcpd_msg, rec - HEADER_LENTH);
+        bcopy(&troll_msg.msg_contents, &tcpd_msg, rec - TCPD_HEADER_LENGTH);
 
         server_addr = tcpd_msg.header;
         server_addr.sin_family      = AF_INET;
@@ -69,7 +69,7 @@ void tcpd_server() {
         ////Sending to ftps
         int s = (int)sendto(srv_sock,
                        tcpd_msg.contents,
-                       rec - HEADER_LENTH * 2 - TCP_HEADER_LENGTH ,
+                       rec - TCPD_HEADER_LENGTH * 2 - TCP_HEADER_LENGTH ,
                        0,
                        (struct sockaddr *) &server_addr,
                        sizeof(server_addr));
@@ -86,7 +86,7 @@ void tcpd_server() {
         // compare the content
         unsigned short tcpd_check_sum = ntohs(tcpd_msg.tcp_header.th_sum);
         bzero(&tcpd_msg.tcp_header.th_sum, sizeof(u_int16_t));
-        unsigned short local_check_sum = cal_crc((unsigned char *)&tcpd_msg, (unsigned char)(rec - HEADER_LENTH));
+        unsigned short local_check_sum = cal_crc((unsigned char *)&tcpd_msg, (unsigned char)(rec - TCPD_HEADER_LENGTH));
         printf("tcpd_check_sum:%hu\n", tcpd_check_sum);
         printf("local_check_sum:%hu\n", local_check_sum);
         if (tcpd_check_sum != local_check_sum){
@@ -167,7 +167,7 @@ void tcpd_client() {
         bcopy((char *) &message, &troll_message.msg_contents, rec);
         //puts(message.contents);
         //Sending to troll
-        int s = (int)sendto(troll_sock, &troll_message, rec + HEADER_LENTH, 0, (struct sockaddr *) &troll, sizeof(troll));
+        int s = (int)sendto(troll_sock, &troll_message, rec + TCPD_HEADER_LENGTH, 0, (struct sockaddr *) &troll, sizeof(troll));
 
         if (s < 0) {
             perror("Error sending datagram");

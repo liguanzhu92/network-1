@@ -1,6 +1,10 @@
 //
 // Created by xu on 2/14/16.
 //
+
+#ifndef DELTA_LIST_H
+#define DELTA_LIST_H
+
 #include <sys/time.h>
 #include <errno.h>
 #include "tcpd.h"
@@ -41,3 +45,5 @@ int cancel_node(linked_list *list, int seq_num);
 int remove_node(node *remove_node);
 int print_list(linked_list *list);
 int is_expired(linked_list *list);
+
+#endif
