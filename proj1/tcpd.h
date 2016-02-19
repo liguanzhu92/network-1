@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,9 +20,10 @@
 #define MAXBUF 1000
 #define SOCK_BUF_SIZE 128*1024
 #define HEADER_LENTH 16
+#define TCP_HEADER_LENGTH 20
 typedef struct TcpdMessage {
-    unsigned int check_sum;
     struct sockaddr_in header;
+    struct tcphdr tcp_header;
     char   contents[MAXBUF];
 } TcpdMessage;
 

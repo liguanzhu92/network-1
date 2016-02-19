@@ -69,7 +69,7 @@ void tcpd_server() {
         ////Sending to ftps
         int s = (int)sendto(srv_sock,
                        tcpd_msg.contents,
-                       rec - HEADER_LENTH * 2 - sizeof(unsigned int),
+                       rec - HEADER_LENTH * 2 - TCP_HEADER_LENGTH ,
                        0,
                        (struct sockaddr *) &server_addr,
                        sizeof(server_addr));
@@ -84,10 +84,12 @@ void tcpd_server() {
 
         printf("Received from troll ,sending to server --> %d\n", count);
         // compare the content
-        unsigned int local_check_sum = cal_crc((void *)&tcpd_msg + sizeof(unsigned int), (unsigned char)(rec - HEADER_LENTH - sizeof(unsigned int)));
-        printf("tcpd_check_sum:%u\n", ntohl(tcpd_msg.check_sum));
-        printf("local_check_sum:%u\n", local_check_sum);
-        if (ntohl(tcpd_msg.check_sum) != local_check_sum){
+        unsigned short tcpd_check_sum = ntohs(tcpd_msg.tcp_header.th_sum);
+        bzero(&tcpd_msg.tcp_header.th_sum, sizeof(u_int16_t));
+        unsigned short local_check_sum = cal_crc((unsigned char *)&tcpd_msg, (unsigned char)(rec - HEADER_LENTH));
+        printf("tcpd_check_sum:%hu\n", tcpd_check_sum);
+        printf("local_check_sum:%hu\n", local_check_sum);
+        if (tcpd_check_sum != local_check_sum){
             printf("%sgarbling detected!\n", "\x1B[33m");
             printf("%s", "\x1B[0m");
         }
@@ -145,7 +147,7 @@ void tcpd_client() {
     while (1) {
 
         //Receiving from ftpc
-        int rec = recvfrom(sock, &message, sizeof(message), 0, (struct sockaddr *) &my_addr, &len);
+        int rec = (int)recvfrom(sock, &message, sizeof(message), 0, (struct sockaddr *) &my_addr, &len);
         ftps_addr = message.header;
         ftps_addr.sin_port       = htons(TCPD_PORT_S);
         troll_message.msg_header = ftps_addr;
@@ -159,13 +161,13 @@ void tcpd_client() {
 
         printf("Received data from client, sending to troll --> %d\n", count);
 
-        message.check_sum = htonl(cal_crc((void *) &message + sizeof(unsigned int), (unsigned char)(rec - sizeof(unsigned int))));
-        //message.check_sum = htons(cal_crc(message.contents, rec - HEADER_LENTH - sizeof(unsigned short)));
-        printf("check_sum: %u\n", ntohl(message.check_sum));
+        bzero(&message.tcp_header.th_sum, sizeof(u_int16_t));
+        message.tcp_header.th_sum = htons(cal_crc((unsigned char *) &message, (unsigned char) rec));
+        printf("check_sum: %hu\n", ntohs(message.tcp_header.th_sum));
         bcopy((char *) &message, &troll_message.msg_contents, rec);
         //puts(message.contents);
         //Sending to troll
-        int s = sendto(troll_sock, &troll_message, rec + HEADER_LENTH, 0, (struct sockaddr *) &troll, sizeof(troll));
+        int s = (int)sendto(troll_sock, &troll_message, rec + HEADER_LENTH, 0, (struct sockaddr *) &troll, sizeof(troll));
 
         if (s < 0) {
             perror("Error sending datagram");

@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     bzero(message.contents, BUFFER_SIZE);
     memcpy(message.contents, &file_size, FILE_SIZE_LENGTH);
 
-    if (SEND(sock, (char *) &message, FILE_SIZE_LENGTH + HEADER_LENTH + sizeof(unsigned int), 0) < 0) {
+    if (SEND(sock, (char *) &message, FILE_SIZE_LENGTH + HEADER_LENTH + TCP_HEADER_LENGTH, 0) < 0) {
         perror("Error sending message from client");
         exit(1);
     }
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
     /* send file name */
     strncpy(message.contents, FILE_NAME, strlen(FILE_NAME));
 
-    if (SEND(sock, (char *) &message, FILE_NAME_LENGTH + HEADER_LENTH + sizeof(unsigned int), 0) < 0) {
+    if (SEND(sock, (char *) &message, FILE_NAME_LENGTH + HEADER_LENTH + TCP_HEADER_LENGTH, 0) < 0) {
         perror("Error sending message from client");
         exit(1);
     }
@@ -97,9 +97,9 @@ int main(int argc, char **argv) {
     /* send file */
     int current_len = 0;
     while ((current_len = fread(message.contents, 1, BUFFER_SIZE, fp)) > 0) {
-        SEND(sock, (char *) &message, current_len + HEADER_LENTH + sizeof(unsigned int), 0);
-        //usleep(10000);
-        sleep(1);
+        SEND(sock, (char *) &message, current_len + HEADER_LENTH + TCP_HEADER_LENGTH, 0);
+        usleep(10000);
+        //sleep(1);
     }
 
     fclose(fp);
