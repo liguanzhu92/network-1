@@ -30,7 +30,7 @@ node *create_node(int seq_num, long time) {
     return new_node;
 }
 
-linked_list *create_list() {
+linked_list *creatfe_list() {
     linked_list *new_list = NULL;
     new_list = (linked_list *) malloc(sizeof(linked_list));
     if (new_list != NULL) {
@@ -166,8 +166,9 @@ int print_list(linked_list *list) {
     }
     long time;
     int seq_num;
+    int i;
     printf("-------Ascending-------\n");
-    for (int i = 0; i < list->len; ++i) {
+    for (i = 0; i < list->len; ++i) {
         seq_num = print_node->seq_num;
         time = print_node->time;
         printf("sequence number:%d, time:%ld\n", seq_num, time);
@@ -175,7 +176,7 @@ int print_list(linked_list *list) {
     }
     printf("-------descending-------\n");
     print_node = list->tail;
-    for (int i = 0; i < list->len; ++i) {
+    for (i = 0; i < list->len; ++i) {
         seq_num = print_node->seq_num;
         time = print_node->time;
         printf("sequence number:%d, time:%ld\n", seq_num, time);
