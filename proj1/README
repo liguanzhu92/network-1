@@ -1,17 +1,24 @@
 1. How to build it?
     Just run make.
-2. How to play with it?
+2. How to play with crc?
     server(beta):
     (1) run tcpd as daemon. 
-        tcpd -s & 
+        ./tcpd -s & 
     (2) run ftps.
-        ftps 1115
+        ./ftps 1115
     client: 
     (1) ssh to new host, and run troll
-        troll 7000 -x0
+        ./troll 7000 -x0 -g25 -t
     (2) open a new terminal. run tcpd as daemon
-        tcpd -c &
+        ./tcpd -c &
     (3) run ftpc
-        ftpc beta 1115 <local-file-to-transfer>
+        ./ftpc beta 1115 <local-file-to-transfer>
 
-   if everything goes well, the file will be saved in "recv" folder on server.
+    You should be able to see "garbling detected" when you can see data is garbled in troll, otherwise no warining messages.
+
+3. How to play with timer?
+    (1)run timer
+	./timer
+    (2)run timer_test
+	./timer_test
+    You can read the log from timer, and see if it looks good.
