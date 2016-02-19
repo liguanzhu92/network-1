@@ -30,7 +30,7 @@ node *create_node(int seq_num, long time) {
     return new_node;
 }
 
-linked_list *creatfe_list() {
+linked_list *create_list() {
     linked_list *new_list = NULL;
     new_list = (linked_list *) malloc(sizeof(linked_list));
     if (new_list != NULL) {
