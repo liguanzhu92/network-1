@@ -4,19 +4,19 @@ project(proj1)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(FTPC_FILES
-        client.c tcpdio.c tcpd.h)
+        client.c tcp_daemon/tcpdio.c tcp_daemon/headers/tcpd.h)
 
 set(FTPS_FILES
-        server.c tcpdio.c tcpd.h)
+        server.c tcp_daemon/tcpdio.c tcp_daemon/headers/tcpd.h)
 
 set(TCPD_FILES
-        tcpd.c tcpd.h troll.h check_sum.h)
+        tcp_daemon/tcpd.c tcp_daemon/headers/tcpd.h tcp_daemon/headers/troll.h tcp_daemon/headers/check_sum.h)
 
 set(TIMER_FILES
-        timer.c delta_list.c delta_list.h tcpd.h)
+        tcp_daemon/timer.c tcp_daemon/delta_list.c tcp_daemon/headers/delta_list.h tcp_daemon/headers/tcpd.h)
 
 set(TIMER_TEST_FILES
-        timer_test.c delta_list.h)
+        tcp_daemon/timer_test.c tcp_daemon/headers/delta_list.h)
 
 add_executable(ftpc ${FTPC_FILES})
 add_executable(ftps ${FTPS_FILES})

@@ -1,19 +1,21 @@
 /* client.c using TCPD */
 
-#include "tcpd.h"
+#include <libgen.h>
+#include "tcp_daemon/headers/tcpd.h"
 
 /* client program called with host name where server is run */
 int main(int argc, char **argv) {
-    int                sock;                    /* initial socket descriptor */
-    struct sockaddr_in sin_addr;                /* structure for socket name setup */
-    FILE               *fp;                     /* file sent to server */
-    unsigned long      file_size  = 0;          /* initialize file size */
-    const char         *HOST_NAME = argv[1];    /* host name */
-    const char         *PORT      = argv[2];    /* port number */
-    const char         *FILE_NAME = argv[3];    /* file name */
-    struct in_addr     sip_addr;                /* structure for server ip address */
-    struct hostent     *hp;                     /* structure host information */
-    struct stat        st;                      /* structure file information */
+    int                sock;                                /* initial socket descriptor */
+    struct sockaddr_in sin_addr;                            /* structure for socket name setup */
+    FILE               *fp;                                 /* file sent to server */
+    unsigned long      file_size  = 0;                      /* initialize file size */
+    const char         *HOST_NAME = argv[1];                /* host name */
+    const char         *PORT      = argv[2];                /* port number */
+    const char         *FILE_NAME = argv[3];                /* file name */
+    const char         *BASE_NAME = basename(argv[3]);      /* base file name */
+    struct in_addr     sip_addr;                            /* structure for server ip address */
+    struct hostent     *hp;                                 /* structure host information */
+    struct stat        st;                                  /* structure file information */
     struct TcpdMessage message;
 
     /* Improper usage */
@@ -73,7 +75,7 @@ int main(int argc, char **argv) {
     bzero(message.contents, FILE_SIZE_LENGTH);
 
     /* send file name */
-    strncpy(message.contents, FILE_NAME, strlen(FILE_NAME));
+    strncpy(message.contents, BASE_NAME, strlen(BASE_NAME));
 
     if (SEND(sock, (char *) &message, FILE_NAME_LENGTH + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0) < 0) {
         perror("Error sending message from client");

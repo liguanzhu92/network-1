@@ -1,6 +1,6 @@
 /* server.c using TCPD */
 
-#include "tcpd.h"
+#include "tcp_daemon/headers/tcpd.h"
 
 /* server program called with no argument */
 int main(int argc, char **argv) {
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
     bzero(buf_in, FILE_NAME_LENGTH);
 
     /* receive file */
-    char dest[30] = "recv/";
+    char dest[30] = "../recv/";
     if (stat(dest, &st) == -1) {
         mkdir(dest, 0700);
     }
