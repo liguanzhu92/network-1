@@ -29,7 +29,6 @@ int main(int argc, char** argv) {
     sin_addr.sin_port = htons(TIMER_PORT_SERVER);
     printf("PORT IS: %d\n", ntohs(sin_addr.sin_port));
 
-    /*
     start_timer(4, 55);
     start_timer(2, 1);//insert (first node)
     cancel_timer(1);//cancel first
@@ -43,8 +42,7 @@ int main(int argc, char** argv) {
     sleep(5);
     cancel_timer(4);
     sleep(5);
-     */
-    start_timer(5.0,1);
+    
     /*start_timer(10.0,2);
     start_timer(30.0,3);
     sleep(5);
