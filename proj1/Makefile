@@ -10,7 +10,7 @@ OBJTIMER_TEST = tcp_daemon/timer_test.c tcp_daemon/headers/delta_list.h
 OUT_DIR = bin/
 MK_DIR = mkdir -p
 
-CFLAGS =
+CFLAGS = -std=gnu11
 # setup for system
 LIBS =
 

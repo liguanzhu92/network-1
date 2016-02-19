@@ -153,9 +153,8 @@ int print_list(linked_list *list) {
     }
     long time;
     int seq_num;
-    int i;
     printf("-----------ascending-----------\n");
-    for (i = 0; i < list->len; ++i) {
+    for (int i = 0; i < list->len; ++i) {
         seq_num = print_node->seq_num;
         time = print_node->time;
         printf("sequence number: %d, time: %ld\xC2\xB5s\n", seq_num, time);
@@ -163,7 +162,7 @@ int print_list(linked_list *list) {
     }
     printf("-----------descending----------\n");
     print_node = list->tail;
-    for (i = 0; i < list->len; ++i) {
+    for (int i = 0; i < list->len; ++i) {
         seq_num = print_node->seq_num;
         time = print_node->time;
         printf("sequence number: %d, time: %ld\xC2\xB5s\n", seq_num, time);
