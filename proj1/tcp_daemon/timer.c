@@ -82,9 +82,9 @@ int main() {
                 printf("\n%sstart node: %d; time: %ld\xC2\xB5s%s\n",
                        "\x1B[33m", time_msg_recv.seq_num, time_msg_recv.time, "\x1B[0m");
                 printf("BEFORE ADD:\n");
+                update_list(time_list);
                 print_list(time_list);
                 node *new_node = create_node(time_msg_recv.seq_num, time_msg_recv.time);
-                update_list(time_list);
                 if (insert_node(time_list, new_node)) {
                     printf("AFTER ADD:\n");
                     print_list(time_list);
@@ -92,6 +92,7 @@ int main() {
             } else if (time_msg_recv.action == CANCEL) { /* Cancel node*/
                 printf("\n%scancel node: %d%s\n", "\x1B[33m", time_msg_recv.seq_num, "\x1B[0m");
                 printf("BEFORE CANCEL:\n");
+                update_list(time_list);
                 print_list(time_list);
                 if (cancel_node(time_list, time_msg_recv.seq_num)) {
                     printf("AFTER CANCEL:\n");

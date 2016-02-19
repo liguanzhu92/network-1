@@ -159,20 +159,29 @@ int print_list(linked_list *list) {
         return 0;
     }
     long print_time;
+
     int seq_num;
     printf("-----------ascending-----------\n");
     for (int i = 0; i < list->len; ++i) {
         seq_num = print_node->seq_num;
-        print_time = print_node->time ;
-        printf("sequence number: %d, time: %ld\xC2\xB5s\n", seq_num, print_time);
+        print_time = print_node->delta_time ;
+        if(i != list->len -1) {
+            printf("%d@: %ld\xC2\xB5s -> ", seq_num, print_time);
+        } else {
+            printf("%d, @: %ld\xC2\xB5s\n", seq_num, print_time);
+        }
         print_node = print_node->next;
     }
     printf("-----------descending----------\n");
     print_node = list->tail;
     for (int i = 0; i < list->len; ++i) {
         seq_num = print_node->seq_num;
-        print_time = print_node->time;
-        printf("sequence number: %d, time: %ld\xC2\xB5s\n", seq_num, print_time);
+        print_time = print_node->delta_time;
+        if(i != list->len -1) {
+            printf("%d@: %ld\xC2\xB5s -> ", seq_num, print_time);
+        } else {
+            printf("%d, @: %ld\xC2\xB5s\n", seq_num, print_time);
+        }
         print_node = print_node->prev;
     }
     printf("*******************************\n");
