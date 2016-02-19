@@ -40,7 +40,7 @@ int main() {
     timer_send_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
 
     time_list = create_list();
-    //a
+
     fd_set fd_read_set;
     struct timeval last_sleep, current_time;
     struct timezone time_zone;
@@ -84,6 +84,7 @@ int main() {
                 printf("BEFORE ADD:\n");
                 print_list(time_list);
                 node *new_node = create_node(time_msg_recv.seq_num, time_msg_recv.time);
+                update_list(time_list);
                 if (insert_node(time_list, new_node)) {
                     printf("AFTER ADD:\n");
                     print_list(time_list);
@@ -103,6 +104,7 @@ int main() {
             node *expired_node, *ptr;
             long dtime = 0;
             printf("SOMETHING EXPIRED:\n");
+            update_list(time_list);
             print_list(time_list);
 
             for (ptr = time_list->head; ptr != NULL;) {
@@ -136,8 +138,7 @@ int main() {
                 expired_node = ptr;
                 dtime = ptr->time;
                 ptr = ptr->next;
-                remove_node(expired_node);
-
+                remove_node(time_list, expired_node);
             }
 
             if (time_list->head == NULL) {

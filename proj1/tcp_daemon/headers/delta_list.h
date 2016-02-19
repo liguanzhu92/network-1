@@ -15,7 +15,7 @@
 #define DEFAULT_TIMEOUT 10
 
 typedef struct node {
-    long time_left;
+    long delta_time;
     long time;
     int seq_num;
     struct node *prev;
@@ -44,8 +44,9 @@ node* create_node(int seq_num, long time);
 linked_list* create_list();
 int insert_node(linked_list *list, node *insert_node);
 int cancel_node(linked_list *list, int seq_num);
-int remove_node(node *remove_node);
+int remove_node(linked_list* list, node *remove_node);
 int print_list(linked_list *list);
 int is_expired(linked_list *list);
+void update_list(linked_list* list);
 
 #endif

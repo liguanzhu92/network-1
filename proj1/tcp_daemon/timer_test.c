@@ -42,16 +42,7 @@ int main(int argc, char** argv) {
     sleep(5);
     cancel_timer(4);
     sleep(5);
-    
-    /*start_timer(10.0,2);
-    start_timer(30.0,3);
-    sleep(5);
-    cancel_timer(2);
-    start_timer(20.0,4);
-    sleep(5);
-    start_timer(18.0,5);
-    cancel_timer(4);
-    cancel_timer(8);*/
+
     return 0;
 }
 
