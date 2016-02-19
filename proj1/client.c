@@ -1,16 +1,5 @@
-// CODED BY GUANZHU Li (li.5328) & JiABEi XU (xu.1717)
-/* client.c using TCP */
+/* client.c using TCPD */
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/unistd.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <sys/stat.h>
-#include "ftp.h"
 #include "tcpd.h"
 
 /* client program called with host name where server is run */
@@ -27,7 +16,7 @@ int main(int argc, char **argv) {
     struct stat        st;                      /* structure file information */
     struct TcpdMessage message;
 
-    /* Improper useage */
+    /* Improper usage */
     if (argc != 4) {
         printf("Usage : ftpc <remote-IP> <remote-port> <local-file-to-transfer>");
         exit(1);
@@ -73,9 +62,10 @@ int main(int argc, char **argv) {
     if (stat(FILE_NAME, &st) >= 0) {
         file_size = htonl(st.st_size);
     }
-    bzero(message.contents, BUFFER_SIZE);
+    bzero(message.contents, CONTENT_BUFF_SIZE);
     memcpy(message.contents, &file_size, FILE_SIZE_LENGTH);
-    if (SEND(sock, (char *) &message, FILE_SIZE_LENGTH + 16, 0) < 0) {
+
+    if (SEND(sock, (char *) &message, FILE_SIZE_LENGTH + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0) < 0) {
         perror("Error sending message from client");
         exit(1);
     }
@@ -84,19 +74,22 @@ int main(int argc, char **argv) {
 
     /* send file name */
     strncpy(message.contents, FILE_NAME, strlen(FILE_NAME));
-    if (SEND(sock, (char *) &message, FILE_NAME_LENGTH + 16, 0) < 0) {
+
+    if (SEND(sock, (char *) &message, FILE_NAME_LENGTH + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0) < 0) {
         perror("Error sending message from client");
         exit(1);
     }
-    printf("File name: %s, size: %ld\n", message.contents, ntohl(file_size));
+    printf("File name: %s, size: %d\n", message.contents, ntohl(file_size));
     bzero(message.contents, FILE_NAME_LENGTH);
 
     /* send file */
     int current_len = 0;
-    while ((current_len = fread(message.contents, 1, BUFFER_SIZE, fp)) > 0) {
-        SEND(sock, (char *) &message, current_len + 16, 0);
-        usleep(10000);
+    while ((current_len = fread(message.contents, 1, CONTENT_BUFF_SIZE, fp)) > 0) {
+        SEND(sock, (char *) &message, current_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
+        //usleep(10000);
+        sleep(1);
     }
+
     fclose(fp);
 
     /* print confirmation msg */
