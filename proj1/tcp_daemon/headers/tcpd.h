@@ -26,10 +26,9 @@
 #define IP_ADDR_LENGTH 4
 #define OPENED_CONNECTIONS 5
 
-#define TCPD_MESSAGE_LENGTH 1020 /* since we have a 16-bit crc, so we need to keep the size of TcpdMessage under 1024*/
 #define TCPD_HEADER_LENGTH 16
 #define TCP_HEADER_LENGTH 20
-#define CONTENT_BUFF_SIZE TCPD_MESSAGE_LENGTH - TCPD_HEADER_LENGTH - TCP_HEADER_LENGTH
+#define CONTENT_BUFF_SIZE 1000
 #define SOCK_BUF_SIZE 128*1024
 
 typedef struct TcpdMessage {

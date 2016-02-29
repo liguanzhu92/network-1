@@ -86,7 +86,7 @@ void tcpd_server() {
         // compare the content
         unsigned short tcpd_check_sum = ntohs(tcpd_msg.tcp_header.check);
         bzero(&tcpd_msg.tcp_header.check, sizeof(u_int16_t));
-        unsigned short local_check_sum = cal_crc((unsigned char *)&tcpd_msg, (unsigned char)(rec - TCPD_HEADER_LENGTH));
+        unsigned short local_check_sum = cal_crc((unsigned char *)&tcpd_msg, (unsigned short)(rec - TCPD_HEADER_LENGTH));
         printf("tcpd_check_sum:%hu\n", tcpd_check_sum);
         printf("local_check_sum:%hu\n", local_check_sum);
         if (tcpd_check_sum != local_check_sum){
@@ -161,7 +161,7 @@ void tcpd_client() {
         printf("Received data from client, sending to troll --> %d\n", count);
 
         bzero(&message.tcp_header.check, sizeof(u_int16_t));
-        message.tcp_header.check = htons(cal_crc((unsigned char *) &message, (unsigned char) rec));
+        message.tcp_header.check = htons(cal_crc((unsigned char *) &message, (unsigned short) rec));
         printf("check_sum: %hu\n", ntohs(message.tcp_header.check));
         bcopy((char *) &message, &troll_message.msg_contents, rec);
         //puts(message.contents);
