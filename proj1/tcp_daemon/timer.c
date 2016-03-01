@@ -64,7 +64,7 @@ int main() {
                 (long) 1e6 * (current_time.tv_sec - last_sleep.tv_sec) + (current_time.tv_usec - last_sleep.tv_usec);
 
         if (time_list->head != NULL)
-            time_list->head->time -= delta_time;
+            time_list->head->delta_time -= delta_time;
 
         if (FD_ISSET(sock_timer_recv, &fd_read_set)) {
             if (recvfrom(
@@ -82,7 +82,6 @@ int main() {
                 printf("\n%sstart node: %d; time: %ld\xC2\xB5s%s\n",
                        "\x1B[33m", time_msg_recv.seq_num, time_msg_recv.time, "\x1B[0m");
                 printf("BEFORE ADD:\n");
-                update_list(time_list);
                 print_list(time_list);
                 node *new_node = create_node(time_msg_recv.seq_num, time_msg_recv.time);
                 if (insert_node(time_list, new_node)) {
@@ -92,7 +91,6 @@ int main() {
             } else if (time_msg_recv.action == CANCEL) { /* Cancel node*/
                 printf("\n%scancel node: %d%s\n", "\x1B[33m", time_msg_recv.seq_num, "\x1B[0m");
                 printf("BEFORE CANCEL:\n");
-                update_list(time_list);
                 print_list(time_list);
                 if (cancel_node(time_list, time_msg_recv.seq_num)) {
                     printf("AFTER CANCEL:\n");
@@ -105,11 +103,10 @@ int main() {
             node *expired_node, *ptr;
             long dtime = 0;
             printf("SOMETHING EXPIRED:\n");
-            update_list(time_list);
             print_list(time_list);
 
             for (ptr = time_list->head; ptr != NULL;) {
-                if (ptr->time > 0)
+                if (ptr->delta_time > 0)
                     break;
                 time_list->head = ptr->next;
                 if (time_list->head != NULL)
@@ -137,7 +134,7 @@ int main() {
                     exit(1);
                 }
                 expired_node = ptr;
-                dtime = ptr->time;
+                dtime = ptr->delta_time;
                 ptr = ptr->next;
                 remove_node(time_list, expired_node);
             }
@@ -145,7 +142,7 @@ int main() {
             if (time_list->head == NULL) {
                 time_list->tail = NULL;
             } else {
-                time_list->head->time += dtime;
+                time_list->head->delta_time += dtime;
             }
         }
         printf("AFTER REMOVED EXPIRED NODES: \n");
@@ -154,8 +151,8 @@ int main() {
             timeout.tv_sec = DEFAULT_TIMEOUT;
             timeout.tv_usec = 0;
         } else {
-            timeout.tv_sec = time_list->head->time / (int) 1e6;
-            timeout.tv_usec = time_list->head->time % (int) 1e6;
+            timeout.tv_sec = time_list->head->delta_time / (int) 1e6;
+            timeout.tv_usec = time_list->head->delta_time % (int) 1e6;
         }
 
         FD_ZERO(&fd_read_set);

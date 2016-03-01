@@ -1,11 +1,10 @@
 #include "headers/delta_list.h"
 
-node *create_node(int seq_num, long time) {
+node *create_node(int seq_num, long delta_time) {
     node *new_node = NULL;
     new_node = (node *) malloc(sizeof(node));
     if (new_node != NULL) {
-        new_node->delta_time = 0;
-        new_node->time = time; //default time
+        new_node->delta_time = delta_time;
         new_node->seq_num = seq_num; //default seq
         new_node->prev = NULL;
         new_node->next = NULL;
@@ -30,8 +29,7 @@ linked_list *create_list() {
 
 int insert_node(linked_list *list, node *insert_node) {
     node *temp_head = list->head;
-    node *temp_tail = list->tail;
-    long temp_time = insert_node->time;
+    long time = 0;
     int temp_seq = insert_node->seq_num;
     //increase list length
     list->len += 1;
@@ -39,7 +37,6 @@ int insert_node(linked_list *list, node *insert_node) {
     if (list->head == NULL) {
         list->head = insert_node;
         list->tail = insert_node;
-        insert_node->delta_time = insert_node->time;
         goto success;
     }
     //check the node seq
@@ -52,42 +49,42 @@ int insert_node(linked_list *list, node *insert_node) {
         list->len -= 1;
         goto fail;
     }
-    //find the proper location according to the insert_node->time
+    //find the proper location according to the insert_node->delta_time
     //reset temp head
     temp_head = list->head;
 
     //compare head
-    if (temp_time < temp_head->time) {
+    if (insert_node->delta_time < temp_head->delta_time) {
         insert_node->next = temp_head;
-        insert_node->delta_time = temp_time;
         temp_head->prev = insert_node;
-        temp_head->delta_time = temp_head->time - insert_node->time;
+        temp_head->delta_time = temp_head->delta_time - insert_node->delta_time;
         list->head = insert_node;
         goto success;
     }
-    //compare tail
-    if (temp_time >= temp_tail->time) {
-        temp_tail->next = insert_node;
-        list->tail = insert_node;
-        insert_node->prev = temp_tail;
-        insert_node->delta_time = temp_time - temp_tail->time;
+        //determine the location
+    node *temp_node = list->head;
+    node *temp_prev;
+    long prev_time = 0;
+    for (; insert_node->delta_time > time; temp_node = temp_node->next) {
+        prev_time = time;
+
+        if(temp_node == NULL)
+            break;
+        temp_prev = temp_node;
+        time +=temp_prev->delta_time;
+    }
+    //insert the node
+    temp_prev->next = insert_node;
+    insert_node->prev = temp_prev;
+    //update time
+    insert_node->delta_time -= prev_time;
+    if (temp_node == NULL){ // insert tail
+        insert_node->next == NULL;
         goto success;
     }
-    //determine the location
-    node *temp_node = list->head;
-    while (temp_node->time < temp_time)
-        temp_node = temp_node->next;
-    //time is equal previous one
-    if (temp_node->time == temp_time)
-        temp_node = temp_node->next;
-    //insert the node
-    temp_node->prev->next = insert_node;
     insert_node->next = temp_node;
-    insert_node->prev = temp_node->prev;
     temp_node->prev = insert_node;
-    //update delta_time
-    insert_node->delta_time = temp_time - insert_node->prev->time;
-    temp_node->delta_time = temp_node->time - temp_time;
+    temp_node->delta_time -= insert_node->delta_time;
 
     success:
     printf("Successfully inserted node %d\n", insert_node->seq_num);
@@ -120,7 +117,7 @@ int cancel_node(linked_list *list, int seq_num) {
             //update pointer
             list->head = temp_node->next;
             temp_node->next->prev = NULL;
-            temp_node->next->delta_time = temp_node->next->time;
+            temp_node->next->delta_time += temp_node->delta_time;
         } else if (temp_node->next == NULL) { //cancel tail node
             list->tail = temp_node->prev;
             temp_node->prev->next = NULL;
@@ -143,7 +140,7 @@ int remove_node(linked_list* list, node *remove_node) {
     if (remove_node != NULL) {
         list->head = remove_node->next;
         if(remove_node->next != NULL) {
-            remove_node->next->delta_time = remove_node->next->time;
+            remove_node->next->delta_time += remove_node->delta_time;
         }
         free(remove_node);
     } else {
@@ -166,13 +163,13 @@ int print_list(linked_list *list) {
         seq_num = print_node->seq_num;
         print_time = print_node->delta_time ;
         if(i != list->len -1) {
-            printf("%d@: %ld\xC2\xB5s -> ", seq_num, print_time);
+            printf("%d@: %ld\xC2\xB5s <=> ", seq_num, print_time);
         } else {
             printf("%d, @: %ld\xC2\xB5s\n", seq_num, print_time);
         }
         print_node = print_node->next;
     }
-    printf("-----------descending----------\n");
+/*    printf("-----------descending----------\n");
     print_node = list->tail;
     for (int i = 0; i < list->len; ++i) {
         seq_num = print_node->seq_num;
@@ -183,7 +180,7 @@ int print_list(linked_list *list) {
             printf("%d, @: %ld\xC2\xB5s\n", seq_num, print_time);
         }
         print_node = print_node->prev;
-    }
+    }*/
     printf("*******************************\n");
     return 0;
 }
@@ -191,18 +188,7 @@ int print_list(linked_list *list) {
 int is_expired(linked_list *list) {
     if (list == NULL || list->head == NULL)
         return FALSE;
-    if (list->head->time <= 0)
+    if (list->head->delta_time <= 0)
         return TRUE;
     return FALSE;
-}
-
-void update_list(linked_list* list) {
-    node* temp_tail = list->tail;
-    // update list
-    for (; temp_tail != NULL; temp_tail =  temp_tail->prev) {
-        if (temp_tail->prev != NULL)
-            temp_tail->time = temp_tail->time - (list->head->delta_time - list->head->time);
-        else
-            temp_tail->delta_time = temp_tail->time;
-    }
 }
