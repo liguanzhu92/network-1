@@ -16,10 +16,13 @@
 
 #define LOCAL_HOST "127.0.0.1"
 #define TCPD_PORT_S 3870
-#define TCPD_PORT 7100
-#define TROLL_PORT 7001
+#define TCPD_PORT_C 7100
+#define TROLL_PORT 7000
+#define CTRL_PORT 3900
 #define TIMER_PORT_CLIENT 3880
 #define TIMER_PORT_SERVER 3890
+#define ACK_PORT_C 7010
+#define ACK_PORT_S 3860
 
 #define FILE_SIZE_LENGTH 4
 #define FILE_NAME_LENGTH 20
@@ -48,5 +51,18 @@ int  ACCEPT(int socket, void *address, socklen_t *address_len);
 void tcpd_server();
 
 void tcpd_client();
+
+void __init_client_sock_c(int client_sock, struct sockaddr_in client_addr);
+
+void __init_ctrl_sock_c(int ctrl_sock, struct sockaddr_in ctrl_addr);
+
+void __init_ack_sock_c(int ack_sock, struct sockaddr_in ack_addr, int new_buff);
+
+void __init_timer_send_sock_c(int timer_send_sock, struct sockaddr_in timer_send_addr);
+
+void __init_timer_recv_sock_c(int timer_recv_sock, struct sockaddr_in timer_recv_addr, int new_buff);
+
+void __init_troll_sock_c(int troll_sock, struct sockaddr_in troll_addr);
+
 
 #endif

@@ -100,42 +100,23 @@ void tcpd_server() {
 }
 
 void tcpd_client() {
-    TcpdMessage        message;                                //Packet format accepted by troll
+    TcpdMessage        message, ctrl_msg, ack_msg;                                //Packet format accepted by troll
     NetMessage         troll_message;
-    int                sock, troll_sock;                               //Initial socket descriptors
-    struct sockaddr_in troll, my_addr, ftps_addr;                    //Structures for server and tcpd socket name setup
+    int client_sock, troll_sock, ctrl_sock, ack_sock, timer_send_sock, timer_recv_sock;   //Initial socket descriptors
+    //Structures for server and tcpd socket name setup
+    struct sockaddr_in client_addr, troll_addr, ctrl_addr, ack_addr, timer_send_addr, timer_recv_addr, server_addr;
+    int new_buffer = SOCK_BUF_SIZE;
 
-    //Initialize socket for UDP in linux
-    if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-        perror("Error openting datagram socket");
-        exit(1);
-    }
-    printf("Socket initialized \n");
+    /* initialize everything */
+    __init_client_sock_c(client_sock, client_addr);
+    __init_ctrl_sock_c(ctrl_sock, ctrl_addr);
+    __init_ack_sock_c(ack_sock, ack_addr, new_buffer);
+    __init_timer_send_sock_c(timer_send_sock, timer_send_addr);
+    __init_timer_recv_sock_c(timer_recv_sock, timer_recv_addr, new_buffer);
+    __init_troll_sock_c(troll_sock, troll_addr);
 
-    //Copying socket to send to troll
-    troll_sock = sock;
-
-    //Constructing socket name for receiving
-    my_addr.sin_family      = AF_INET;
-    my_addr.sin_addr.s_addr = INADDR_ANY;            //Listen to any IP address
-    my_addr.sin_port        = htons(TCPD_PORT);
-
-    //Constructing socket name of the troll to send to
-    troll.sin_family      = AF_INET;
-    troll.sin_port        = htons(TROLL_PORT);
-    troll.sin_addr.s_addr = inet_addr(LOCAL_HOST);
-
-    //Binding socket name to socket
-    if (bind(sock, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in)) < 0) {
-        perror("Error binding stream socket");
-        close(sock);
-        close(troll_sock);
-        exit(1);
-    }
-    printf("Socket name binded, waiting for client ...\n");
-
-    //To hold the length of my_addr
-    int len = sizeof(my_addr);
+    //To hold the length of client_addr
+    int len = sizeof(client_addr);
 
     //Counter to count number of datagrams forwarded
     int count = 0;
@@ -146,15 +127,13 @@ void tcpd_client() {
     while (1) {
 
         //Receiving from ftpc
-        int rec = (int)recvfrom(sock, &message, sizeof(message), 0, (struct sockaddr *) &my_addr, &len);
-        ftps_addr = message.header;
-        ftps_addr.sin_port       = htons(TCPD_PORT_S);
-        troll_message.msg_header = ftps_addr;
+        int rec = (int)recvfrom(client_sock, &message, sizeof(message), 0, (struct sockaddr *) &client_addr, &len);
+        server_addr = message.header;
+        server_addr.sin_port       = htons(TCPD_PORT_S);
+        troll_message.msg_header = server_addr;
 
         if (rec < 0) {
             perror("Error receiving datagram");
-            close(sock);
-            close(troll_sock);
             exit(1);
         }
 
@@ -166,12 +145,10 @@ void tcpd_client() {
         bcopy((char *) &message, &troll_message.msg_contents, rec);
         //puts(message.contents);
         //Sending to troll
-        int s = (int)sendto(troll_sock, &troll_message, rec + TCPD_HEADER_LENGTH, 0, (struct sockaddr *) &troll, sizeof(troll));
+        int s = (int)sendto(troll_sock, &troll_message, rec + TCPD_HEADER_LENGTH, 0, (struct sockaddr *) &troll_addr, sizeof(troll_addr));
 
         if (s < 0) {
             perror("Error sending datagram");
-            close(sock);
-            close(troll_sock);
             exit(1);
         }
 
@@ -179,4 +156,92 @@ void tcpd_client() {
         count++;
 
     }
+}
+
+void __init_client_sock_c(int client_sock, struct sockaddr_in client_addr) {
+    if ((client_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("Error openting datagram socket");
+        exit(1);
+    }
+    printf("client socket initialized \n");
+    //Constructing socket name for receiving
+    client_addr.sin_family      = AF_INET;
+    client_addr.sin_addr.s_addr = INADDR_ANY;            //Listen to any IP address
+    client_addr.sin_port        = htons(TCPD_PORT_C);
+    //Binding socket name to socket
+    if (bind(client_sock, (struct sockaddr *) &client_addr, sizeof(struct sockaddr_in)) < 0) {
+        perror("Error binding stream socket");
+        exit(1);
+    }
+    printf("client socket name binded, waiting for client ...\n");
+}
+
+void __init_ctrl_sock_c(int ctrl_sock, struct sockaddr_in ctrl_addr) {
+    if((ctrl_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("opening control socket.");
+        exit(1);
+    }
+    printf("control socket initialized \n");
+    ctrl_addr.sin_family = AF_INET;
+    ctrl_addr.sin_port = htons(CTRL_PORT);
+    ctrl_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
+}
+
+void __init_ack_sock_c(int ack_sock, struct sockaddr_in ack_addr, int new_buff) {
+    if((ack_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("opening datagram socket for recv from ftpc");
+        exit(1);
+    }
+    ack_addr.sin_family = AF_INET;
+    ack_addr.sin_port = htons(ACK_PORT_C);
+    ack_addr.sin_addr.s_addr = INADDR_ANY;
+    if(bind(ack_sock, (struct sockaddr *)&ack_addr, sizeof(ack_addr)) < 0) {
+        perror("ACK socket Bind failed");
+        exit(2);
+    }
+
+    setsockopt(ack_sock, SOL_SOCKET, SO_RCVBUF, &new_buff, sizeof(&new_buff));
+}
+
+void __init_timer_send_sock_c(int timer_send_sock, struct sockaddr_in timer_send_addr) {
+    if((timer_send_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("opening datagram socket for recv from timer send");
+        exit(1);
+    }
+    timer_send_addr.sin_family = AF_INET;
+    timer_send_addr.sin_port = htons(TIMER_PORT_SERVER);
+    timer_send_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
+
+    if((timer_send_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("opening datagram socket for recv from timer recv");
+        exit(1);
+    }
+}
+
+void __init_timer_recv_sock_c(int timer_recv_sock, struct sockaddr_in timer_recv_addr, int new_buff) {
+    if((timer_recv_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("opening datagram socket for recv from timer send");
+        exit(1);
+    }
+    timer_recv_addr.sin_family = AF_INET;
+    timer_recv_addr.sin_port = htons(TIMER_PORT_SERVER);
+    timer_recv_addr.sin_addr.s_addr = INADDR_ANY;
+
+    if((timer_recv_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("opening datagram socket for recv from timer recv");
+        exit(1);
+    }
+    setsockopt(timer_recv_sock, SOL_SOCKET, SO_RCVBUF, &new_buff, sizeof(&new_buff));
+}
+
+void __init_troll_sock_c(int troll_sock, struct sockaddr_in troll_addr) {
+    if((troll_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("opening troll socket");
+        exit(1);
+    }
+
+    //Constructing socket name of the troll to send to
+    troll_addr.sin_family      = AF_INET;
+    troll_addr.sin_port        = htons(TROLL_PORT);
+    troll_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
 }
