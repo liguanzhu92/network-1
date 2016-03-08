@@ -1,6 +1,8 @@
+#include <sys/time.h>
 #include "headers/tcpd.h"
 #include "headers/troll.h"
 #include "headers/check_sum.h"
+#include "headers/delta_list.h"
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -63,13 +65,13 @@ void tcpd_server() {
 
         bcopy(&troll_msg.msg_contents, &tcpd_msg, rec - TCPD_HEADER_LENGTH);
 
-        server_addr = tcpd_msg.header;
+        server_addr = tcpd_msg.tcpd_header;
         server_addr.sin_family      = AF_INET;
         server_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
         ////Sending to ftps
         int s = (int)sendto(srv_sock,
                        tcpd_msg.contents,
-                       rec - TCPD_HEADER_LENGTH * 2 - TCP_HEADER_LENGTH ,
+                       rec - TCPD_HEADER_LENGTH * 2 - TCP_HEADER_LENGTH,
                        0,
                        (struct sockaddr *) &server_addr,
                        sizeof(server_addr));
@@ -106,6 +108,14 @@ void tcpd_client() {
     //Structures for server and tcpd socket name setup
     struct sockaddr_in client_addr, troll_addr, ctrl_addr, ack_addr, timer_send_addr, timer_recv_addr, server_addr;
     int new_buffer = SOCK_BUF_SIZE;
+    fd_set fd_read;
+    int window[WINDOW_SIZE];
+    TcpdMessage tcpd_buf[TCPD_BUF_SIZE];
+    int window_index = 0, head = 0, index = 0;
+    struct timeval start_time, end_time;
+    time_message timer_send_message, timer_recv_message;
+    float time_remain = 0;
+    int resend_pack = -1;
 
     /* initialize everything */
     __init_client_sock_c(client_sock, client_addr);
@@ -116,45 +126,188 @@ void tcpd_client() {
     __init_troll_sock_c(troll_sock, troll_addr);
 
     //To hold the length of client_addr
-    int len = sizeof(client_addr);
+    int len = sizeof(struct sockaddr_in);
 
     //Counter to count number of datagrams forwarded
     int count = 0;
 
     bzero(troll_message.msg_contents, sizeof(message));
 
+    FD_ZERO(&fd_read);
+    FD_SET(client_sock, &fd_read);
+    FD_SET(ack_sock, &fd_read);
+    FD_SET(timer_recv_sock, &fd_read);
+
+    /* initialize window and buffer */
+    for(int i = 0; i < WINDOW_SIZE; i++) {
+        window[i] = -1;
+    }
+    for(int i = 0; i < TCPD_BUF_SIZE; i++) {
+        tcpd_buf->tcp_header.seq = 0xFFFFFFFF;
+    }
+
     //Always keep on listening and sending
-    while (1) {
-
-        //Receiving from ftpc
-        int rec = (int)recvfrom(client_sock, &message, sizeof(message), 0, (struct sockaddr *) &client_addr, &len);
-        server_addr = message.header;
-        server_addr.sin_port       = htons(TCPD_PORT_S);
-        troll_message.msg_header = server_addr;
-
-        if (rec < 0) {
-            perror("Error receiving datagram");
-            exit(1);
+    while (TRUE) {
+        if(select(FD_SETSIZE, &fd_read, NULL, NULL, NULL) < 0) {
+            perror("select");
+            exit(0);
         }
 
-        printf("Received data from client, sending to troll --> %d\n", count);
+        /* send data to troll */
+        if(FD_ISSET(client_sock, &fd_read)) {
+            ssize_t rec = recvfrom(client_sock, (void *) &tcpd_buf[head], TCPD_MESSAGE_SIZE, 0, (struct sockaddr *) &client_addr, &len);
+            printf("\nReceived seq_num %u from client\n", tcpd_buf[head].tcp_header.seq);
 
-        bzero(&message.tcp_header.check, sizeof(u_int16_t));
-        message.tcp_header.check = htons(cal_crc((unsigned char *) &message, (unsigned short) rec));
-        printf("check_sum: %hu\n", ntohs(message.tcp_header.check));
-        bcopy((char *) &message, &troll_message.msg_contents, rec);
-        //puts(message.contents);
-        //Sending to troll
-        int s = (int)sendto(troll_sock, &troll_message, rec + TCPD_HEADER_LENGTH, 0, (struct sockaddr *) &troll_addr, sizeof(troll_addr));
+            window[window_index] = tcpd_buf[head].tcp_header.seq;
 
-        if (s < 0) {
-            perror("Error sending datagram");
-            exit(1);
+            /* modify the tcpd_header so it can be sent by troll to tcpd_s */
+            server_addr = message.tcpd_header;
+            server_addr.sin_port = htons(TCPD_PORT_S);
+            tcpd_buf[head].tcpd_header = server_addr;
+
+            /* calculate crc */
+            bzero(&tcpd_buf[head].tcp_header.check, sizeof(u_int16_t));
+            tcpd_buf[head].tcp_header.check = htons(cal_crc((unsigned char *) &tcpd_buf[head], (unsigned short) rec));
+            printf("check_sum: %hu\n", ntohs(tcpd_buf[head].tcp_header.check));
+
+            // TODO may not need this
+            for(int i = 0; i < TCPD_BUF_SIZE; i++) {
+                if(tcpd_buf[i].tcp_header.seq == window[window_index]) {
+                    index = i;
+                    break;
+                }
+            }
+            tcpd_buf[index].tcp_header.window = WINDOW_SIZE - window_index;
+
+            /* send to troll */
+            if(sendto(troll_sock, (void *) &tcpd_buf[index], rec + TCPD_HEADER_LENGTH, 0, (struct sockaddr *) &troll_addr, len) < 0) {
+                perror("send from tcpd_c to troll");
+                exit(0);
+            }
+            printf("\nsending seq %u from tcpd_c to troll", tcpd_buf[index].tcp_header.seq);
+
+            /* send to timer */
+            gettimeofday(&start_time, NULL);
+            timer_send_message.action = START;
+            timer_send_message.seq_num = tcpd_buf[index].tcp_header.seq;
+            timer_send_message.time = cal_RTO(time_remain, tcpd_buf[index].tcp_header.seq) * 10;
+            printf("\nsending seq %u to timer\n", tcpd_buf[index].tcp_header.seq);
+            sendto(timer_send_sock, &timer_send_message, sizeof(time_message), 0, (struct sockaddr *) &timer_send_addr, len);
+
+            /* move window index and wrap buffer*/
+            window_index++;
+            head = (head + 1) % TCPD_BUF_SIZE;
+
+            /* send to control socket */
+            if(window_index >= WINDOW_SIZE) {
+                printf("\nWINDOW FULL, SLEEP\n");
+            } else {
+                printf("\nWINDOW NOT FULL, KEEP SENDING\n");
+            }
+            ctrl_msg.tcp_header.window = window_index;
+            sendto(ctrl_sock, (void *)&ctrl_msg, TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&ctrl_addr, len);
         }
 
-        //Incrementing counter
-        count++;
+        /* received or retransmission */
+        if(FD_ISSET(ack_sock, &fd_read)) {
+            printf("\ngetting ack\n");
+            gettimeofday(&end_time, NULL);
+            time_remain = cal_RTT(&start_time, &end_time);
+            printf("\n RTT IS %f\n", time_remain);
 
+            unsigned short ack_crc;
+            unsigned short ack_cal_crc;
+            ssize_t rec = recvfrom(ack_sock, (void*)&ack_msg, TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&ack_addr, &len);
+
+            ack_crc = ntohs(ack_msg.tcp_header.check);
+            bzero(&ack_msg.tcp_header.check, sizeof(u_int16_t));
+            ack_cal_crc = cal_crc((char *) &ack_msg, rec);
+            printf("\ncal checksum: %hu, received checksum: %hu\n", ack_crc, ack_cal_crc);
+            printf("\nACK SEQ: %d\n", ack_msg.tcp_header.seq);
+
+            if(ack_crc == ack_cal_crc) {
+                if(ack_msg.tcp_header.ack == 1) {
+
+                    //Delete this seq from Timer
+                    timer_send_message.seq_num = ack_msg.tcp_header.ack_seq;
+                    timer_send_message.action = CANCEL;
+                    timer_send_message.time = 0;
+                    printf("\ncancel timer\n");
+                    sendto(timer_send_sock, &timer_send_message, sizeof(time_message), 0, (struct sockaddr *) &timer_send_addr, len);
+
+                    for(int i = 0; i < WINDOW_SIZE; i++) {
+                        if(window[i] == ack_msg.tcp_header.ack_seq) {
+                            printf("I've cleaned window: window[%d]\n, WINDOWS[i]: %d, SEQ: %d", i, window[i], ack_msg.tcp_header.ack_seq);
+                            window[i] = 0xFFFFFFFF;//RECV ACK
+                        }
+                    }
+
+                    if(is_window_empty(window)) {
+                        printf("\nWINDOW EMPTY\n");
+                        ctrl_msg.tcp_header.window = 0;//WINDOW EMPTY, KEEP SENDING
+                        window_index = 0;//Make pointer back to begin
+                        sendto(ctrl_sock, (void *)&ctrl_msg, TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&ctrl_addr, len);
+                    }
+                }
+                if(ack_msg.tcp_header.fin == 1) {
+                    printf("\nfinish!\n");
+                    recvfrom(ack_sock, (void *)&ack_msg, sizeof(ack_msg), 0, (struct sockaddr *) &ack_msg, &len);//WAITING FOR FIN ACK
+                    if(strcmp(ack_msg.contents, "FIN")) {
+                        ctrl_msg.tcp_header.window = WINDOW_SIZE;
+                        sendto(ctrl_sock, (void*)&ctrl_msg, TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&ctrl_addr, len);
+
+                        timer_send_message.seq_num = ack_msg.tcp_header.ack_seq;
+                        timer_send_message.action = CANCEL;
+                        timer_send_message.time = 0;
+                        printf("\ncancel node seq: %d\n", timer_send_message.seq_num);
+                        sendto(timer_send_sock, &timer_send_message, sizeof(timer_send_message), 0, (struct sockaddr *) &timer_send_addr, len);
+                        close(troll_sock);
+                        close(client_sock);
+                        exit(0);
+                    }
+                }
+            }
+        }
+
+        /* if something expired */
+        if(FD_ISSET(timer_recv_sock, &fd_read)) {
+            printf("\nIn timer recv\n");
+
+            if(recvfrom(timer_recv_sock, &timer_recv_message, sizeof(timer_recv_message), 0, (struct sockaddr *)&timer_recv_addr, &len) > 0) {
+                printf("\n PACKET SEQ NUM: %d HAS EXPIRED\n", timer_recv_message.seq_num);
+
+            }
+
+            for(int i = 0; i < WINDOW_SIZE; i++) {
+                if(window[i] == timer_recv_message.seq_num) {
+                    for(int j = 0; j < TCPD_BUF_SIZE; j++) {
+                        if((tcpd_buf[j].tcp_header.seq == timer_recv_message.seq_num) && (tcpd_buf[j].tcp_header.seq != 0xFFFFFFFF)) {
+                            printf("\nRESEND TO BUFFER\n");
+                            resend_pack = j;
+                        }
+                    }//END
+                }//END if window
+            }
+
+            if(resend_pack != -1) {
+                /* send to troll */
+                sendto(troll_sock, (void *)&tcpd_buf[resend_pack], TCPD_BUF_SIZE, 0, (struct sockaddr *)&troll_addr, sizeof(troll_addr));
+
+                /* send to timer */
+                gettimeofday(&start_time, NULL);
+                timer_send_message.time = cal_RTO(time_remain, tcpd_buf[resend_pack].tcp_header.seq)*10;
+                timer_send_message.seq_num = tcpd_buf[resend_pack].tcp_header.seq;
+                timer_send_message.action = START;
+                sendto(timer_send_sock, &timer_send_message, sizeof(timer_send_message), 0, (struct sockaddr*)&timer_send_addr, len);
+                resend_pack = -1;
+            }
+        }
+
+        /* reset */
+        FD_ZERO(&fd_read);
+        FD_SET(client_sock, &fd_read);
+        FD_SET(ack_sock, &fd_read);
+        FD_SET(timer_recv_sock, &fd_read);
     }
 }
 
@@ -244,4 +397,13 @@ void __init_troll_sock_c(int troll_sock, struct sockaddr_in troll_addr) {
     troll_addr.sin_family      = AF_INET;
     troll_addr.sin_port        = htons(TROLL_PORT);
     troll_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
+}
+
+int is_window_empty(int window[]) {
+    for(int i = 0; i < WINDOW_SIZE; i++) {
+        if(window[i] != 0xFFFFFFFF) {
+            return FALSE;
+        }
+    }
+    return FALSE;
 }

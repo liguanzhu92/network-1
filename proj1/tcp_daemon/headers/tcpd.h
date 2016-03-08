@@ -32,37 +32,32 @@
 #define TCPD_HEADER_LENGTH 16
 #define TCP_HEADER_LENGTH 20
 #define CONTENT_BUFF_SIZE 1000
+#define TCPD_MESSAGE_SIZE TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH + CONTENT_BUFF_SIZE
 #define SOCK_BUF_SIZE 128*1024
 
+#define WINDOW_SIZE 20
+#define TCPD_BUF_SIZE 64
+
 typedef struct TcpdMessage {
-    struct sockaddr_in header;
+    struct sockaddr_in tcpd_header;
     struct tcphdr tcp_header;
     char   contents[CONTENT_BUFF_SIZE];
 } TcpdMessage;
 
 int  SEND(int socket, const void *buffer, size_t len, int flags);
-
 int  RECV(int socket, void *buffer, size_t length, int flags);
-
 int  CONNECT(int socket, const struct sockaddr *address, socklen_t address_len);
-
 int  ACCEPT(int socket, void *address, socklen_t *address_len);
-
+int  BIND(int socket, const struct sockaddr *address, socklen_t address_len);
+int  RECV_CTRL(int socket, void *buffer, size_t len, int flags);
 void tcpd_server();
-
 void tcpd_client();
-
 void __init_client_sock_c(int client_sock, struct sockaddr_in client_addr);
-
 void __init_ctrl_sock_c(int ctrl_sock, struct sockaddr_in ctrl_addr);
-
 void __init_ack_sock_c(int ack_sock, struct sockaddr_in ack_addr, int new_buff);
-
 void __init_timer_send_sock_c(int timer_send_sock, struct sockaddr_in timer_send_addr);
-
 void __init_timer_recv_sock_c(int timer_recv_sock, struct sockaddr_in timer_recv_addr, int new_buff);
-
 void __init_troll_sock_c(int troll_sock, struct sockaddr_in troll_addr);
-
+int is_window_empty(int window[]);
 
 #endif

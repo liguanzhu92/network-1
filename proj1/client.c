@@ -5,18 +5,25 @@
 
 /* client program called with host name where server is run */
 int main(int argc, char **argv) {
-    int                sock;                                /* initial socket descriptor */
+    int sock;                                /* initial socket descriptor */
     struct sockaddr_in sin_addr;                            /* structure for socket name setup */
-    FILE               *fp;                                 /* file sent to server */
-    unsigned long      file_size  = 0;                      /* initialize file size */
-    const char         *HOST_NAME = argv[1];                /* host name */
-    const char         *PORT      = argv[2];                /* port number */
-    const char         *FILE_NAME = argv[3];                /* file name */
-    const char         *BASE_NAME = basename(argv[3]);      /* base file name */
-    struct in_addr     sip_addr;                            /* structure for server ip address */
-    struct hostent     *hp;                                 /* structure host information */
-    struct stat        st;                                  /* structure file information */
-    struct TcpdMessage message;
+    FILE *fp;                                 /* file sent to server */
+    unsigned long file_size = 0;                      /* initialize file size */
+    const char *HOST_NAME = argv[1];                /* host name */
+    const char *PORT = argv[2];                /* port number */
+    const char *FILE_NAME = argv[3];                /* file name */
+    const char *BASE_NAME = basename(argv[3]);      /* base file name */
+    struct in_addr sip_addr;                            /* structure for server ip address */
+    struct hostent *hp;                                 /* structure host information */
+    struct stat st;                                  /* structure file information */
+    TcpdMessage message;
+    fd_set fd_read;
+    int ctrl_sock;
+    struct sockaddr_in ctrl_addr;
+    TcpdMessage ctrl_recv_message;
+    int EOF_FILE = 0;
+    int read_len;
+
 
     /* Improper usage */
     if (argc != 4) {
@@ -43,16 +50,21 @@ int main(int argc, char **argv) {
     }
     bcopy((void *) hp->h_addr, (void *) &sin_addr.sin_addr, hp->h_length);
     sin_addr.sin_family = htons(AF_INET);
-    sin_addr.sin_port   = htons(atoi(PORT));
+    sin_addr.sin_port = htons(atoi(PORT));
 
+    /* set up control socket */
+    ctrl_addr.sin_family = AF_INET;
+    ctrl_addr.sin_port = htons(CTRL_PORT);
+    ctrl_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
 
-    if (CONNECT(sock, (struct sockaddr *) &sin_addr, sizeof(struct sockaddr_in)) < 0) {
-        close(sock);
-        perror("error connecting stream socket");
+    if (BIND(ctrl_sock, (struct sockaddr *) &ctrl_addr, sizeof(struct sockaddr_in)) < 0) {
+        perror("error binding stream socket");
         exit(1);
     }
+    int new_buf_size = SOCK_BUF_SIZE;
+    setsockopt(ctrl_sock, SOL_SOCKET, SO_RCVBUF, &new_buf_size, sizeof(&new_buf_size));
 
-    message.header = sin_addr;
+    message.tcpd_header = sin_addr;
 
     /* send file size */
     fp = fopen(FILE_NAME, "rb");
@@ -84,21 +96,49 @@ int main(int argc, char **argv) {
     printf("File name: %s, size: %d\n", message.contents, ntohl(file_size));
     bzero(message.contents, FILE_NAME_LENGTH);
 
+    FD_ZERO(&fd_read);
+    FD_SET(ctrl_sock, &fd_read);
     /* send file */
-    int current_len = 0;
-    while ((current_len = fread(message.contents, 1, CONTENT_BUFF_SIZE, fp)) > 0) {
-        SEND(sock, (char *) &message, current_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
-        //usleep(10000);
-        sleep(1);
+    while (1) {
+        printf("transferring files");
+        if (select(ctrl_sock, &fd_read, NULL, NULL, NULL) < 0) {
+            perror("select in client");
+            exit(1);
+        }
+        if (FD_ISSET(ctrl_sock, &fd_read)) {
+            RECV_CTRL(ctrl_sock, &ctrl_recv_message, TCPD_MESSAGE_SIZE, 0);
+            if (ctrl_recv_message.tcp_header.window >= WINDOW_SIZE) {
+                printf("\nwindow is full, stop sending");
+                usleep(100000);
+            } else {
+                bzero(message.contents, CONTENT_BUFF_SIZE);
+                if ((read_len = fread(message.contents, 1, CONTENT_BUFF_SIZE, fp)) < CONTENT_BUFF_SIZE) {
+                    message.tcp_header.seq++;
+                    SEND(sock, (char *) &message, read_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
+                    usleep(10000);
+                    EOF_FILE = 1;
+                    printf("\nIN THE LAST SEQ: %d\n", message.tcp_header.seq);
+                } else {
+                    message.tcp_header.seq++;
+                    message.tcp_header.fin = 0;
+                    usleep(10000);
+                    SEND(sock, (char *) &message, read_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
+                    printf("\nSEND CONTENT SEQ:%d\n", message.tcp_header.seq);
+                }
+                if (EOF_FILE == 1) {
+                    bzero(message.contents, CONTENT_BUFF_SIZE);
+                    message.tcp_header.fin = 1;
+                    message.tcp_header.seq++;
+                    SEND(sock, (char *) &message, read_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
+                    close(sock);
+                    fclose(fp);
+                    exit(0);
+                }
+
+            }
+        }
+        FD_ZERO(&fd_read);
+        FD_SET(ctrl_sock, &fd_read);
     }
-
-    fclose(fp);
-
-    /* print confirmation msg */
-    memcpy(&sip_addr, &sin_addr.sin_addr, IP_ADDR_LENGTH);
-    printf("Sent %s to server %s: %s\n", FILE_NAME, inet_ntoa(sip_addr), PORT);
-
-    /* close all connections and remove socket file */
-    close(sock);
     return 0;
 }

@@ -46,5 +46,7 @@ int cancel_node(linked_list *list, int seq_num);
 int remove_node(linked_list* list, node *remove_node);
 int print_list(linked_list *list);
 int is_expired(linked_list *list);
+float cal_RTO(float M, int packet_ctrl);
+float cal_RTT(struct timeval *start, struct timeval *end);
 
 #endif

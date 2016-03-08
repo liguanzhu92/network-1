@@ -3,7 +3,7 @@
 CC = gcc
 OBJSRV = server.c tcp_daemon/tcpdio.c tcp_daemon/headers/tcpd.h
 OBJCLI = client.c tcp_daemon/tcpdio.c tcp_daemon/headers/tcpd.h
-OBJTCPD = tcp_daemon/tcpd.c tcp_daemon/headers/tcpd.h tcp_daemon/headers/troll.h tcp_daemon/headers/check_sum.h
+OBJTCPD = tcp_daemon/tcpd.c tcp_daemon/timer_helper.c tcp_daemon/headers/tcpd.h tcp_daemon/headers/troll.h tcp_daemon/headers/check_sum.h
 OBJTIMER = tcp_daemon/timer.c tcp_daemon/delta_list.c tcp_daemon/headers/delta_list.h tcp_daemon/headers/tcpd.h
 OBJTIMER_TEST = tcp_daemon/timer_test.c tcp_daemon/headers/delta_list.h
 
