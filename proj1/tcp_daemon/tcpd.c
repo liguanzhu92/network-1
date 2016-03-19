@@ -19,85 +19,259 @@ int main(int argc, char **argv) {
 }
 
 void tcpd_server() {
-    TcpdMessage        tcpd_msg;
-    NetMessage         troll_msg;
-    int                sock, srv_sock;
-    struct sockaddr_in my_addr, server_addr;
+    TcpdMessage        message, ack_msg;                                //Packet format accepted by troll
+    NetMessage         troll_message;
+    int sever_sock, troll_sock, ack_sock;   //Initial socket descriptors
+    //Structures for server and tcpd socket name setup
+    struct sockaddr_in troll_addr, ack_addr, server_addr;
+    int new_buffer = SOCK_BUF_SIZE;
+    TcpdMessage tcpd_buf[TCPD_BUF_SIZE];
+    int ack_buffer[TCPD_BUF_SIZE];
+    fd_set fd_read;
+    int window[WINDOW_SIZE];
+    int window_index = 0, head = 0, index = 0;
+    //FLAGS
+    int crc_match = FALSE;
+    int ack_buffer_flag = FALSE;
+    int ack_exist = FALSE;
+    int checksum = 0;
+    int nr_failed_acks = 0;
 
-    if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-        perror("Error openting datagram socket");
+    /* initialize window and ack buffer */
+    for(int i = 0; i < WINDOW_SIZE; i++) {
+        window[i] = -1;
+    }
+    for(int i = 0; i < TCPD_BUF_SIZE; i++) {
+        ack_buffer[i] = -1;
+    }
+
+    /*create from ftps socket*/
+    if((sever_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("opening datagram socket for send to ftps");
+        exit(1);
+    }
+
+    /*create troll socket*/
+    if((troll_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("opening datagram socket for recv from troll m2");
         exit(1);
     }
     printf("Server socket initialized \n");
 
-    //Copying socket to send to ftps
-    srv_sock = sock;
-
-    //Constructing socket name for receiving
-    my_addr.sin_family      = AF_INET;
-    my_addr.sin_addr.s_addr = INADDR_ANY;            //Listen to any IP address
-    my_addr.sin_port        = htons(TCPD_PORT_S);
+    /* create troll_addr with parameters and bind troll_addr to socket */
+    troll_addr.sin_family = AF_INET;
+    troll_addr.sin_port = htons(TCPD_PORT_S);
+    troll_addr.sin_addr.s_addr = INADDR_ANY;
 
     //Binding socket name to socket
-    if (bind(sock, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in)) < 0) {
-        perror("Error binding stream socket");
+    if(bind(troll_sock, (struct sockaddr *)&troll_addr, sizeof(troll_addr)) < 0) {
+        perror("Recv(receive from troll socket Bind failed");
+        exit(2);
+    }
+
+    setsockopt(troll_sock, SOL_SOCKET, SO_RCVBUF, &new_buffer , sizeof(&new_buffer ));
+
+    if((ack_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("opening datagram socket for send ack to tcpd_m2");
         exit(1);
     }
     printf("Socket binded, wait for troll data...\n");
 
-    //To hold the length of my_addr
-    int len = sizeof(my_addr);
+
+    //Contruct troll header
+    ack_addr.sin_family = AF_INET;
+    ack_addr.sin_port = htons(TCPD_PORT_C);
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(TCPD_PORT_S);
+    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+    //To hold the length of sever_addr
+    int len = sizeof(struct sockaddr_in);
 
     //Counter to count number of datagrams forwarded
     int count = 0;
 
+    FD_ZERO(&fd_read);
+    FD_SET(troll_sock, &fd_read);
+
     //Always keep on listening and sending
-    while (1) {
+    while (TRUE) {
+        if(select(FD_SETSIZE, &fd_read, NULL, NULL, NULL) < 0) {
+            perror("select");
+            exit(0);
+        }
         //Receiving from troll
-        int rec = (int)recvfrom(sock, &troll_msg, sizeof(troll_msg), 0, (struct sockaddr *) &my_addr, &len);
+        if(FD_ISSET(troll_sock, &fd_read)){
+            if(recvfrom(troll_sock, (void *)&tcpd_buf[head], TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&troll_addr, &len) < 0){
+                perror("RECV from troll error");
+                exit(0);
+            }
 
-        if (rec < 0) {
-            perror("Error receiving datagram");
-            close(sock);
-            close(srv_sock);
-            exit(1);
+            /*out of window bound*/
+            int lastsent = -1;
+            int seq = tcpd_buf[head].tcp_header.seq;
+            int lowest_seq;
+            int highest_seq;
+            int IsAccept = 1;
+
+            if (lastsent < 0) {
+                IsAccept = 1;
+            } else {
+                lowest_seq = (lastsent / 20) * 20;
+                highest_seq = lowest_seq + 20;
+                if ((lastsent + 1) % 20 == 0) {
+                    lowest_seq = highest_seq;
+                    highest_seq = lowest_seq + 20;
+                }
+
+                if (seq < lowest_seq || seq >= highest_seq)
+                    IsAccept = 0;
+                else
+                    IsAccept = 1;
+            }
+
+            printf("----------------------\n");
+            printf("accept: %d, lowest: %d, highest: %d, seq: %d, lastsent: %d\n", IsAccept, lowest_seq, highest_seq, seq, lastsent);
+            printf("----------------------\n");
+
+            if (IsAccept) {
+                printf("OUT OF window BOUND\n");
+                FD_ZERO(&fd_read);
+                FD_SET(troll_sock,&fd_read);
+                continue;
+            }
+
+            checksum = cal_crc((void *)&tcpd_buf[head].contents, 1000);// no idea about the length
+
+            if(checksum == tcpd_buf[head].tcp_header.check){
+                crc_match = TRUE;
+                // check ack
+                for(int i = 0; i< TCPD_BUF_SIZE; i++) {
+                    if(ack_buffer[i] == tcpd_buf[head].tcp_header.seq)
+                    {
+                        ack_buffer_flag = TRUE;
+                    }
+                    // not in buffer
+                    if(ack_buffer_flag != TRUE){
+                        for(i = 0; i < WINDOW_SIZE; i++)
+                        {
+                            //CHECK WHETHER IN WINOW OR NOT
+                            if(window[i] == tcpd_buf[head].tcp_header.seq)
+                            {
+                                ack_exist = TRUE;
+                            }
+                            if(ack_exist){
+                                printf("\nIN THE WINDOWS, %d WILL ARRIVE FTPS SOON\n",tcpd_buf[head].tcp_header.seq);
+                            } else {
+                                window_index = tcpd_buf[head].tcp_header.seq % 20;
+                                window[window_index] = tcpd_buf[head].tcp_header.seq ;
+                                printf("\nWIN SRV [%d]: %d\n",window_index, tcpd_buf[head].tcp_header.seq);
+                                if(head < TCPD_BUF_SIZE - 1) {
+                                    head++;
+                                }
+                                else {
+                                    head = 0;//Make buffer zero
+                                }
+                            }
+                        }
+                    } else {
+                        printf("\nACK FOR DUPLICATE AGAIN\n");
+                        ack_msg.tcp_header.ack = 1;
+                        ack_msg.tcp_header.ack_seq = tcpd_buf[head].tcp_header.seq;
+                        ack_msg.tcpd_header = ack_addr;
+                        ack_msg.tcp_header.check = cal_crc((void *)&ack_msg.contents, 1000);//no idea size
+                        if(sendto(ack_sock, (void *)&ack_msg, TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&troll_addr, sizeof(troll_addr)) < 0)
+                        {
+                            perror("send to sock_ack error");
+                            exit(0);
+                        }
+                        printf("\nSEND ACK SEQ %d, TO TROLL M1\n", ack_msg.tcp_header.ack_seq);
+                    }
+                }
+            } else {
+                crc_match = FALSE;//checksum wrong
+                printf("\nCRC HAVE SOMETHING WRONG\n");
+            }
+            if (crc_match){
+                lowest_seq = 100000;
+                int lowest_seq_window_index = -1;
+                for(int i = 0; i < WINDOW_SIZE; i++)
+                {
+                    if((window[i] < lowest_seq) && (window[i] != -1))
+                    {
+                        lowest_seq = window[i];
+                        lowest_seq_window_index = i;
+                    }
+                }
+                printf("\nLOWEST_SEQ %d\n", lowest_seq);
+                printf("\nLASTSENT: %d\n", lastsent);
+                //if lowest in win is to be sent
+                if(lowest_seq == (lastsent + 1)){
+                    int buffer_index = 0;
+                    int pointer = 0;
+                    for(int i = 0; i < 64; i++){
+                        if(tcpd_buf[i].tcp_header.seq == lowest_seq)
+                        {
+                            buffer_index = i;
+                            break;
+                        }
+                        if(sendto(sever_sock, (void *)&tcpd_buf[buffer_index], TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
+                        {
+                            perror("Send to sock_ftps error");
+                            exit(0);
+                        }
+                        lastsent = tcpd_buf[buffer_index].tcp_header.seq;
+                        printf("[%d]finish bit: %d\n",
+                               tcpd_buf[buffer_index].tcp_header.seq,
+                               tcpd_buf[buffer_index].tcp_header.fin);
+                        if(!tcpd_buf[buffer_index].tcp_header.fin){
+                            ack_msg.tcp_header.ack = 1;
+                            ack_msg.tcp_header.ack_seq = tcpd_buf[buffer_index].tcp_header.seq;
+                            ack_buffer[pointer] = tcpd_buf[buffer_index].tcp_header.seq;
+                            printf("\nPTR Value %d; lastsent = %d\n", pointer, lastsent);
+                            pointer = (pointer + 1)%64;
+                            ack_msg.tcp_header.check = cal_crc((void*)&ack_msg.contents, 1000);// no idea
+                            ack_msg.tcpd_header = ack_addr;
+
+                            if(ack_msg.tcp_header.ack_seq % 5 == 0) {
+                                sendto(ack_sock, (void *)&ack_msg, TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&troll_addr, sizeof(troll_addr));
+                            } else {
+                                if (nr_failed_acks > 5) {
+                                    sendto(ack_sock, (void *)&ack_msg, TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&troll_addr, sizeof(troll_addr));
+                                }
+                                nr_failed_acks++;
+                            }
+                            printf("\nACK SEQ SENT:%d\n", tcpd_buf[buffer_index].tcp_header.seq);
+                            window[lowest_seq_window_index] = -1;
+                        } else {
+                            printf("\nRECEIVE FIN!!! seq: %d\n", tcpd_buf[buffer_index].tcp_header.seq);
+                            sendto(sever_sock, (void*)&tcpd_buf[buffer_index], TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
+                            ack_msg.tcpd_header = ack_addr;
+                            //ack_msg.tcp_header.fin = 1;
+                            ack_msg.tcp_header.ack = 0;
+                            ack_msg.tcp_header.ack_seq = tcpd_buf[buffer_index].tcp_header.seq;
+                            ack_msg.tcp_header.check = cal_crc((void *)&ack_msg.tcp_header, (unsigned)sizeof(struct tcphdr));
+                            window[lowest_seq_window_index] = -1;
+                            strcpy(ack_msg.tcp_header.fin, "FIN");
+                            sendto(ack_sock, (void *)&ack_msg, TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&troll_addr, sizeof(troll_addr));
+                            printf("\nFINISH TRANSFER FILE\n");
+                            close(ack_sock);
+                            close(troll_sock);
+                            close(sever_sock);
+                            exit(0);
+                        }
+                    }
+                } else {
+                    printf("\nSLEEP FOR WAITING\n");
+                    usleep(100000);
+                }
+            } else {
+                printf("\nCRC WRONG, RETRANSMIT\n");
+            }
         }
-
-        bcopy(&troll_msg.msg_contents, &tcpd_msg, rec - TCPD_HEADER_LENGTH);
-
-        server_addr = tcpd_msg.tcpd_header;
-        server_addr.sin_family      = AF_INET;
-        server_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
-        ////Sending to ftps
-        int s = (int)sendto(srv_sock,
-                       tcpd_msg.contents,
-                       rec - TCPD_HEADER_LENGTH * 2 - TCP_HEADER_LENGTH,
-                       0,
-                       (struct sockaddr *) &server_addr,
-                       sizeof(server_addr));
-
-        //puts(tcpd_msg.contents);
-        if (s < 0) {
-            perror("Error sending datagram");
-            close(sock);
-            close(srv_sock);
-            exit(1);
-        }
-
-        printf("Received from troll ,sending to server --> %d\n", count);
-        // compare the content
-        unsigned short tcpd_check_sum = ntohs(tcpd_msg.tcp_header.check);
-        bzero(&tcpd_msg.tcp_header.check, sizeof(u_int16_t));
-        unsigned short local_check_sum = cal_crc((unsigned char *)&tcpd_msg, (unsigned short)(rec - TCPD_HEADER_LENGTH));
-        printf("tcpd_check_sum:%hu\n", tcpd_check_sum);
-        printf("local_check_sum:%hu\n", local_check_sum);
-        if (tcpd_check_sum != local_check_sum){
-            printf("%sgarbling detected!%s\n", "\x1B[33m", "\x1B[0m");
-        }
-
-        //Incrementing counter
-        count++;
-
+        FD_ZERO(&fd_read);
+        FD_SET(troll_sock, &fd_read);
     }
 }
 
