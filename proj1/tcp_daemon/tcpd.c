@@ -221,9 +221,9 @@ void tcpd_server() {
                 printf("\nLOWEST_SEQ %d\n", lowest_seq);
                 printf("\nLASTSENT: %d\n", lastsent);
                 //if lowest in win is to be sent
+                int pointer = 0;
                 if(lowest_seq == (lastsent + 1)){
                     int buffer_index = 0;
-                    int pointer = 0;
                     for(int i = 0; i < 64; i++) {
                         if (tcpd_recv[i].tcp_header.seq == lowest_seq) {
                             buffer_index = i;
