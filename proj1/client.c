@@ -36,6 +36,10 @@ int main(int argc, char **argv) {
         perror("error opening datagram socket");
         exit(1);
     }
+    if((ctrl_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
+        perror("error openting datagram socket");
+        exit(1);
+    }
 
     if (PORT == 0) {
         fprintf(stderr, "%s: unknown host\n", argv[1]);
@@ -78,6 +82,7 @@ int main(int argc, char **argv) {
     }
     bzero(message.contents, CONTENT_BUFF_SIZE);
     memcpy(message.contents, &file_size, FILE_SIZE_LENGTH);
+    message.tcp_header.seq = 0;
 
     if (SEND(sock, (char *) &message, FILE_SIZE_LENGTH + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0) < 0) {
         perror("Error sending message from client");
@@ -88,6 +93,7 @@ int main(int argc, char **argv) {
 
     /* send file name */
     strncpy(message.contents, BASE_NAME, strlen(BASE_NAME));
+    message.tcp_header.seq++;
 
     if (SEND(sock, (char *) &message, FILE_NAME_LENGTH + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0) < 0) {
         perror("Error sending message from client");
@@ -115,13 +121,15 @@ int main(int argc, char **argv) {
                 if ((read_len = fread(message.contents, 1, CONTENT_BUFF_SIZE, fp)) < CONTENT_BUFF_SIZE) {
                     message.tcp_header.seq++;
                     SEND(sock, (char *) &message, read_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
-                    usleep(10000);
+                    //usleep(10000);
+                    sleep(1);
                     EOF_FILE = 1;
                     printf("\nIN THE LAST SEQ: %d\n", message.tcp_header.seq);
                 } else {
                     message.tcp_header.seq++;
                     message.tcp_header.fin = 0;
-                    usleep(10000);
+                    //usleep(10000);
+                    sleep(1);
                     SEND(sock, (char *) &message, read_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
                     printf("\nSEND CONTENT SEQ:%d\n", message.tcp_header.seq);
                 }

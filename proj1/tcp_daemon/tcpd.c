@@ -253,7 +253,7 @@ void tcpd_server() {
                             ack_msg.tcp_header.ack_seq = tcpd_buf[buffer_index].tcp_header.seq;
                             ack_msg.tcp_header.check = cal_crc((void *)&ack_msg.tcp_header, (unsigned)sizeof(struct tcphdr));
                             window[lowest_seq_window_index] = -1;
-                            strcpy(ack_msg.tcp_header.fin, "FIN");
+                            strcpy(ack_msg.contents, "FIN");
                             sendto(ack_sock, (void *)&ack_msg, TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&troll_addr, sizeof(troll_addr));
                             printf("\nFINISH TRANSFER FILE\n");
                             close(ack_sock);
@@ -292,12 +292,12 @@ void tcpd_client() {
     int resend_pack = -1;
 
     /* initialize everything */
-    __init_client_sock_c(client_sock, client_addr);
-    __init_ctrl_sock_c(ctrl_sock, ctrl_addr);
-    __init_ack_sock_c(ack_sock, ack_addr, new_buffer);
-    __init_timer_send_sock_c(timer_send_sock, timer_send_addr);
-    __init_timer_recv_sock_c(timer_recv_sock, timer_recv_addr, new_buffer);
-    __init_troll_sock_c(troll_sock, troll_addr);
+    __init_client_sock_c(&client_sock, &client_addr);
+    __init_ctrl_sock_c(&ctrl_sock, &ctrl_addr);
+    __init_ack_sock_c(&ack_sock, &ack_addr, new_buffer);
+    __init_timer_send_sock_c(&timer_send_sock, &timer_send_addr);
+    __init_timer_recv_sock_c(&timer_recv_sock, &timer_recv_addr, new_buffer);
+    __init_troll_sock_c(&troll_sock, &troll_addr);
 
     //To hold the length of client_addr
     int len = sizeof(struct sockaddr_in);
@@ -485,92 +485,91 @@ void tcpd_client() {
     }
 }
 
-void __init_client_sock_c(int client_sock, struct sockaddr_in client_addr) {
-    if ((client_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+void __init_client_sock_c(int* client_sock, struct sockaddr_in* client_addr) {
+    if ((*client_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("Error openting datagram socket");
         exit(1);
     }
     printf("client socket initialized \n");
     //Constructing socket name for receiving
-    client_addr.sin_family      = AF_INET;
-    client_addr.sin_addr.s_addr = INADDR_ANY;            //Listen to any IP address
-    client_addr.sin_port        = htons(TCPD_PORT_C);
+    client_addr->sin_family      = AF_INET;
+    client_addr->sin_addr.s_addr = INADDR_ANY;            //Listen to any IP address
+    client_addr->sin_port        = htons(TCPD_PORT_C);
     //Binding socket name to socket
-    if (bind(client_sock, (struct sockaddr *) &client_addr, sizeof(struct sockaddr_in)) < 0) {
+    if (bind(*client_sock, (struct sockaddr *) client_addr, sizeof(struct sockaddr_in)) < 0) {
         perror("Error binding stream socket");
         exit(1);
     }
     printf("client socket name binded, waiting for client ...\n");
 }
 
-void __init_ctrl_sock_c(int ctrl_sock, struct sockaddr_in ctrl_addr) {
-    if((ctrl_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+void __init_ctrl_sock_c(int* ctrl_sock, struct sockaddr_in* ctrl_addr) {
+    if((*ctrl_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("opening control socket.");
         exit(1);
     }
     printf("control socket initialized \n");
-    ctrl_addr.sin_family = AF_INET;
-    ctrl_addr.sin_port = htons(CTRL_PORT);
-    ctrl_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
+    ctrl_addr->sin_family = AF_INET;
+    ctrl_addr->sin_port = htons(CTRL_PORT);
+    ctrl_addr->sin_addr.s_addr = inet_addr(LOCAL_HOST);
 }
 
-void __init_ack_sock_c(int ack_sock, struct sockaddr_in ack_addr, int new_buff) {
-    if((ack_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+void __init_ack_sock_c(int* ack_sock, struct sockaddr_in* ack_addr, int new_buff) {
+    if((*ack_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("opening datagram socket for recv from ftpc");
         exit(1);
     }
-    ack_addr.sin_family = AF_INET;
-    ack_addr.sin_port = htons(ACK_PORT_C);
-    ack_addr.sin_addr.s_addr = INADDR_ANY;
-    if(bind(ack_sock, (struct sockaddr *)&ack_addr, sizeof(ack_addr)) < 0) {
+    ack_addr->sin_family = AF_INET;
+    ack_addr->sin_port = htons(ACK_PORT_C);
+    ack_addr->sin_addr.s_addr = INADDR_ANY;
+    printf("ack socket initialized \n");
+    if(bind(*ack_sock, (struct sockaddr *) ack_addr, sizeof(struct sockaddr_in)) < 0) {
         perror("ACK socket Bind failed");
         exit(2);
     }
-
-    setsockopt(ack_sock, SOL_SOCKET, SO_RCVBUF, &new_buff, sizeof(&new_buff));
+    printf("ack socket binded \n");
+    setsockopt(*ack_sock, SOL_SOCKET, SO_RCVBUF, &new_buff, sizeof(&new_buff));
 }
 
-void __init_timer_send_sock_c(int timer_send_sock, struct sockaddr_in timer_send_addr) {
-    if((timer_send_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+void __init_timer_send_sock_c(int* timer_send_sock, struct sockaddr_in* timer_send_addr) {
+    if((*timer_send_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("opening datagram socket for recv from timer send");
         exit(1);
     }
-    timer_send_addr.sin_family = AF_INET;
-    timer_send_addr.sin_port = htons(TIMER_PORT_SERVER);
-    timer_send_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
-
-    if((timer_send_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-        perror("opening datagram socket for recv from timer recv");
-        exit(1);
-    }
+    printf("timer_send socket initialized \n");
+    timer_send_addr->sin_family = AF_INET;
+    timer_send_addr->sin_port = htons(TIMER_PORT_SERVER);
+    timer_send_addr->sin_addr.s_addr = inet_addr(LOCAL_HOST);
 }
 
-void __init_timer_recv_sock_c(int timer_recv_sock, struct sockaddr_in timer_recv_addr, int new_buff) {
-    if((timer_recv_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+void __init_timer_recv_sock_c(int* timer_recv_sock, struct sockaddr_in* timer_recv_addr, int new_buff) {
+    if((*timer_recv_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("opening datagram socket for recv from timer send");
         exit(1);
     }
-    timer_recv_addr.sin_family = AF_INET;
-    timer_recv_addr.sin_port = htons(TIMER_PORT_SERVER);
-    timer_recv_addr.sin_addr.s_addr = INADDR_ANY;
+    printf("timer_recv socket initialized \n");
+    timer_recv_addr->sin_family = AF_INET;
+    timer_recv_addr->sin_port = htons(TIMER_PORT_CLIENT);
+    timer_recv_addr->sin_addr.s_addr = INADDR_ANY;
 
-    if((timer_recv_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-        perror("opening datagram socket for recv from timer recv");
-        exit(1);
+    if(bind(*timer_recv_sock, (struct sockaddr *) timer_recv_addr, sizeof(struct sockaddr_in)) < 0) {
+        perror("timer_recv socket bind failed");
+        exit(2);
     }
-    setsockopt(timer_recv_sock, SOL_SOCKET, SO_RCVBUF, &new_buff, sizeof(&new_buff));
+    printf("timer_recv socket binded \n");
+    setsockopt(*timer_recv_sock, SOL_SOCKET, SO_RCVBUF, &new_buff, sizeof(&new_buff));
 }
 
-void __init_troll_sock_c(int troll_sock, struct sockaddr_in troll_addr) {
-    if((troll_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+void __init_troll_sock_c(int* troll_sock, struct sockaddr_in* troll_addr) {
+    if((*troll_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("opening troll socket");
         exit(1);
     }
-
+    printf("troll socket initialized \n");
     //Constructing socket name of the troll to send to
-    troll_addr.sin_family      = AF_INET;
-    troll_addr.sin_port        = htons(TROLL_PORT);
-    troll_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
+    troll_addr->sin_family      = AF_INET;
+    troll_addr->sin_port        = htons(TROLL_PORT);
+    troll_addr->sin_addr.s_addr = inet_addr(LOCAL_HOST);
 }
 
 int is_window_empty(int window[]) {
