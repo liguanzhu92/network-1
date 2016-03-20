@@ -203,7 +203,7 @@ void tcpd_server() {
                         exit(0);
                     }
                     printf("\nSEND ACK SEQ %d, TO TROLL M1\n", ack_msg.tcp_header.ack_seq);
-                    }
+                }
             } else {
                 crc_match = FALSE;//checksum wrong
                 printf("\nCRC HAVE SOMETHING WRONG\n");
