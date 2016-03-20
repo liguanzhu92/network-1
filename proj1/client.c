@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
         exit(2);
     }
     bcopy((void *) hp->h_addr, (void *) &sin_addr.sin_addr, hp->h_length);
-    sin_addr.sin_family = htons(AF_INET);
+    sin_addr.sin_family = AF_INET;
     sin_addr.sin_port = htons(atoi(PORT));
 
     /* set up control socket */

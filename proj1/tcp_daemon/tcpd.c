@@ -83,9 +83,9 @@ void tcpd_server() {
     printf("Socket binded, wait for troll data...\n");
 
 
-    // Contruct troll header
+    // Construct troll header
     ack_addr.sin_family = AF_INET;
-    ack_addr.sin_port = htons(TCPD_PORT_C);
+    ack_addr.sin_port = htons(ACK_PORT_C);
     ack_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
 
     server_addr.sin_family = AF_INET;
@@ -155,7 +155,7 @@ void tcpd_server() {
             bzero(&tcpd_recv[head].tcp_header.check, sizeof(u_int16_t));
             checksum = cal_crc((void *)&tcpd_recv[head], rec);// no idea about the length
 
-            if(checksum == check_in_message){
+            if(checksum == check_in_message) {
                 crc_match = TRUE;
                 ack_buffer_flag = FALSE;
                 // check ack
@@ -169,7 +169,7 @@ void tcpd_server() {
                 if(ack_buffer_flag != TRUE){
                     ack_exist = FALSE;
                     for(int i = 0; i < WINDOW_SIZE; i++) {
-                        //CHECK WHETHER IN WINOW OR NOT
+                        //CHECK WHETHER IN WINDOW OR NOT
                         if (window[i] == tcpd_recv[head].tcp_header.seq) {
                             ack_exist = TRUE;
                             break;
@@ -354,7 +354,7 @@ void tcpd_client() {
 
             /* calculate crc */
             bzero(&tcpd_buf[head].tcp_header.check, sizeof(u_int16_t));
-            tcpd_buf[head].tcp_header.check = htons(cal_crc((unsigned char *) &tcpd_buf[head], (unsigned short) rec));
+            tcpd_buf[head].tcp_header.check = cal_crc((unsigned char *) &tcpd_buf[head], (unsigned short) rec);
             printf("check_sum: %hu\n", ntohs(tcpd_buf[head].tcp_header.check));
 
             // TODO may not need this
@@ -410,7 +410,7 @@ void tcpd_client() {
             unsigned short ack_cal_crc;
             ssize_t rec = recvfrom(ack_sock, (void*)&ack_msg, TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&ack_addr, &len);
 
-            ack_crc = ntohs(ack_msg.tcp_header.check);
+            ack_crc = ack_msg.tcp_header.check;
             bzero(&ack_msg.tcp_header.check, sizeof(u_int16_t));
             ack_cal_crc = cal_crc((char *) &ack_msg, rec);
             printf("\ncal checksum: %hu, received checksum: %hu\n", ack_crc, ack_cal_crc);
