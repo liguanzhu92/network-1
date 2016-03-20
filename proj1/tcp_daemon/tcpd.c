@@ -328,7 +328,7 @@ void tcpd_client() {
         window[i] = -1;
     }
     for(int i = 0; i < TCPD_BUF_SIZE; i++) {
-        tcpd_buf->tcp_header.seq = 0xFFFFFFFF;
+        tcpd_buf[i].tcp_header.seq = 0xFFFFFFFF;
     }
 
     //Always keep on listening and sending

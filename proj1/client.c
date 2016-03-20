@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
         exit(1);
     }
     if((ctrl_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
-        perror("error openting datagram socket");
+        perror("error opening datagram socket");
         exit(1);
     }
 
@@ -59,9 +59,9 @@ int main(int argc, char **argv) {
     /* set up control socket */
     ctrl_addr.sin_family = AF_INET;
     ctrl_addr.sin_port = htons(CTRL_PORT);
-    ctrl_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
+    ctrl_addr.sin_addr.s_addr = INADDR_ANY;
 
-    if (BIND(ctrl_sock, (struct sockaddr *) &ctrl_addr, sizeof(struct sockaddr_in)) < 0) {
+    if (bind(ctrl_sock, (struct sockaddr *) &ctrl_addr, sizeof(struct sockaddr_in)) < 0) {
         perror("error binding stream socket");
         exit(1);
     }
@@ -88,6 +88,7 @@ int main(int argc, char **argv) {
         perror("Error sending message from client");
         exit(1);
     }
+    printf("Transferring file size ---> SEQ: %d\n", message.tcp_header.seq);
     puts(message.contents);
     bzero(message.contents, FILE_SIZE_LENGTH);
 
@@ -99,6 +100,7 @@ int main(int argc, char **argv) {
         perror("Error sending message from client");
         exit(1);
     }
+    printf("Transferring file name ---> SEQ: %d\n", message.tcp_header.seq);
     printf("File name: %s, size: %d\n", message.contents, ntohl(file_size));
     bzero(message.contents, FILE_NAME_LENGTH);
 
@@ -106,15 +108,15 @@ int main(int argc, char **argv) {
     FD_SET(ctrl_sock, &fd_read);
     /* send file */
     while (1) {
-        printf("transferring files");
-        if (select(ctrl_sock, &fd_read, NULL, NULL, NULL) < 0) {
+        printf("Transferring file contents ---> ");
+        if (select(FD_SETSIZE, &fd_read, NULL, NULL, NULL) < 0) {
             perror("select in client");
             exit(1);
         }
         if (FD_ISSET(ctrl_sock, &fd_read)) {
             RECV_CTRL(ctrl_sock, &ctrl_recv_message, TCPD_MESSAGE_SIZE, 0);
             if (ctrl_recv_message.tcp_header.window >= WINDOW_SIZE) {
-                printf("\nwindow is full, stop sending");
+                printf("window is full, stop sending\n");
                 usleep(100000);
             } else {
                 bzero(message.contents, CONTENT_BUFF_SIZE);
@@ -124,14 +126,14 @@ int main(int argc, char **argv) {
                     //usleep(10000);
                     sleep(1);
                     EOF_FILE = 1;
-                    printf("\nIN THE LAST SEQ: %d\n", message.tcp_header.seq);
+                    printf("LAST SEQ: %d\n", message.tcp_header.seq);
                 } else {
                     message.tcp_header.seq++;
                     message.tcp_header.fin = 0;
                     //usleep(10000);
                     sleep(1);
                     SEND(sock, (char *) &message, read_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
-                    printf("\nSEND CONTENT SEQ:%d\n", message.tcp_header.seq);
+                    printf("SEQ: %d\n", message.tcp_header.seq);
                 }
                 if (EOF_FILE == 1) {
                     bzero(message.contents, CONTENT_BUFF_SIZE);
