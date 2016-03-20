@@ -153,7 +153,7 @@ void tcpd_server() {
 
             u_int16_t check_in_message = tcpd_recv[head].tcp_header.check;
             bzero(&tcpd_recv[head].tcp_header.check, sizeof(u_int16_t));
-            checksum = cal_crc((void *)&tcpd_recv[head], rec);// no idea about the length
+            checksum = cal_crc((char *) &tcpd_recv[head], (unsigned short) rec);// no idea about the length
 
             if(checksum == check_in_message) {
                 crc_match = TRUE;
@@ -194,7 +194,7 @@ void tcpd_server() {
                     ack_msg.tcp_header.ack = 1;
                     ack_msg.tcp_header.ack_seq = tcpd_recv[head].tcp_header.seq;
                     ack_msg.tcpd_header = ack_addr;
-                    ack_msg.tcp_header.check = cal_crc((void *)&ack_msg, TCPD_MESSAGE_SIZE);//no idea size
+                    ack_msg.tcp_header.check = cal_crc((char *) &ack_msg, (unsigned short) TCPD_MESSAGE_SIZE);//no idea size
                     if(sendto(ack_sock, (void *)&ack_msg, TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&troll_s_addr, sizeof(troll_s_addr)) < 0) {
                         perror("send to sock_ack error");
                         exit(0);
@@ -242,7 +242,7 @@ void tcpd_server() {
                         ack_buffer[pointer] = tcpd_recv[buffer_index].tcp_header.seq;
                         printf("\nPTR Value %d; lastsent = %d\n", pointer, lastsent);
                         pointer = (pointer + 1)%64;
-                        ack_msg.tcp_header.check = cal_crc((void*)&ack_msg, TCPD_MESSAGE_SIZE);// no idea
+                        ack_msg.tcp_header.check = cal_crc((char *) &ack_msg, (unsigned short)TCPD_MESSAGE_SIZE);// no idea
                         ack_msg.tcpd_header = ack_addr;
                         if(ack_msg.tcp_header.ack_seq % 5 == 0) {
                                 sendto(ack_sock, (void *)&ack_msg, TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&troll_s_addr, sizeof(troll_s_addr));
@@ -262,7 +262,7 @@ void tcpd_server() {
                         //ack_msg.tcp_header.fin = 1;
                         ack_msg.tcp_header.ack = 0;
                         ack_msg.tcp_header.ack_seq = tcpd_recv[buffer_index].tcp_header.seq;
-                        ack_msg.tcp_header.check = cal_crc((void *)&ack_msg, TCPD_MESSAGE_SIZE);
+                        ack_msg.tcp_header.check = cal_crc((char *) &ack_msg, (unsigned short) TCPD_MESSAGE_SIZE);
                         window[lowest_seq_window_index] = -1;
                         strcpy(ack_msg.contents, "FIN");
                         sendto(ack_sock, (void *)&ack_msg, TCPD_MESSAGE_SIZE, 0, (struct sockaddr *)&troll_s_addr, sizeof(troll_s_addr));
@@ -352,11 +352,6 @@ void tcpd_client() {
             server_addr.sin_family = AF_INET;
             tcpd_buf[head].tcpd_header = server_addr;
 
-            /* calculate crc */
-            bzero(&tcpd_buf[head].tcp_header.check, sizeof(u_int16_t));
-            tcpd_buf[head].tcp_header.check = cal_crc((unsigned char *) &tcpd_buf[head], (unsigned short) rec);
-            printf("check_sum: %hu\n", ntohs(tcpd_buf[head].tcp_header.check));
-
             // TODO may not need this
             for(int i = 0; i < TCPD_BUF_SIZE; i++) {
                 if(tcpd_buf[i].tcp_header.seq == window[window_index]) {
@@ -365,6 +360,11 @@ void tcpd_client() {
                 }
             }
             tcpd_buf[index].tcp_header.window = WINDOW_SIZE - window_index;
+
+            /* calculate crc */
+            bzero(&tcpd_buf[head].tcp_header.check, sizeof(u_int16_t));
+            tcpd_buf[head].tcp_header.check = cal_crc((char *) &tcpd_buf[head], (unsigned short) rec);
+            printf("check_sum: %hu\n", tcpd_buf[head].tcp_header.check);
 
             /* send to troll */
             troll_message.msg_header = tcpd_buf[index].tcpd_header;
@@ -412,7 +412,7 @@ void tcpd_client() {
 
             ack_crc = ack_msg.tcp_header.check;
             bzero(&ack_msg.tcp_header.check, sizeof(u_int16_t));
-            ack_cal_crc = cal_crc((char *) &ack_msg, rec);
+            ack_cal_crc = cal_crc((char *) &ack_msg, (unsigned short)rec);
             printf("\ncal checksum: %hu, received checksum: %hu\n", ack_crc, ack_cal_crc);
             printf("\nACK SEQ: %d\n", ack_msg.tcp_header.seq);
 
