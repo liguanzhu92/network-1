@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
     ctrl_addr.sin_port = htons(CTRL_PORT);
     ctrl_addr.sin_addr.s_addr = INADDR_ANY;
 
-    if (bind(ctrl_sock, (struct sockaddr *) &ctrl_addr, sizeof(struct sockaddr_in)) < 0) {
+    if (BIND(ctrl_sock, (struct sockaddr *) &ctrl_addr, sizeof(struct sockaddr_in)) < 0) {
         perror("error binding stream socket");
         exit(1);
     }

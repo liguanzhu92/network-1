@@ -65,7 +65,7 @@ void tcpd_server() {
     troll_c_addr.sin_addr.s_addr = INADDR_ANY;
 
     troll_s_addr.sin_family = AF_INET;
-    troll_s_addr.sin_port = htons(TROLL_PORT);
+    troll_s_addr.sin_port = htons(TROLL_PORT_SERVER);
     troll_s_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
 
     //Binding socket name to socket
@@ -462,10 +462,10 @@ void tcpd_client() {
 
         /* if something expired */
         if(FD_ISSET(timer_recv_sock, &fd_read)) {
-            printf("\nIn timer recv\n");
+            //printf("\nIn timer recv\n");
 
             if(recvfrom(timer_recv_sock, &timer_recv_message, sizeof(timer_recv_message), 0, (struct sockaddr *)&timer_recv_addr, &len) > 0) {
-                printf("\n PACKET SEQ NUM: %d HAS EXPIRED\n", timer_recv_message.seq_num);
+                printf("\nPACKET SEQ NUM: %u HAS EXPIRED\n", timer_recv_message.seq_num);
 
             }
 
@@ -473,7 +473,6 @@ void tcpd_client() {
                 if(window[i] == timer_recv_message.seq_num) {
                     for(int j = 0; j < TCPD_BUF_SIZE; j++) {
                         if((tcpd_buf[j].tcp_header.seq == timer_recv_message.seq_num) && (tcpd_buf[j].tcp_header.seq != 0xFFFFFFFF)) {
-                            printf("\nRESEND TO BUFFER\n");
                             resend_pack = j;
                         }
                     }//END
@@ -482,11 +481,12 @@ void tcpd_client() {
 
             if(resend_pack != -1) {
                 /* send to troll */
-                memcpy((void *) &troll_message.msg_contents, (void *) &tcpd_buf[index], length_buf[resend_pack]);
+                memcpy((void *) &troll_message.msg_contents, (void *) &tcpd_buf[resend_pack], length_buf[resend_pack]);
                 troll_message.msg_header = tcpd_buf[resend_pack].tcpd_header;
                 troll_message.msg_header.sin_family = htons(AF_INET);
                 troll_message.msg_header.sin_port = htons(TCPD_PORT_S);
                 sendto(troll_sock, &troll_message, length_buf[resend_pack] + TCPD_HEADER_LENGTH, 0, (struct sockaddr *)&troll_addr, sizeof(troll_addr));
+                printf("sending seq %u from tcpd_c to troll\n", tcpd_buf[resend_pack].tcp_header.seq);
 
                 /* send to timer */
                 gettimeofday(&start_time, NULL);
@@ -494,6 +494,7 @@ void tcpd_client() {
                 timer_send_message.seq_num = tcpd_buf[resend_pack].tcp_header.seq;
                 timer_send_message.action = START;
                 sendto(timer_send_sock, &timer_send_message, sizeof(timer_send_message), 0, (struct sockaddr*)&timer_send_addr, len);
+                printf("sending seq %u to timer\n", tcpd_buf[resend_pack].tcp_header.seq);
                 resend_pack = -1;
             }
         }
@@ -589,7 +590,7 @@ void __init_troll_sock_c(int* troll_sock, struct sockaddr_in* troll_addr) {
     printf("troll socket initialized \n");
     //Constructing socket name of the troll to send to
     troll_addr->sin_family      = AF_INET;
-    troll_addr->sin_port        = htons(TROLL_PORT);
+    troll_addr->sin_port        = htons(TROLL_PORT_CLIENT);
     troll_addr->sin_addr.s_addr = inet_addr(LOCAL_HOST);
 }
 
