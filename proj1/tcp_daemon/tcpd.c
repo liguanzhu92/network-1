@@ -285,6 +285,7 @@ void tcpd_client() {
     fd_set fd_read;
     int window[WINDOW_SIZE];
     TcpdMessage tcpd_buf[TCPD_BUF_SIZE];
+    int length_buf[TCPD_BUF_SIZE];
     int window_index = 0, head = 0, index = 0;
     struct timeval start_time, end_time;
     time_message timer_send_message, timer_recv_message;
@@ -330,6 +331,7 @@ void tcpd_client() {
         /* send data to troll */
         if(FD_ISSET(client_sock, &fd_read)) {
             ssize_t rec = recvfrom(client_sock, (void *) &tcpd_buf[head], TCPD_MESSAGE_SIZE, 0, (struct sockaddr *) &client_addr, &len);
+            length_buf[head] = (int)rec;
             printf("\nReceived seq_num %u from client\n", tcpd_buf[head].tcp_header.seq);
 
             window[window_index] = tcpd_buf[head].tcp_header.seq;
@@ -337,6 +339,7 @@ void tcpd_client() {
             /* modify the tcpd_header so it can be sent by troll to tcpd_s */
             server_addr = message.tcpd_header;
             server_addr.sin_port = htons(TCPD_PORT_S);
+            server_addr.sin_family = AF_INET;
             tcpd_buf[head].tcpd_header = server_addr;
 
             /* calculate crc */
@@ -354,7 +357,11 @@ void tcpd_client() {
             tcpd_buf[index].tcp_header.window = WINDOW_SIZE - window_index;
 
             /* send to troll */
-            if(sendto(troll_sock, (void *) &tcpd_buf[index], rec + TCPD_HEADER_LENGTH, 0, (struct sockaddr *) &troll_addr, len) < 0) {
+            troll_message.msg_header = tcpd_buf[index].tcpd_header;
+            troll_message.msg_header.sin_family = htons(AF_INET);
+            troll_message.msg_header.sin_port = htons(TCPD_PORT_S);
+            memcpy((void *) &troll_message.msg_contents, (void *) &tcpd_buf[index], length_buf[index]);
+            if(sendto(troll_sock, &troll_message, length_buf[index] + TCPD_HEADER_LENGTH, 0, (struct sockaddr *) &troll_addr, len) < 0) {
                 perror("send from tcpd_c to troll");
                 exit(0);
             }
@@ -465,7 +472,11 @@ void tcpd_client() {
 
             if(resend_pack != -1) {
                 /* send to troll */
-                sendto(troll_sock, (void *)&tcpd_buf[resend_pack], TCPD_BUF_SIZE, 0, (struct sockaddr *)&troll_addr, sizeof(troll_addr));
+                memcpy((void *) &troll_message.msg_contents, (void *) &tcpd_buf[index], length_buf[resend_pack]);
+                troll_message.msg_header = tcpd_buf[resend_pack].tcpd_header;
+                troll_message.msg_header.sin_family = htons(AF_INET);
+                troll_message.msg_header.sin_port = htons(TCPD_PORT_S);
+                sendto(troll_sock, &troll_message, length_buf[resend_pack] + TCPD_HEADER_LENGTH, 0, (struct sockaddr *)&troll_addr, sizeof(troll_addr));
 
                 /* send to timer */
                 gettimeofday(&start_time, NULL);
