@@ -86,10 +86,10 @@ void tcpd_server() {
     // Construct troll header
     ack_addr.sin_family = AF_INET;
     ack_addr.sin_port = htons(ACK_PORT_C);
-    ack_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
+    //ack_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST); // get  tcpd-c addr from TCPDmesg
 
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(TCPD_PORT_S);
+    //server_addr.sin_port = htons(TCPD_PORT_S); // get server addr from TCPDmsg
     server_addr.sin_addr.s_addr = inet_addr(LOCAL_HOST);
 
     //To hold the length of sever_addr
@@ -116,6 +116,9 @@ void tcpd_server() {
             }
             rec -= TCPD_HEADER_LENGTH;
             memcpy((void *)&tcpd_recv[head], &troll_message.msg_contents, rec);
+            memcpy((void*)&tcpd_recv[head].tcpd_header.sin_addr, &ack_addr.sin_addr.s_addr, sizeof(ack_addr.sin_addr.s_addr));
+            memcpy((void *)&tcpd_recv[head].tcpd_header.sin_port, &server_addr.sin_port, sizeof(server_addr.sin_port));
+
             // check sequence received
             /*out of window bound*/
 
