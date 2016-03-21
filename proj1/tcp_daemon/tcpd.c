@@ -140,7 +140,7 @@ void tcpd_server() {
                     highest_seq = lowest_seq + 20;
                 }
 
-                if (seq < lowest_seq || seq >= highest_seq)
+                if (seq < lowest_seq || seq > highest_seq)
                     IsAccept = 0;
                 else
                     IsAccept = 1;
@@ -281,7 +281,7 @@ void tcpd_server() {
                     }
                 } else { //fin != 1
                     printf("\nSLEEP FOR WAITING\n");
-                    usleep(100000);
+                    usleep(10000);
                 }
             } else { //crc_match == FALSE
                 printf("\nCRC WRONG, RETRANSMIT\n");
@@ -353,12 +353,6 @@ void tcpd_client() {
 
             window[window_index] = tcpd_buf[head].tcp_header.seq;
 
-            /* modify the tcpd_header so it can be sent by troll to tcpd_s *//*
-            server_addr = message.tcpd_header;
-            server_addr.sin_port = htons(TCPD_PORT_S);
-            server_addr.sin_family = AF_INET;
-            tcpd_buf[head].tcpd_header = server_addr;*/
-
             // TODO may not need this
             for(int i = 0; i < TCPD_BUF_SIZE; i++) {
                 if(tcpd_buf[i].tcp_header.seq == window[window_index]) {
@@ -366,7 +360,6 @@ void tcpd_client() {
                     break;
                 }
             }
-            tcpd_buf[index].tcp_header.window = WINDOW_SIZE - window_index;
 
             /* calculate crc */
             bzero(&tcpd_buf[head].tcp_header.check, sizeof(u_int16_t));
@@ -393,9 +386,8 @@ void tcpd_client() {
             sendto(timer_send_sock, &timer_send_message, sizeof(time_message), 0, (struct sockaddr *) &timer_send_addr, len);
 
             /* move window index and wrap buffer*/
-            window_index++;
             head = (head + 1) % TCPD_BUF_SIZE;
-
+            window_index++;
             /* send to control socket */
             if(window_index >= WINDOW_SIZE) {
                 printf("\nWINDOW FULL, SLEEP\n");

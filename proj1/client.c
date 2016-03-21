@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
             RECV_CTRL(ctrl_sock, &ctrl_recv_message, TCPD_MESSAGE_SIZE, 0);
             if (ctrl_recv_message.tcp_header.window >= WINDOW_SIZE) {
                 printf("window is full, stop sending\n");
-                usleep(100000);
+                usleep(10000);
             } else {
                 bzero(message.contents, CONTENT_BUFF_SIZE);
                 if ((read_len = fread(message.contents, 1, CONTENT_BUFF_SIZE, fp)) < CONTENT_BUFF_SIZE) {
