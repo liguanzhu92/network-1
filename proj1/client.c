@@ -115,22 +115,22 @@ int main(int argc, char **argv) {
         }
         if (FD_ISSET(ctrl_sock, &fd_read)) {
             RECV_CTRL(ctrl_sock, &ctrl_recv_message, TCPD_MESSAGE_SIZE, 0);
-            if (ctrl_recv_message.tcp_header.window >= WINDOW_SIZE) {
+            if (ctrl_recv_message.tcp_header.window >= WINDOW_SIZE - 1) {
                 printf("window is full, stop sending\n");
-                usleep(50000);
+                //usleep(50000);
             } else {
                 bzero(message.contents, CONTENT_BUFF_SIZE);
                 if ((read_len = fread(message.contents, 1, CONTENT_BUFF_SIZE, fp)) < CONTENT_BUFF_SIZE) {
                     message.tcp_header.seq++;
                     SEND(sock, (char *) &message, read_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
-                    usleep(50000);
+                    //usleep(50000);
                     //sleep(1);
                     EOF_FILE = 1;
                     printf("LAST SEQ: %d\n", message.tcp_header.seq);
                 } else {
                     message.tcp_header.seq++;
                     message.tcp_header.fin = 0;
-                    usleep(50000);
+                    //usleep(50000);
                     //sleep(1);
                     SEND(sock, (char *) &message, read_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
                     printf("SEQ: %d\n", message.tcp_header.seq);
@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
                     bzero(message.contents, CONTENT_BUFF_SIZE);
                     message.tcp_header.fin = 1;
                     message.tcp_header.seq++;
-                    usleep(50000);
+                    //usleep(50000);
                     SEND(sock, (char *) &message, read_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
                     CLOSE(sock);
                     fclose(fp);

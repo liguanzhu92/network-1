@@ -124,6 +124,9 @@ void tcpd_server() {
 
             int seq = tcpd_recv[head].tcp_header.seq;
             if(seq <= lastsent) {
+                if(seq % 20 == 1 || seq % 20 == 0) {
+                    usleep(50000);
+                }
                 bzero(&ack_msg.tcp_header.check,sizeof(u_int16_t));
                 ack_msg.tcp_header.ack = 1;
                 ack_msg.tcp_header.ack_seq = tcpd_recv[head].tcp_header.seq;
@@ -386,7 +389,7 @@ void tcpd_client() {
             gettimeofday(&start_time, NULL);
             timer_send_message.action = START;
             timer_send_message.seq_num = tcpd_buf[index].tcp_header.seq;
-            timer_send_message.time = cal_RTO(time_remain, tcpd_buf[index].tcp_header.seq) * 1;
+            timer_send_message.time = cal_RTO(time_remain, tcpd_buf[index].tcp_header.seq);
             printf("\nsending seq %u to timer\n", tcpd_buf[index].tcp_header.seq);
             sendto(timer_send_sock, &timer_send_message, sizeof(time_message), 0, (struct sockaddr *) &timer_send_addr, len);
 
@@ -493,7 +496,7 @@ void tcpd_client() {
 
                 /* send to timer */
                 gettimeofday(&start_time, NULL);
-                timer_send_message.time = cal_RTO(time_remain, tcpd_buf[resend_pack].tcp_header.seq) * 1;
+                timer_send_message.time = cal_RTO(time_remain, tcpd_buf[resend_pack].tcp_header.seq);
                 timer_send_message.seq_num = tcpd_buf[resend_pack].tcp_header.seq;
                 timer_send_message.action = START;
                 sendto(timer_send_sock, &timer_send_message, sizeof(timer_send_message), 0, (struct sockaddr*)&timer_send_addr, len);
