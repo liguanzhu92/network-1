@@ -141,7 +141,7 @@ int main(int argc, char **argv) {
                     message.tcp_header.seq++;
                     usleep(50000);
                     SEND(sock, (char *) &message, read_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
-                    close(sock);
+                    CLOSE(sock);
                     fclose(fp);
                     exit(0);
                 }

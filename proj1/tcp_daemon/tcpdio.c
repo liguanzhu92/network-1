@@ -49,3 +49,7 @@ int RECV_CTRL(int socket, void *buffer, size_t len, int flags) {
     }
     return ret;
 }
+
+int CLOSE(int sock) {
+    return close(sock);
+}

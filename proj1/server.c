@@ -98,8 +98,8 @@ int main(int argc, char **argv) {
     printf("Received %s from client.\n", file_name);
 
     /* close all connections and remove socket file */
-    close(msgsock);
-    close(sock);
+    CLOSE(msgsock);
+    CLOSE(sock);
 
     return 0;
 }

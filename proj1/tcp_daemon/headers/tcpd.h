@@ -50,6 +50,7 @@ int  CONNECT(int socket, const struct sockaddr *address, socklen_t address_len);
 int  ACCEPT(int socket, void *address, socklen_t *address_len);
 int  BIND(int socket, const struct sockaddr *address, socklen_t address_len);
 int  RECV_CTRL(int socket, void *buffer, size_t len, int flags);
+int  CLOSE(int socket);
 void tcpd_server();
 void tcpd_client();
 void __init_client_sock_c(int *client_sock, struct sockaddr_in *client_addr);
