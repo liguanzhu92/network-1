@@ -123,15 +123,15 @@ int main(int argc, char **argv) {
                 if ((read_len = fread(message.contents, 1, CONTENT_BUFF_SIZE, fp)) < CONTENT_BUFF_SIZE) {
                     message.tcp_header.seq++;
                     SEND(sock, (char *) &message, read_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
-                    //usleep(10000);
-                    sleep(1);
+                    usleep(10000);
+                    //sleep(1);
                     EOF_FILE = 1;
                     printf("LAST SEQ: %d\n", message.tcp_header.seq);
                 } else {
                     message.tcp_header.seq++;
                     message.tcp_header.fin = 0;
-                    //usleep(10000);
-                    sleep(1);
+                    usleep(10000);
+                    //sleep(1);
                     SEND(sock, (char *) &message, read_len + TCPD_HEADER_LENGTH + TCP_HEADER_LENGTH, 0);
                     printf("SEQ: %d\n", message.tcp_header.seq);
                 }
