@@ -15,11 +15,7 @@ set(TCPD_FILES
 set(TIMER_FILES
         tcp_daemon/timer.c tcp_daemon/delta_list.c tcp_daemon/headers/delta_list.h tcp_daemon/headers/tcpd.h)
 
-set(TIMER_TEST_FILES
-        tcp_daemon/timer_test.c tcp_daemon/headers/delta_list.h)
-
 add_executable(ftpc ${FTPC_FILES})
 add_executable(ftps ${FTPS_FILES})
 add_executable(tcpd ${TCPD_FILES})
 add_executable(timer ${TIMER_FILES})
-add_executable(timer_test ${TIMER_TEST_FILES})
