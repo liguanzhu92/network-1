@@ -1,0 +1,19 @@
+# project waf (1.8.20) configured on Fri Mar 18 22:07:16 2016 by
+# waf 1.8.20 (abi 98, python 20606f0 on linux2)
+# using ./waf configure ../..
+#
+----------------------------------------
+Setting top to
+/home/7/xujiab/nt/ns3/waf-1.8.20
+----------------------------------------
+Setting out to
+/home/7/xujiab/nt/ns3/waf-1.8.20/build
+----------------------------------------
+Checking for program 'python'
+/usr/bin/python
+find program=['python'] paths=['/usr/lib64/qt-3.3/bin', '/usr/NX/bin', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/bin', '/bin', '/usr/bin', '/opt/dell/srvadmin/bin'] var='PYTHON' -> ['/usr/bin/python']
+['/usr/bin/python', '-c', 'import imp;print(imp.get_tag())']
+err: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: 'module' object has no attribute 'get_tag'
+
