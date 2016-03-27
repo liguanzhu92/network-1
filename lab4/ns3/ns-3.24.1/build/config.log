@@ -1,0 +1,991 @@
+# project ns (3.24.1) configured on Sun Mar 27 11:39:47 2016 by
+# waf 1.8.12 (abi 98, python 20606f0 on linux2)
+# using ./waf configure --build-profile=debug --enable-examples --enable-tests
+#
+----------------------------------------
+Setting top to
+/home/7/xujiab/nt/lab4/ns3/ns-3.24.1
+----------------------------------------
+Setting out to
+/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build
+----------------------------------------
+Checking for 'gcc' (C compiler)
+find program=['gcc', 'cc'] paths=['/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/lib64/qt-3.3/bin', '/usr/NX/bin', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/bin', '/bin', '/usr/bin', '/opt/dell/srvadmin/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='CC' -> ['/usr/bin/gcc']
+find program=['ar'] paths=['/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/lib64/qt-3.3/bin', '/usr/NX/bin', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/bin', '/bin', '/usr/bin', '/opt/dell/srvadmin/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='AR' -> ['/usr/bin/ar']
+/usr/bin/gcc
+----------------------------------------
+Checking for cc version
+4.4.7
+----------------------------------------
+Checking for 'g++' (C++ compiler)
+find program=['g++', 'c++'] paths=['/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/lib64/qt-3.3/bin', '/usr/NX/bin', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/bin', '/bin', '/usr/bin', '/opt/dell/srvadmin/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='CXX' -> ['/usr/bin/g++']
+(tool ar is already loaded, skipping)
+/usr/bin/g++
+------------------------------------------------------
+Checking for compilation flag -Wl,--soname=foo support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_5d0c86f1a55b720f5932ba11a73e1b01/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-Wl,--soname=foo', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_5d0c86f1a55b720f5932ba11a73e1b01/testbuild/test.cpp.1.o']
+ok
+------------------------------------------------------
+Checking for program 'python'
+/usr/bin/python
+find program=['python'] paths=['/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/lib64/qt-3.3/bin', '/usr/NX/bin', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/bin', '/bin', '/usr/bin', '/opt/dell/srvadmin/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='PYTHON' -> ['/usr/bin/python']
+['/usr/bin/python', '-c', 'import imp;print(imp.get_tag())']
+err: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: 'module' object has no attribute 'get_tag'
+
+['/usr/bin/python', '-c', 'import sys\nfor x in sys.version_info: print(str(x))']
+out: 2
+6
+6
+final
+0
+
+['/usr/bin/python', '-c', "from distutils.sysconfig import get_config_var, get_python_lib\n\nprint(repr(get_python_lib(standard_lib=0, prefix='/usr/local') or ''))"]
+out: '/usr/local/lib/python2.6/site-packages'
+
+'/usr/local/lib/python2.6/site-packages'
+
+['/usr/bin/python', '-c', "from distutils.sysconfig import get_config_var, get_python_lib\n\nprint(repr(get_python_lib(plat_specific=1, standard_lib=0, prefix='/usr/local') or ''))"]
+out: '/usr/local/lib64/python2.6/site-packages'
+
+'/usr/local/lib64/python2.6/site-packages'
+
+------------------------------------------------------
+Checking for python version
+(2, 6, 6, 'final', 0)
+['/usr/bin/python', '-c', "from distutils.sysconfig import get_config_var, get_python_lib\n\nprint(repr(get_config_var('prefix') or ''))\nprint(repr(get_config_var('SO') or ''))\nprint(repr(get_config_var('LDFLAGS') or ''))\nprint(repr(get_config_var('LIBDIR') or ''))\nprint(repr(get_config_var('LIBPL') or ''))\nprint(repr(get_config_var('INCLUDEPY') or ''))\nprint(repr(get_config_var('Py_ENABLE_SHARED') or ''))\nprint(repr(get_config_var('MACOSX_DEPLOYMENT_TARGET') or ''))\nprint(repr(get_config_var('LDSHARED') or ''))\nprint(repr(get_config_var('CFLAGS') or ''))\nprint(repr(get_config_var('LDVERSION') or ''))"]
+out: '/usr'
+'.so'
+''
+'/usr/lib64'
+'/usr/lib64/python2.6/config'
+'/usr/include/python2.6'
+1
+''
+'gcc -pthread -shared'
+'-fno-strict-aliasing -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv   -DNDEBUG -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv'
+''
+
+'/usr'
+'.so'
+''
+'/usr/lib64'
+'/usr/lib64/python2.6/config'
+'/usr/include/python2.6'
+1
+''
+'gcc -pthread -shared'
+'-fno-strict-aliasing -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv   -DNDEBUG -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv'
+''
+
+Configuration returned from ['/usr/bin/python']:
+prefix = '/usr'
+SO = '.so'
+LDFLAGS = ''
+LIBDIR = '/usr/lib64'
+LIBPL = '/usr/lib64/python2.6/config'
+INCLUDEPY = '/usr/include/python2.6'
+Py_ENABLE_SHARED = 1
+MACOSX_DEPLOYMENT_TARGET = ''
+LDSHARED = 'gcc -pthread -shared'
+CFLAGS = '-fno-strict-aliasing -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv   -DNDEBUG -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv'
+LDVERSION = ''
+
+------------------------------------------------------
+python-config
+/usr/bin/python-config
+find program=['/usr/bin/python-config', 'python2.6-config', 'python-config-2.6', 'python2.6m-config'] paths=['/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/lib64/qt-3.3/bin', '/usr/NX/bin', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/bin', '/bin', '/usr/bin', '/opt/dell/srvadmin/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='PYTHON_CONFIG' -> ['/usr/bin/python-config']
+------------------------------------------------------
+Asking python-config for pyembed '--cflags' flags
+['/usr/bin/python-config', '--cflags']
+out: -I/usr/include/python2.6 -I/usr/include/python2.6 -fno-strict-aliasing -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv -DNDEBUG -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv
+
+yes
+------------------------------------------------------
+Asking python-config for pyembed '--libs' flags
+['/usr/bin/python-config', '--libs']
+out: -lpthread -ldl -lutil -lm -lpython2.6
+
+yes
+------------------------------------------------------
+Asking python-config for pyembed '--ldflags' flags
+['/usr/bin/python-config', '--ldflags']
+out: -lpthread -ldl -lutil -lm -lpython2.6
+
+yes
+------------------------------------------------------
+Getting pyembed flags from python-config
+==>
+
+#include <Python.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+	void Py_Initialize(void);
+	void Py_Finalize(void);
+#ifdef __cplusplus
+}
+#endif
+int main(int argc, char **argv)
+{
+   (void)argc; (void)argv;
+   Py_Initialize();
+   Py_Finalize();
+   return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_1e2b4491ddc66cde0ef44f5f6002b464/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fno-strict-aliasing', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-I/usr/include/python2.6', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-DHAVE_PYEMBED=1', '-D_GNU_SOURCE', '-DNDEBUG', '-D_GNU_SOURCE', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_1e2b4491ddc66cde0ef44f5f6002b464/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_1e2b4491ddc66cde0ef44f5f6002b464/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_1e2b4491ddc66cde0ef44f5f6002b464/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread', '-ldl', '-lutil', '-lm', '-lpython2.6']
+yes
+------------------------------------------------------
+Asking python-config for pyext '--cflags' flags
+['/usr/bin/python-config', '--cflags']
+out: -I/usr/include/python2.6 -I/usr/include/python2.6 -fno-strict-aliasing -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv -DNDEBUG -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv
+
+yes
+------------------------------------------------------
+Asking python-config for pyext '--libs' flags
+['/usr/bin/python-config', '--libs']
+out: -lpthread -ldl -lutil -lm -lpython2.6
+
+yes
+------------------------------------------------------
+Asking python-config for pyext '--ldflags' flags
+['/usr/bin/python-config', '--ldflags']
+out: -lpthread -ldl -lutil -lm -lpython2.6
+
+yes
+------------------------------------------------------
+Getting pyext flags from python-config
+==>
+
+#include <Python.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+	void Py_Initialize(void);
+	void Py_Finalize(void);
+#ifdef __cplusplus
+}
+#endif
+int main(int argc, char **argv)
+{
+   (void)argc; (void)argv;
+   Py_Initialize();
+   Py_Finalize();
+   return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_b6f7629b76175629e844ef92141ca19d/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fPIC', '-fno-strict-aliasing', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-I/usr/include/python2.6', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-D_GNU_SOURCE', '-DNDEBUG', '-D_GNU_SOURCE', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_b6f7629b76175629e844ef92141ca19d/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_b6f7629b76175629e844ef92141ca19d/testbuild/testprog.so[0m
+
+['/usr/bin/g++', '-shared', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_b6f7629b76175629e844ef92141ca19d/testbuild/testprog.so', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lpthread', '-ldl', '-lutil', '-lm', '-lpython2.6']
+yes
+---------------------------------------------------------
+Checking for compilation flag -fvisibility=hidden support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_5d0c86f1a55b720f5932ba11a73e1b01/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fvisibility=hidden', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DHAVE_PYTHON_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_5d0c86f1a55b720f5932ba11a73e1b01/testbuild/test.cpp.1.o']
+ok
+---------------------------------------------------------
+Checking for compilation flag -Wno-array-bounds support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_5d0c86f1a55b720f5932ba11a73e1b01/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-Wno-array-bounds', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DHAVE_PYTHON_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_5d0c86f1a55b720f5932ba11a73e1b01/testbuild/test.cpp.1.o']
+ok
+---------------------------------------------------------
+Checking for pybindgen location
+../pybindgen-0.17.0.post41+ngd10fa60 (guessed)
+---------------------------------------------------------
+Checking for python module 'pybindgen'
+['/usr/bin/python', '-c', "\nimport pybindgen as current_module\nversion = getattr(current_module, '__version__', None)\nif version is not None:\n\tprint(str(version))\nelse:\n\tprint('unknown version')\n"]
+out: 0.17.0.post41+ngd10fa60
+
+0.17.0.post41+ngd10fa60
+---------------------------------------------------------
+Checking for pybindgen version
+0.17.0.post41+ngd10fa60
+---------------------------------------------------------
+Checking for code snippet
+==>
+
+#include <stdint.h>
+#include <vector>
+
+int main ()
+{
+   std::vector< uint64_t > t = std::vector< unsigned long > ();
+   return 0;
+}
+
+<==
+[1/1] Compiling [32mbuild/.conf_check_637c7413ee23302cd6b06360ae5e6bab/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DHAVE_PYTHON_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_637c7413ee23302cd6b06360ae5e6bab/testbuild/test.cpp.1.o']
+yes
+---------------------------------------------------------
+Checking for types uint64_t and unsigned long equivalence
+no
+---------------------------------------------------------
+Checking for code snippet
+==>
+
+#include <stdint.h>
+#include <vector>
+
+int main ()
+{
+   std::vector< uint64_t > t = std::vector< unsigned long long > ();
+   return 0;
+}
+
+<==
+[1/1] Compiling [32mbuild/.conf_check_e7a6f5233e103cc378242b8a6a0f09a0/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DHAVE_PYTHON_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_e7a6f5233e103cc378242b8a6a0f09a0/testbuild/test.cpp.1.o']
+err: ../test.cpp: In function ‘int main()’:
+../test.cpp:7: error: conversion from ‘std::vector<long long unsigned int, std::allocator<long long unsigned int> >’ to non-scalar type ‘std::vector<long unsigned int, std::allocator<long unsigned int> >’ requested
+
+from /home/7/xujiab/nt/lab4/ns3/ns-3.24.1/bindings/python: Test does not build: Traceback (most recent call last):
+  File "/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 30697296: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DHAVE_PYTHON_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_e7a6f5233e103cc378242b8a6a0f09a0/testbuild/test.cpp.1.o']
+
+no
+from /home/7/xujiab/nt/lab4/ns3/ns-3.24.1/bindings/python: The configuration failed
+--------------------------------------------------------------
+Checking for types uint64_t and unsigned long long equivalence
+yes
+--------------------------------------------------------------
+Checking for the apidefs that can be used for Python bindings
+gcc-LP64
+--------------------------------------------------------------
+Checking for internal GCC cxxabi
+==>
+
+# include <cxxabi.h>
+int main ()
+{
+   const abi::__si_class_type_info *_typeinfo  __attribute__((unused)) = NULL;
+   return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_cdbf636a0bb4e649a99b09a40cc486db/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DHAVE_PYTHON_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_cdbf636a0bb4e649a99b09a40cc486db/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_cdbf636a0bb4e649a99b09a40cc486db/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_cdbf636a0bb4e649a99b09a40cc486db/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+complete
+--------------------------------------------------------------
+Checking for python module 'pygccxml'
+['/usr/bin/python', '-c', "\nimport pygccxml as current_module\nversion = getattr(current_module, '__version__', None)\nif version is not None:\n\tprint(str(version))\nelse:\n\tprint('unknown version')\n"]
+err: Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+ImportError: No module named pygccxml
+
+not found
+from /home/7/xujiab/nt/lab4/ns3/ns-3.24.1/bindings/python: Could not find the python module 'pygccxml'
+--------------------------------------------------------------
+Checking boost includes
+1_41
+--------------------------------------------------------------
+Checking boost libs
+Found the boost path in /usr/lib64 with the libraries:
+    /usr/lib64/libboost_date_time-mt.so
+    /usr/lib64/libboost_date_time-mt.so.5
+    /usr/lib64/libboost_date_time.so
+    /usr/lib64/libboost_date_time.so.5
+    /usr/lib64/libboost_filesystem-mt.so
+    /usr/lib64/libboost_filesystem-mt.so.5
+    /usr/lib64/libboost_filesystem.so
+    /usr/lib64/libboost_filesystem.so.5
+    /usr/lib64/libboost_graph-mt.so
+    /usr/lib64/libboost_graph-mt.so.5
+    /usr/lib64/libboost_graph.so
+    /usr/lib64/libboost_graph.so.5
+    /usr/lib64/libboost_iostreams-mt.so
+    /usr/lib64/libboost_iostreams-mt.so.5
+    /usr/lib64/libboost_iostreams.so
+    /usr/lib64/libboost_iostreams.so.5
+    /usr/lib64/libboost_math_c99-mt.so
+    /usr/lib64/libboost_math_c99-mt.so.5
+    /usr/lib64/libboost_math_c99.so
+    /usr/lib64/libboost_math_c99.so.5
+    /usr/lib64/libboost_math_c99f-mt.so
+    /usr/lib64/libboost_math_c99f-mt.so.5
+    /usr/lib64/libboost_math_c99f.so
+    /usr/lib64/libboost_math_c99f.so.5
+    /usr/lib64/libboost_math_c99l-mt.so
+    /usr/lib64/libboost_math_c99l-mt.so.5
+    /usr/lib64/libboost_math_c99l.so
+    /usr/lib64/libboost_math_c99l.so.5
+    /usr/lib64/libboost_math_tr1-mt.so
+    /usr/lib64/libboost_math_tr1-mt.so.5
+    /usr/lib64/libboost_math_tr1.so
+    /usr/lib64/libboost_math_tr1.so.5
+    /usr/lib64/libboost_math_tr1f-mt.so
+    /usr/lib64/libboost_math_tr1f-mt.so.5
+    /usr/lib64/libboost_math_tr1f.so
+    /usr/lib64/libboost_math_tr1f.so.5
+    /usr/lib64/libboost_math_tr1l-mt.so
+    /usr/lib64/libboost_math_tr1l-mt.so.5
+    /usr/lib64/libboost_math_tr1l.so
+    /usr/lib64/libboost_math_tr1l.so.5
+    /usr/lib64/libboost_prg_exec_monitor-mt.so
+    /usr/lib64/libboost_prg_exec_monitor-mt.so.5
+    /usr/lib64/libboost_prg_exec_monitor.so
+    /usr/lib64/libboost_prg_exec_monitor.so.5
+    /usr/lib64/libboost_program_options-mt.so
+    /usr/lib64/libboost_program_options-mt.so.5
+    /usr/lib64/libboost_program_options.so
+    /usr/lib64/libboost_program_options.so.5
+    /usr/lib64/libboost_python-mt.so
+    /usr/lib64/libboost_python-mt.so.5
+    /usr/lib64/libboost_python.so
+    /usr/lib64/libboost_python.so.5
+    /usr/lib64/libboost_regex-mt.so
+    /usr/lib64/libboost_regex-mt.so.5
+    /usr/lib64/libboost_regex.so
+    /usr/lib64/libboost_regex.so.5
+    /usr/lib64/libboost_serialization-mt.so
+    /usr/lib64/libboost_serialization-mt.so.5
+    /usr/lib64/libboost_serialization.so
+    /usr/lib64/libboost_serialization.so.5
+    /usr/lib64/libboost_signals-mt.so
+    /usr/lib64/libboost_signals-mt.so.5
+    /usr/lib64/libboost_signals.so
+    /usr/lib64/libboost_signals.so.5
+    /usr/lib64/libboost_system-mt.so
+    /usr/lib64/libboost_system-mt.so.5
+    /usr/lib64/libboost_system.so
+    /usr/lib64/libboost_system.so.5
+    /usr/lib64/libboost_thread-mt.so
+    /usr/lib64/libboost_thread-mt.so.5
+    /usr/lib64/libboost_unit_test_framework-mt.so
+    /usr/lib64/libboost_unit_test_framework-mt.so.5
+    /usr/lib64/libboost_unit_test_framework.so
+    /usr/lib64/libboost_unit_test_framework.so.5
+    /usr/lib64/libboost_wave-mt.so
+    /usr/lib64/libboost_wave-mt.so.5
+    /usr/lib64/libboost_wserialization-mt.so
+    /usr/lib64/libboost_wserialization-mt.so.5
+    /usr/lib64/libboost_wserialization.so
+    /usr/lib64/libboost_wserialization.so.5
+Trying pattern boost_system(-gcc[0-9]{0,3})-1_41.so$
+Trying pattern boost_system-1_41.so$
+Trying pattern boost_system(-gcc[0-9]{0,3}).so$
+Trying pattern boost_system.so$
+Found boost lib libboost_system.so
+Trying pattern boost_signals(-gcc[0-9]{0,3})-1_41.so$
+Trying pattern boost_signals-1_41.so$
+Trying pattern boost_signals(-gcc[0-9]{0,3}).so$
+Trying pattern boost_signals.so$
+Found boost lib libboost_signals.so
+Trying pattern boost_filesystem(-gcc[0-9]{0,3})-1_41.so$
+Trying pattern boost_filesystem-1_41.so$
+Trying pattern boost_filesystem(-gcc[0-9]{0,3}).so$
+Trying pattern boost_filesystem.so$
+Found boost lib libboost_filesystem.so
+ok
+--------------------------------------------------------------
+Checking for boost linkage
+==>
+
+#include <boost/system/error_code.hpp>
+int main() { boost::system::error_code c; }
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_5e533b077ba5b80cb4821c1b1fd366fc/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-I/usr/include', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-DHAVE_PYEMBED=1', '-DHAVE_PYEXT=1', '-DHAVE_PYTHON_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_5e533b077ba5b80cb4821c1b1fd366fc/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_5e533b077ba5b80cb4821c1b1fd366fc/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_5e533b077ba5b80cb4821c1b1fd366fc/testbuild/testprog', '-Wl,-Bstatic', '-L/usr/lib64', '-Wl,-Bdynamic', '-L/usr/lib64', '-lboost_system', '-lboost_signals', '-lboost_filesystem']
+ok
+--------------------------------------------------------------
+Checking for click location
+not found
+--------------------------------------------------------------
+Checking for program 'pkg-config'
+/usr/bin/pkg-config
+find program=['pkg-config'] paths=['/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/lib64/qt-3.3/bin', '/usr/NX/bin', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/bin', '/bin', '/usr/bin', '/opt/dell/srvadmin/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='PKGCONFIG' -> ['/usr/bin/pkg-config']
+--------------------------------------------------------------
+Checking for 'gtk+-2.0' >= 2.12
+['/usr/bin/pkg-config', '--atleast-version=2.12', 'gtk+-2.0']
+['/usr/bin/pkg-config', '--cflags', '--libs', 'gtk+-2.0']
+out: -pthread -I/usr/include/gtk-2.0 -I/usr/lib64/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lcairo -lpango-1.0 -lfreetype -lfontconfig -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lglib-2.0  
+
+yes
+--------------------------------------------------------------
+Checking for 'libxml-2.0' >= 2.7
+['/usr/bin/pkg-config', '--atleast-version=2.7', 'libxml-2.0']
+['/usr/bin/pkg-config', '--cflags', '--libs', 'libxml-2.0']
+out: -I/usr/include/libxml2  -lxml2  
+
+yes
+--------------------------------------------------------------
+Checking for type uint128_t
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	if ((uint128_t *) 0) return 0;
+	if (sizeof (uint128_t)) return 0;
+	return 1;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_6fa8100ebce4cbf91f304c94e0eb1aad/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_6fa8100ebce4cbf91f304c94e0eb1aad/testbuild/test.cpp.1.o']
+err: ../test.cpp: In function ‘int main(int, char**)’:
+../test.cpp:5: error: ‘uint128_t’ was not declared in this scope
+../test.cpp:5: error: expected primary-expression before ‘)’ token
+../test.cpp:5: error: expected ‘)’ before numeric constant
+../test.cpp:6: error: ‘uint128_t’ was not declared in this scope
+
+from /home/7/xujiab/nt/lab4/ns3/ns-3.24.1/src/core: Test does not build: Traceback (most recent call last):
+  File "/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 140691049083536: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_6fa8100ebce4cbf91f304c94e0eb1aad/testbuild/test.cpp.1.o']
+
+not found
+from /home/7/xujiab/nt/lab4/ns3/ns-3.24.1/src/core: The configuration failed
+--------------------------------------------------------------
+Checking for type __uint128_t
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	if ((__uint128_t *) 0) return 0;
+	if (sizeof (__uint128_t)) return 0;
+	return 1;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_50bbc9723154d8a9fcec9597c0936757/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_50bbc9723154d8a9fcec9597c0936757/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_50bbc9723154d8a9fcec9597c0936757/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_50bbc9723154d8a9fcec9597c0936757/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking high precision implementation
+128-bit integer (default)
+--------------------------------------------------------------
+Checking for header stdint.h
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_a61b8fd7ad0fbe0615b25337654aaaf6/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_a61b8fd7ad0fbe0615b25337654aaaf6/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_a61b8fd7ad0fbe0615b25337654aaaf6/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_a61b8fd7ad0fbe0615b25337654aaaf6/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header inttypes.h
+==>
+#include <inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_ef3a7b2d02f66dd1db720bf5bdb5c0ff/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_ef3a7b2d02f66dd1db720bf5bdb5c0ff/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_ef3a7b2d02f66dd1db720bf5bdb5c0ff/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_ef3a7b2d02f66dd1db720bf5bdb5c0ff/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header sys/inttypes.h
+==>
+#include <sys/inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_b20e1fd1a9785213a7e5a65402277be9/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_b20e1fd1a9785213a7e5a65402277be9/testbuild/test.cpp.1.o']
+err: ../test.cpp:1:26: error: sys/inttypes.h: No such file or directory
+
+from /home/7/xujiab/nt/lab4/ns3/ns-3.24.1/src/core: Test does not build: Traceback (most recent call last):
+  File "/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 140691049142800: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_b20e1fd1a9785213a7e5a65402277be9/testbuild/test.cpp.1.o']
+
+not found
+from /home/7/xujiab/nt/lab4/ns3/ns-3.24.1/src/core: The configuration failed
+--------------------------------------------------------------
+Checking for header sys/types.h
+==>
+#include <sys/types.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_45c01f9a55bc6caf15848751221b51b1/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_45c01f9a55bc6caf15848751221b51b1/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_45c01f9a55bc6caf15848751221b51b1/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_45c01f9a55bc6caf15848751221b51b1/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header sys/stat.h
+==>
+#include <sys/stat.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_62b63ab93d7de1696fe9e588043342dc/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_62b63ab93d7de1696fe9e588043342dc/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_62b63ab93d7de1696fe9e588043342dc/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_62b63ab93d7de1696fe9e588043342dc/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header dirent.h
+==>
+#include <dirent.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_5859917757c3a18aa1c84a9ce3836e25/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_5859917757c3a18aa1c84a9ce3836e25/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_5859917757c3a18aa1c84a9ce3836e25/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_5859917757c3a18aa1c84a9ce3836e25/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header stdlib.h
+==>
+#include <stdlib.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_6e33e13cebdf75fe88b0b49fc40ac38a/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_6e33e13cebdf75fe88b0b49fc40ac38a/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_6e33e13cebdf75fe88b0b49fc40ac38a/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_6e33e13cebdf75fe88b0b49fc40ac38a/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header signal.h
+==>
+#include <signal.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_c3d990b83b8333c74b46e74a149b41dd/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_c3d990b83b8333c74b46e74a149b41dd/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_c3d990b83b8333c74b46e74a149b41dd/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_c3d990b83b8333c74b46e74a149b41dd/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header pthread.h
+==>
+
+#include <pthread.h>
+int main ()
+{
+   pthread_mutex_t m;
+   pthread_mutex_init (&m, NULL);
+   return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_15f0c565752887e107397858da72ce50/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-pthread', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_15f0c565752887e107397858da72ce50/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_15f0c565752887e107397858da72ce50/testbuild/testprog[0m
+
+['/usr/bin/g++', '-pthread', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_15f0c565752887e107397858da72ce50/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header stdint.h
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_a61b8fd7ad0fbe0615b25337654aaaf6/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_a61b8fd7ad0fbe0615b25337654aaaf6/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_a61b8fd7ad0fbe0615b25337654aaaf6/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_a61b8fd7ad0fbe0615b25337654aaaf6/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header inttypes.h
+==>
+#include <inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_ef3a7b2d02f66dd1db720bf5bdb5c0ff/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_ef3a7b2d02f66dd1db720bf5bdb5c0ff/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_ef3a7b2d02f66dd1db720bf5bdb5c0ff/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_ef3a7b2d02f66dd1db720bf5bdb5c0ff/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header sys/inttypes.h
+==>
+#include <sys/inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_b20e1fd1a9785213a7e5a65402277be9/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_b20e1fd1a9785213a7e5a65402277be9/testbuild/test.cpp.1.o']
+err: ../test.cpp:1:26: error: sys/inttypes.h: No such file or directory
+
+from /home/7/xujiab/nt/lab4/ns3/ns-3.24.1/src/core: Test does not build: Traceback (most recent call last):
+  File "/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 140691049141712: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_b20e1fd1a9785213a7e5a65402277be9/testbuild/test.cpp.1.o']
+
+not found
+from /home/7/xujiab/nt/lab4/ns3/ns-3.24.1/src/core: The configuration failed
+--------------------------------------------------------------
+Checking for library rt
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_b7459145b66ad3a3bb207b68400ee971/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-pthread', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_b7459145b66ad3a3bb207b68400ee971/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_b7459145b66ad3a3bb207b68400ee971/testbuild/testprog[0m
+
+['/usr/bin/g++', '-pthread', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_b7459145b66ad3a3bb207b68400ee971/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt']
+yes
+--------------------------------------------------------------
+Checking for header sys/ioctl.h
+==>
+#include <sys/ioctl.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_019f1211255998e16dce6a7f0c862c74/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_019f1211255998e16dce6a7f0c862c74/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_019f1211255998e16dce6a7f0c862c74/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_019f1211255998e16dce6a7f0c862c74/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header net/if.h
+==>
+#include <net/if.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_914ac959327359375afb3ac8c5bfba30/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_914ac959327359375afb3ac8c5bfba30/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_914ac959327359375afb3ac8c5bfba30/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_914ac959327359375afb3ac8c5bfba30/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header net/ethernet.h
+==>
+#include <net/ethernet.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_c9976ffd2b399b83f1a3c49b70ecdda1/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_c9976ffd2b399b83f1a3c49b70ecdda1/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_c9976ffd2b399b83f1a3c49b70ecdda1/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_c9976ffd2b399b83f1a3c49b70ecdda1/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header linux/if_tun.h
+==>
+#include <linux/if_tun.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_66b09053e7fb6880e3f11b24d1649e3b/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_66b09053e7fb6880e3f11b24d1649e3b/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_66b09053e7fb6880e3f11b24d1649e3b/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_66b09053e7fb6880e3f11b24d1649e3b/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for header netpacket/packet.h
+==>
+#include <netpacket/packet.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_850a6b8612bcd3d964c1c14410f69e28/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_IF_TUN_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_850a6b8612bcd3d964c1c14410f69e28/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_850a6b8612bcd3d964c1c14410f69e28/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_850a6b8612bcd3d964c1c14410f69e28/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for NSC location
+not found
+--------------------------------------------------------------
+Checking for OpenFlow location
+not found
+--------------------------------------------------------------
+Checking for 'sqlite3'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'sqlite3']
+out:  -lsqlite3  
+
+yes
+--------------------------------------------------------------
+Checking for header linux/if_tun.h
+==>
+#include <linux/if_tun.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_66b09053e7fb6880e3f11b24d1649e3b/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_66b09053e7fb6880e3f11b24d1649e3b/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_66b09053e7fb6880e3f11b24d1649e3b/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_66b09053e7fb6880e3f11b24d1649e3b/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+--------------------------------------------------------------
+Checking for python module 'gtk'
+['/usr/bin/python', '-c', "\nimport gtk as current_module\nversion = getattr(current_module, '__version__', None)\nif version is not None:\n\tprint(str(version))\nelse:\n\tprint('unknown version')\n"]
+err: Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+  File "/usr/lib64/python2.6/site-packages/gtk-2.0/gtk/__init__.py", line 64, in <module>
+    _init()
+  File "/usr/lib64/python2.6/site-packages/gtk-2.0/gtk/__init__.py", line 52, in _init
+    _gtk.init_check()
+RuntimeError: could not open display
+
+not found
+from /home/7/xujiab/nt/lab4/ns3/ns-3.24.1/src/visualizer: Could not find the python module 'gtk'
+--------------------------------------------------------------
+Checking for python module 'goocanvas'
+['/usr/bin/python', '-c', "\nimport goocanvas as current_module\nversion = getattr(current_module, '__version__', None)\nif version is not None:\n\tprint(str(version))\nelse:\n\tprint('unknown version')\n"]
+err: Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+ImportError: No module named goocanvas
+
+not found
+from /home/7/xujiab/nt/lab4/ns3/ns-3.24.1/src/visualizer: Could not find the python module 'goocanvas'
+--------------------------------------------------------------
+Checking for python module 'pygraphviz'
+['/usr/bin/python', '-c', "\nimport pygraphviz as current_module\nversion = getattr(current_module, '__version__', None)\nif version is not None:\n\tprint(str(version))\nelse:\n\tprint('unknown version')\n"]
+err: Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+ImportError: No module named pygraphviz
+
+not found
+from /home/7/xujiab/nt/lab4/ns3/ns-3.24.1/src/visualizer: Could not find the python module 'pygraphviz'
+--------------------------------------------------------------
+Checking for program 'sudo'
+/usr/bin/sudo
+find program=['sudo'] paths=['/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/lib64/qt-3.3/bin', '/usr/NX/bin', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/bin', '/bin', '/usr/bin', '/opt/dell/srvadmin/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='SUDO' -> ['/usr/bin/sudo']
+--------------------------------------------------------------
+Checking for program 'valgrind'
+/usr/bin/valgrind
+find program=['valgrind'] paths=['/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/lib64/qt-3.3/bin', '/usr/NX/bin', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/bin', '/bin', '/usr/bin', '/opt/dell/srvadmin/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='VALGRIND' -> ['/usr/bin/valgrind']
+--------------------------------------------------------------
+Checking for 'gsl'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'gsl']
+err: Package gsl was not found in the pkg-config search path.
+Perhaps you should add the directory containing `gsl.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'gsl' found
+
+not found
+from /home/7/xujiab/nt/lab4/ns3/ns-3.24.1: The configuration failed
+----------------------------------------------------------------
+Checking for compilation flag -Wno-error=deprecated-d... support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_5d0c86f1a55b720f5932ba11a73e1b01/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-Wno-error=deprecated-declarations', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_5d0c86f1a55b720f5932ba11a73e1b01/testbuild/test.cpp.1.o']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -Wno-error=deprecated-d... support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_6960cc6b68d8c69a91c45126406b1a25/test.c[0m
+
+['/usr/bin/gcc', '-Wno-error=deprecated-declarations', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.c', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_6960cc6b68d8c69a91c45126406b1a25/testbuild/test.c.1.o']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -fstrict-aliasing support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_5d0c86f1a55b720f5932ba11a73e1b01/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_5d0c86f1a55b720f5932ba11a73e1b01/testbuild/test.cpp.1.o']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -fstrict-aliasing support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_6960cc6b68d8c69a91c45126406b1a25/test.c[0m
+
+['/usr/bin/gcc', '-fstrict-aliasing', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.c', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_6960cc6b68d8c69a91c45126406b1a25/testbuild/test.c.1.o']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -Wstrict-aliasing support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_5d0c86f1a55b720f5932ba11a73e1b01/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.cpp', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_5d0c86f1a55b720f5932ba11a73e1b01/testbuild/test.cpp.1.o']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -Wstrict-aliasing support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_6960cc6b68d8c69a91c45126406b1a25/test.c[0m
+
+['/usr/bin/gcc', '-Wstrict-aliasing', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.c', '-c', '-o', '/home/7/xujiab/nt/lab4/ns3/ns-3.24.1/build/.conf_check_6960cc6b68d8c69a91c45126406b1a25/testbuild/test.c.1.o']
+ok
+----------------------------------------------------------------
+Checking for program 'doxygen'
+/usr/bin/doxygen
+find program=['doxygen'] paths=['/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/lib64/qt-3.3/bin', '/usr/NX/bin', '/usr/local/jdk1.8.0_51/bin', '/usr/local/bin', '/usr/local/matlab/bin', '/usr/local/maple/bin', '/usr/bin', '/bin', '.', '/usr/local/bin', '/bin', '/usr/bin', '/opt/dell/srvadmin/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='DOXYGEN' -> ['/usr/bin/doxygen']
