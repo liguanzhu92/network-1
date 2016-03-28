@@ -1,0 +1,23 @@
+README
+
+Network Topology
+
+     10.1.1.0         10.1.2.0          10.1.3.0
+ A -------------- B -------------- C -------------- D
+                    point-to-point
+
+
+
+File  Location:
+	NS3_root/scratch/test.cc
+
+Run:
+ 	NS3_root/waf --run test
+
+Transimission Infor:
+	tcpdump -nn -tt -v -K -r  udp-0-0.pcap
+	tcpdump -nn -tt -v -K -r  udp-1-0.pcap
+	tcpdump -nn -tt -v -K -r  udp-1-1.pcap
+	tcpdump -nn -tt -v -K -r  udp-2-1.pcap
+	tcpdump -nn -tt -v -K -r  udp-3-0.pcap	
+	tcpdump -nn -tt -v -K -r  udp-2-0.pcap
