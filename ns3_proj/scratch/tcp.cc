@@ -1,4 +1,3 @@
-
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
@@ -7,7 +6,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("FirstScriptExample");
+NS_LOG_COMPONENT_DEFINE ("TCP_CHAIN");
 
 class MyApp : public Application
 {
@@ -155,22 +154,21 @@ main (int argc, char *argv[])
     LogComponentEnableAll(LOG_LEVEL_INFO);
   }
   
-  //p2p nodes A---B
+  /* p2p nodes A--B */
   NodeContainer nodesAB;
   nodesAB.Create (2);
 
-  //p2p nodes B--C
+  /* p2p nodes B--C */
   NodeContainer nodesBC;
   nodesBC.Add (nodesAB.Get (1)); 
   nodesBC.Create (1);
 
-  //p2p nodes C--D
+  /* p2p nodes C--D */
   NodeContainer nodesCD;
   nodesCD.Add (nodesBC.Get (1));
   nodesCD.Create(1);
 
-
-  //create channel
+  /* create channel */
   PointToPointHelper pointToPoint;
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
@@ -184,21 +182,23 @@ main (int argc, char *argv[])
 
   pointToPoint.EnablePcapAll ("tcp");
 
+  /* assign error rate to each devices */
   Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
   em->SetAttribute ("ErrorRate", DoubleValue (1e-6));
   devicesAB.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
   devicesCD.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
 
-  Ptr<RateErrorModel> em2 = CreateObject<RateErrorModel> ();
-  em2->SetAttribute ("ErrorRate", DoubleValue (5e-5));
-  devicesBC.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
+  Ptr<RateErrorModel> em1 = CreateObject<RateErrorModel> ();
+  em1->SetAttribute ("ErrorRate", DoubleValue (5e-5));
+  devicesBC.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em1));
 
-  //install stack and assign IP
+  /* install stack and assign IP */
   InternetStackHelper stack;
   stack.Install (nodesAB);
   stack.Install (nodesBC.Get (1));
   stack.Install (nodesCD.Get (1));
 
+  /* assign ip addresses */
   Ipv4AddressHelper addressAB;
   addressAB.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4AddressHelper addressBC;
@@ -210,6 +210,7 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer interfacesBC = addressBC.Assign (devicesBC);
   Ipv4InterfaceContainer interfacesCD = addressCD.Assign (devicesCD);
 
+  /* set up a server */
   uint16_t sinkPort = 8080;
   Address sinkAddress (InetSocketAddress (interfacesCD.GetAddress (1), sinkPort));
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
@@ -217,8 +218,8 @@ main (int argc, char *argv[])
   sinkApps.Start (Seconds (0.));
   sinkApps.Stop (Seconds (20.));
 
+  /* set up a client */
   Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodesAB.Get (0), TcpSocketFactory::GetTypeId ());
-
   Ptr<MyApp> app = CreateObject<MyApp> ();
   app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
   nodesAB.Get (0)->AddApplication (app);
@@ -226,7 +227,7 @@ main (int argc, char *argv[])
   app->SetStopTime (Seconds (20.));
 
   AsciiTraceHelper asciiTraceHelper;
-  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("sixth.cwnd");
+  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("sixth2.cwnd");
   ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
 
   PcapHelper pcapHelper;
