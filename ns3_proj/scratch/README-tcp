@@ -1,0 +1,40 @@
+README
+
+Network Topology
+
+         node A                node B                node C                node D
+   +----------------+    +----------------+    +----------------+    +----------------+
+   |    ns-3 TCP    |    |    ns-3 TCP    |    |    ns-3 TCP    |    |    ns-3 TCP    |
+   +----------------+    +----------------+    +----------------+    +----------------+
+   |    10.1.1.1    |    |    10.1.2.1    |    |    10.1.3.1    |    |    10.1.3.2    |
+   +----------------+    +----------------+    +----------------+    +----------------+
+   | point-to-point |    | point-to-point |    | point-to-point |    | point-to-point |
+   +----------------+    +----------------+    +----------------+    +----------------+
+           |                     |                     |                     |
+           +---------------------+---------------------+---------------------+
+                5 Mbps, 2 ms          5 Mbps, 2 ms          5 Mbps, 2 ms
+	Creates 4 nodes with 3 point connections between nodes A and B, B and C, and C and D.
+	Client node A sends 5 packets to server D.
+
+
+File  Location:
+	NS3_root/scratch/tcp.cc
+
+Run:
+ 	NS3_root/waf --run "tcp"
+	NS3_root/waf --run "tcp -v" (verbose)
+
+
+Transimission Infor:
+	/usr/sbin/tcpdump -nn -tt -v -K -r  tdp-0-0.pcap
+	/usr/sbin/tcpdump -nn -tt -v -K -r  tdp-1-0.pcap
+	/usr/sbin/tcpdump -nn -tt -v -K -r  tdp-1-1.pcap
+	/usr/sbin/tcpdump -nn -tt -v -K -r  tdp-2-1.pcap
+	/usr/sbin/tcpdump -nn -tt -v -K -r  tdp-3-0.pcap
+	/usr/sbin/tcpdump -nn -tt -v -K -r  tdp-2-0.pcap
+
+	cwnd log info can be found in sixth.cwnd
+
+
+Graph cwnd:
+	view the graph sixth.png
