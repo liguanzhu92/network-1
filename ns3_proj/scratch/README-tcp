@@ -26,14 +26,14 @@ Run:
 
 
 Transimission Infor:
-	/usr/sbin/tcpdump -nn -tt -v -K -r  tdp-0-0.pcap
-	/usr/sbin/tcpdump -nn -tt -v -K -r  tdp-1-0.pcap
-	/usr/sbin/tcpdump -nn -tt -v -K -r  tdp-1-1.pcap
-	/usr/sbin/tcpdump -nn -tt -v -K -r  tdp-2-1.pcap
-	/usr/sbin/tcpdump -nn -tt -v -K -r  tdp-3-0.pcap
-	/usr/sbin/tcpdump -nn -tt -v -K -r  tdp-2-0.pcap
+	/usr/sbin/tcpdump -nn -tt -v -K -r  tcp-0-0.pcap
+	/usr/sbin/tcpdump -nn -tt -v -K -r  tcp-1-0.pcap
+	/usr/sbin/tcpdump -nn -tt -v -K -r  tcp-1-1.pcap
+	/usr/sbin/tcpdump -nn -tt -v -K -r  tcp-2-1.pcap
+	/usr/sbin/tcpdump -nn -tt -v -K -r  tcp-3-0.pcap
+	/usr/sbin/tcpdump -nn -tt -v -K -r  tcp-2-0.pcap
 
-	cwnd log info can be found in sixth.cwnd
+	cwnd log info can be found in sixth.cwnd/sixth2
 
 
 Graph cwnd:

@@ -37,7 +37,7 @@ private:
     bool            m_running;
     uint32_t        m_packetsSent;
 };
-
+//application constructor
 MyApp::MyApp ()
         : m_socket (0),
           m_peer (),
@@ -65,7 +65,7 @@ TypeId MyApp::GetTypeId (void)
   ;
   return tid;
 }
-
+// initialize application variables
 void
 MyApp::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate)
 {
@@ -75,7 +75,7 @@ MyApp::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t
   m_nPackets = nPackets;
   m_dataRate = dataRate;
 }
-
+// called to run the application
 void
 MyApp::StartApplication (void)
 {
@@ -85,7 +85,7 @@ MyApp::StartApplication (void)
   m_socket->Connect (m_peer);
   SendPacket ();
 }
-
+// for stop
 void
 MyApp::StopApplication (void)
 {
@@ -123,7 +123,7 @@ MyApp::ScheduleTx (void)
     m_sendEvent = Simulator::Schedule (tNext, &MyApp::SendPacket, this);
   }
 }
-
+//callbacks for congestion window updated
 static void
 CwndChange (Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd)
 {
@@ -131,6 +131,7 @@ CwndChange (Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd)
   *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
 }
 
+//show the dropped packages
 static void
 RxDrop (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
 {
@@ -141,7 +142,7 @@ RxDrop (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
 int
 main (int argc, char *argv[])
 {
-  int enableVerbose = 0;
+  /*int enableVerbose = 0;
   if(argc == 2) {
     if(strcmp(argv[1], "-v") == 0) {
       enableVerbose = 1;
@@ -153,6 +154,7 @@ main (int argc, char *argv[])
   if(enableVerbose) {
     LogComponentEnableAll(LOG_LEVEL_INFO);
   }
+   */
   
   /* p2p nodes A--B */
   NodeContainer nodesAB;
@@ -216,15 +218,15 @@ main (int argc, char *argv[])
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
   ApplicationContainer sinkApps = packetSinkHelper.Install (nodesCD.Get (1));
   sinkApps.Start (Seconds (0.));
-  sinkApps.Stop (Seconds (20.));
+  sinkApps.Stop (Seconds (200.));
 
   /* set up a client */
   Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodesAB.Get (0), TcpSocketFactory::GetTypeId ());
   Ptr<MyApp> app = CreateObject<MyApp> ();
-  app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
+  app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("0.1Mbps"));
   nodesAB.Get (0)->AddApplication (app);
   app->SetStartTime (Seconds (1.));
-  app->SetStopTime (Seconds (20.));
+  app->SetStopTime (Seconds (200.));
 
   AsciiTraceHelper asciiTraceHelper;
   Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("sixth2.cwnd");
@@ -236,7 +238,7 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  Simulator::Stop (Seconds (20));
+  Simulator::Stop (Seconds (200));
   Simulator::Run ();
   Simulator::Destroy ();
 
