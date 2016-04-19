@@ -45,6 +45,7 @@ uint8_t data[writeSize];
 
 void StartFlow (Ptr<Socket>, Ipv4Address, uint16_t);
 void WriteUntilBufferFull (Ptr<Socket>, uint32_t);
+static void SeqSend (Ptr<OutputStreamWrapper> stream, SequenceNumber32 oldSeq, SequenceNumber32 newSeq);
 
 static void 
 CwndTracer (uint32_t oldval, uint32_t newval)
@@ -175,9 +176,9 @@ main (int argc, char *argv[])
   pointToPoint.EnableAsciiAll (ascii.CreateFileStream ("tcp-large-transfer.tr"));
   pointToPoint.EnablePcapAll ("tcp-large-transfer");
 
-  //AsciiTraceHelper asciiTraceHelper;
-  //Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("sixth2.cwnd");
-  //ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
+  AsciiTraceHelper asciiTraceHelper;
+  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("seq.cwnd");
+  ns3TcpSocket->TraceConnectWithoutContext ("NextTxSequence", MakeBoundCallback (&SeqSend, stream));
 
   //PcapHelper pcapHelper;
   //Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", std::ios::out, PcapHelper::DLT_PPP);
@@ -225,5 +226,12 @@ void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSpace)
       currentTxBytes += amountSent;
     }
   localSocket->Close ();
+}
+
+static void SeqSend (Ptr<OutputStreamWrapper> stream, SequenceNumber32 oldSeq, SequenceNumber32 newSeq)
+{
+  // TODO let's see if we can add retransmitted package to another stream, basically use something like hashSet
+  NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newSeq);
+  *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldSeq << "\t" << newSeq << std::endl;
 }
 
