@@ -1,151 +1,64 @@
+//
+// Network topology
+//
+//           1Mb/s, 10ms       1Mb/s, 10ms       1Mb/s, 10ms
+//       A-----------------B-----------------C-----------------D
+//
+//
+// - Tracing of queues and packet receptions to file 
+//   "tcp-large-transfer.tr"
+// - pcap traces also generated in the following files
+//   "tcp-large-transfer-$n-$i.pcap" where n and i represent node and interface
+// numbers respectively
+//  Usage (e.g.): ./waf --run tcp-large-transfer
+
+
+#include <ctype.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cassert>
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
+#include "ns3/packet-sink.h"
+#include "ns3/ipv4-global-routing-helper.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("TCP_CHAIN");
+NS_LOG_COMPONENT_DEFINE ("TCP_Transfer");
 
-class MyApp : public Application
+// The number of bytes to send in this simulation.
+static const uint32_t totalTxBytes = 2000000;
+static uint32_t currentTxBytes = 0;
+// Perform series of 1040 byte writes (this is a multiple of 26 since
+// we want to detect data splicing in the output stream)
+static const uint32_t writeSize = 1040;
+uint8_t data[writeSize];
+
+// These are for starting the writing process, and handling the sending 
+// socket's notification upcalls (events).  These two together more or less
+// implement a sending "Application", although not a proper ns3::Application
+// subclass.
+
+void StartFlow (Ptr<Socket>, Ipv4Address, uint16_t);
+void WriteUntilBufferFull (Ptr<Socket>, uint32_t);
+
+static void 
+CwndTracer (uint32_t oldval, uint32_t newval)
 {
-public:
-    MyApp ();
-    virtual ~MyApp ();
-
-    /**
-     * Register this type.
-     * \return The TypeId.
-     */
-    static TypeId GetTypeId (void);
-    void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate);
-
-private:
-    virtual void StartApplication (void);
-    virtual void StopApplication (void);
-
-    void ScheduleTx (void);
-    void SendPacket (void);
-
-    Ptr<Socket>     m_socket;
-    Address         m_peer;
-    uint32_t        m_packetSize;
-    uint32_t        m_nPackets;
-    DataRate        m_dataRate;
-    EventId         m_sendEvent;
-    bool            m_running;
-    uint32_t        m_packetsSent;
-};
-//application constructor
-MyApp::MyApp ()
-        : m_socket (0),
-          m_peer (),
-          m_packetSize (0),
-          m_nPackets (0),
-          m_dataRate (0),
-          m_sendEvent (),
-          m_running (false),
-          m_packetsSent (0)
-{
-}
-
-MyApp::~MyApp ()
-{
-  m_socket = 0;
-}
-
-/* static */
-TypeId MyApp::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("MyApp")
-          .SetParent<Application> ()
-          .SetGroupName ("Tutorial")
-          .AddConstructor<MyApp> ()
-  ;
-  return tid;
-}
-// initialize application variables
-void
-MyApp::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate)
-{
-  m_socket = socket;
-  m_peer = address;
-  m_packetSize = packetSize;
-  m_nPackets = nPackets;
-  m_dataRate = dataRate;
-}
-// called to run the application
-void
-MyApp::StartApplication (void)
-{
-  m_running = true;
-  m_packetsSent = 0;
-  m_socket->Bind ();
-  m_socket->Connect (m_peer);
-  SendPacket ();
-}
-// for stop
-void
-MyApp::StopApplication (void)
-{
-  m_running = false;
-
-  if (m_sendEvent.IsRunning ())
-  {
-    Simulator::Cancel (m_sendEvent);
-  }
-
-  if (m_socket)
-  {
-    m_socket->Close ();
-  }
-}
-
-void
-MyApp::SendPacket (void)
-{
-  Ptr<Packet> packet = Create<Packet> (m_packetSize);
-  m_socket->Send (packet);
-
-  if (++m_packetsSent < m_nPackets)
-  {
-    ScheduleTx ();
-  }
-}
-
-void
-MyApp::ScheduleTx (void)
-{
-  if (m_running)
-  {
-    Time tNext (Seconds (m_packetSize * 8 / static_cast<double> (m_dataRate.GetBitRate ())));
-    m_sendEvent = Simulator::Schedule (tNext, &MyApp::SendPacket, this);
-  }
-}
-//callbacks for congestion window updated
-static void
-CwndChange (Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd)
-{
-  NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
-  *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
-}
-
-//show the dropped packages
-static void
-RxDrop (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
-{
-  NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
-  file->Write (Simulator::Now (), p);
+  NS_LOG_INFO ("Moving cwnd from " << oldval << " to " << newval);
 }
 
 int
 main (int argc, char *argv[])
 {
-  /*int enableVerbose = 0;
+  bool enableVerbose = false;
   if(argc == 2) {
     if(strcmp(argv[1], "-v") == 0) {
-      enableVerbose = 1;
+      enableVerbose = true;
     }
   }
   Time::SetResolution (Time::NS);
@@ -154,7 +67,14 @@ main (int argc, char *argv[])
   if(enableVerbose) {
     LogComponentEnableAll(LOG_LEVEL_INFO);
   }
-   */
+
+  // initialize the tx buffer.
+  for(uint32_t i = 0; i < writeSize; ++i)
+    {
+      char m = toascii (97 + i % 26);
+      data[i] = m;
+    }
+
   
   /* p2p nodes A--B */
   NodeContainer nodesAB;
@@ -172,8 +92,8 @@ main (int argc, char *argv[])
 
   /* create channel */
   PointToPointHelper pointToPoint;
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("1Mbps"));
+  pointToPoint.SetChannelAttribute ("Delay", StringValue ("10ms"));
   
   NetDeviceContainer devicesAB;
   devicesAB = pointToPoint.Install (nodesAB);
@@ -212,9 +132,19 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer interfacesBC = addressBC.Assign (devicesBC);
   Ipv4InterfaceContainer interfacesCD = addressCD.Assign (devicesCD);
 
+/*------Simulation---------------------------*/
+
+
+  // Create a source to send packets from n0.  Instead of a full Application
+  // and the helper APIs you might see in other example files, this example
+  // will use sockets directly and register some socket callbacks as a sending
+  // "Application".
+
+
+
   /* set up a server */
   uint16_t sinkPort = 8080;
-  Address sinkAddress (InetSocketAddress (interfacesCD.GetAddress (1), sinkPort));
+  //Address sinkAddress (InetSocketAddress (interfacesCD.GetAddress (1), sinkPort));
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
   ApplicationContainer sinkApps = packetSinkHelper.Install (nodesCD.Get (1));
   sinkApps.Start (Seconds (0.));
@@ -222,19 +152,36 @@ main (int argc, char *argv[])
 
   /* set up a client */
   Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodesAB.Get (0), TcpSocketFactory::GetTypeId ());
-  Ptr<MyApp> app = CreateObject<MyApp> ();
-  app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("0.1Mbps"));
-  nodesAB.Get (0)->AddApplication (app);
-  app->SetStartTime (Seconds (1.));
-  app->SetStopTime (Seconds (200.));
+  ns3TcpSocket->Bind();
+  // Trace changes to the congestion window
+  Config::ConnectWithoutContext ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeCallback (&CwndTracer));
 
-  AsciiTraceHelper asciiTraceHelper;
-  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("sixth2.cwnd");
-  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
+  // ...and schedule the sending "Application"; This is similar to what an 
+  // ns3::Application subclass would do internally.
+  Simulator::ScheduleNow (&StartFlow, ns3TcpSocket,
+                          interfacesCD.GetAddress (1), sinkPort);
+  //sinkApps->SetStartTime (Seconds (1.));
+  //sinkApps->SetStopTime (Seconds (200.));
 
-  PcapHelper pcapHelper;
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", std::ios::out, PcapHelper::DLT_PPP);
-  devicesCD.Get (1)->TraceConnectWithoutContext ("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
+  // One can toggle the comment for the following line on or off to see the
+  // effects of finite send buffer modelling.  One can also change the size of
+  // said buffer.
+
+  //localSocket->SetAttribute("SndBufSize", UintegerValue(4096));
+
+ //  tracing
+  //Ask for ASCII and pcap traces of network traffic
+  AsciiTraceHelper ascii;
+  pointToPoint.EnableAsciiAll (ascii.CreateFileStream ("tcp-large-transfer.tr"));
+  pointToPoint.EnablePcapAll ("tcp-large-transfer");
+
+  //AsciiTraceHelper asciiTraceHelper;
+  //Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("sixth2.cwnd");
+  //ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
+
+  //PcapHelper pcapHelper;
+  //Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", std::ios::out, PcapHelper::DLT_PPP);
+  //devicesCD.Get (1)->TraceConnectWithoutContext ("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
@@ -244,3 +191,39 @@ main (int argc, char *argv[])
 
   return 0;
 }
+
+
+//begin implementation of sending "Application"
+void StartFlow (Ptr<Socket> localSocket,
+                Ipv4Address servAddress,
+                uint16_t servPort)
+{
+  NS_LOG_LOGIC ("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
+  localSocket->Connect (InetSocketAddress (servAddress, servPort)); //connect
+
+  // tell the tcp implementation to call WriteUntilBufferFull again
+  // if we blocked and new tx buffer space becomes available
+  localSocket->SetSendCallback (MakeCallback (&WriteUntilBufferFull));
+  WriteUntilBufferFull (localSocket, localSocket->GetTxAvailable ());
+}
+
+void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSpace)
+{
+  while (currentTxBytes < totalTxBytes && localSocket->GetTxAvailable () > 0) 
+    {
+      uint32_t left = totalTxBytes - currentTxBytes;
+      uint32_t dataOffset = currentTxBytes % writeSize;
+      uint32_t toWrite = writeSize - dataOffset;
+      toWrite = std::min (toWrite, left);
+      toWrite = std::min (toWrite, localSocket->GetTxAvailable ());
+      int amountSent = localSocket->Send (&data[dataOffset], toWrite, 0);
+      if(amountSent < 0)
+        {
+          // we will be called again when new tx space becomes available.
+          return;
+        }
+      currentTxBytes += amountSent;
+    }
+  localSocket->Close ();
+}
+
