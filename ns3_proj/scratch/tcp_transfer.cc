@@ -45,7 +45,7 @@ uint8_t data[writeSize];
 
 void StartFlow (Ptr<Socket>, Ipv4Address, uint16_t);
 void WriteUntilBufferFull (Ptr<Socket>, uint32_t);
-static void SeqSend (Ptr<OutputStreamWrapper> stream, SequenceNumber32 oldSeq, SequenceNumber32 newSeq);
+static void CwndChange (Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd);
 
 static void 
 CwndTracer (uint32_t oldval, uint32_t newval)
@@ -76,7 +76,7 @@ main (int argc, char *argv[])
       data[i] = m;
     }
 
-  
+  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpFixed::GetTypeId()));
   /* p2p nodes A--B */
   NodeContainer nodesAB;
   nodesAB.Create (2);
@@ -112,7 +112,7 @@ main (int argc, char *argv[])
   devicesCD.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
 
   Ptr<RateErrorModel> em1 = CreateObject<RateErrorModel> ();
-  em1->SetAttribute ("ErrorRate", DoubleValue (5e-5));
+  em1->SetAttribute ("ErrorRate", DoubleValue (1e-5));
   devicesBC.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em1));
 
   /* install stack and assign IP */
@@ -149,7 +149,7 @@ main (int argc, char *argv[])
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
   ApplicationContainer sinkApps = packetSinkHelper.Install (nodesCD.Get (1));
   sinkApps.Start (Seconds (0.));
-  sinkApps.Stop (Seconds (200.));
+  sinkApps.Stop (Seconds (2000.));
 
   /* set up a client */
   Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodesAB.Get (0), TcpSocketFactory::GetTypeId ());
@@ -177,8 +177,8 @@ main (int argc, char *argv[])
   pointToPoint.EnablePcapAll ("tcp-large-transfer");
 
   AsciiTraceHelper asciiTraceHelper;
-  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("seq.cwnd");
-  ns3TcpSocket->TraceConnectWithoutContext ("NextTxSequence", MakeBoundCallback (&SeqSend, stream));
+  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("CwndChange.cwnd");
+  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
 
   //PcapHelper pcapHelper;
   //Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", std::ios::out, PcapHelper::DLT_PPP);
@@ -186,7 +186,7 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  Simulator::Stop (Seconds (200));
+  Simulator::Stop (Seconds (2000));
   Simulator::Run ();
   Simulator::Destroy ();
 
@@ -228,10 +228,10 @@ void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSpace)
   localSocket->Close ();
 }
 
-static void SeqSend (Ptr<OutputStreamWrapper> stream, SequenceNumber32 oldSeq, SequenceNumber32 newSeq)
+static void CwndChange (Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd)
 {
   // TODO let's see if we can add retransmitted package to another stream, basically use something like hashSet
-  NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newSeq);
-  *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldSeq << "\t" << newSeq << std::endl;
+  NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
+  *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
 }
 

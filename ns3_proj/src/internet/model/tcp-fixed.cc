@@ -33,7 +33,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("TcpFixed");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpFixed);
-static const int FIXED_WINDOW_SIZE = 100;
+static const int FIXED_WINDOW_SIZE = 53600;
 
 TypeId
 TcpFixed::GetTypeId (void)
@@ -59,7 +59,6 @@ TcpFixed::TcpFixed (void)
     m_inFastRec (false),
     m_limitedTx (false) // mute valgrind, actual value set by the attribute system
 {
-  m_cWnd = FIXED_WINDOW_SIZE;
   NS_LOG_FUNCTION (this);
 }
 
@@ -69,7 +68,6 @@ TcpFixed::TcpFixed (const TcpFixed& sock)
     m_inFastRec (false),
     m_limitedTx (sock.m_limitedTx)
 {
-  m_cWnd = FIXED_WINDOW_SIZE;
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Invoked the copy constructor");
 }
@@ -97,6 +95,7 @@ TcpFixed::NewAck (const SequenceNumber32& seq)
   if (m_inFastRec && seq < m_recover)
     { // Partial ACK, partial window deflation (RFC2582 sec.3 bullet #5 paragraph 3)
       // m_cWnd += m_segmentSize - (seq - m_txBuffer->HeadSequence ());
+      m_cWnd = FIXED_WINDOW_SIZE;
       NS_LOG_INFO ("Partial ACK for seq " << seq << " in fast recovery: cwnd set to " << m_cWnd);
       m_txBuffer->DiscardUpTo(seq);  //Bug 1850:  retransmit before newack
       DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
@@ -106,6 +105,7 @@ TcpFixed::NewAck (const SequenceNumber32& seq)
   else if (m_inFastRec && seq >= m_recover)
     { // Full ACK (RFC2582 sec.3 bullet #5 paragraph 2, option 1)
       // m_cWnd = std::min (m_ssThresh.Get (), BytesInFlight () + m_segmentSize);
+      m_cWnd = FIXED_WINDOW_SIZE;
       m_inFastRec = false;
       NS_LOG_INFO ("Received full ACK for seq " << seq <<". Leaving fast recovery with cwnd set to " << m_cWnd);
     }
@@ -114,6 +114,7 @@ TcpFixed::NewAck (const SequenceNumber32& seq)
   if (m_cWnd < m_ssThresh)
     { // Slow start mode, add one segSize to cWnd. Default m_ssThresh is 65535. (RFC2001, sec.1)
       // m_cWnd += m_segmentSize;
+      m_cWnd = FIXED_WINDOW_SIZE;
       NS_LOG_INFO ("In SlowStart, ACK of seq " << seq << "; update cwnd to " << m_cWnd << "; ssthresh " << m_ssThresh);
     }
   else
@@ -122,6 +123,7 @@ TcpFixed::NewAck (const SequenceNumber32& seq)
       double adder = static_cast<double> (m_segmentSize * m_segmentSize) / m_cWnd.Get ();
       adder = std::max (1.0, adder);
       // m_cWnd += static_cast<uint32_t> (adder);
+      m_cWnd = FIXED_WINDOW_SIZE;
       NS_LOG_INFO ("In CongAvoid, updated to cwnd " << m_cWnd << " ssthresh " << m_ssThresh);
     }
 
@@ -138,6 +140,7 @@ TcpFixed::DupAck (const TcpHeader& t, uint32_t count)
     { // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
       m_ssThresh = std::max (2 * m_segmentSize, BytesInFlight () / 2);
       // m_cWnd = m_ssThresh + 3 * m_segmentSize;
+      m_cWnd = FIXED_WINDOW_SIZE;
       m_recover = m_highTxMark;
       m_inFastRec = true;
       NS_LOG_INFO ("Triple dupack. Enter fast recovery mode. Reset cwnd to " << m_cWnd <<
@@ -147,6 +150,7 @@ TcpFixed::DupAck (const TcpHeader& t, uint32_t count)
   else if (m_inFastRec)
     { // Increase cwnd for every additional dupack (RFC2582, sec.3 bullet #3)
       // m_cWnd += m_segmentSize;
+      m_cWnd = FIXED_WINDOW_SIZE;
       NS_LOG_INFO ("Dupack in fast recovery mode. Increase cwnd to " << m_cWnd);
       if (!m_sendPendingDataEvent.IsRunning ())
         {
@@ -179,6 +183,7 @@ TcpFixed::Retransmit (void)
   // TCP back to slow start
   m_ssThresh = std::max (2 * m_segmentSize, BytesInFlight () / 2);
   // m_cWnd = m_segmentSize;
+  m_cWnd = FIXED_WINDOW_SIZE;
   m_nextTxSequence = m_txBuffer->HeadSequence (); // Restart from highest Ack
   NS_LOG_INFO ("RTO. Reset cwnd to " << m_cWnd <<
                ", ssthresh to " << m_ssThresh << ", restart from seqnum " << m_nextTxSequence);
