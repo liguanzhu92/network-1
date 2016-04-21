@@ -1,17 +1,3 @@
-//
-// Network topology
-//
-//           1Mb/s, 10ms       1Mb/s, 10ms       1Mb/s, 10ms
-//       A-----------------B-----------------C-----------------D
-//
-//
-// - Tracing of queues and packet receptions to file 
-//   "tcp-large-transfer.tr"
-// - pcap traces also generated in the following files
-//   "tcp-large-transfer-$n-$i.pcap" where n and i represent node and interface
-// numbers respectively
-//  Usage (e.g.): ./waf --run tcp-large-transfer
-
 
 #include <ctype.h>
 #include <iostream>
@@ -33,15 +19,8 @@ NS_LOG_COMPONENT_DEFINE ("TCP_Transfer");
 // The number of bytes to send in this simulation.
 static const uint32_t totalTxBytes = 2000000;
 static uint32_t currentTxBytes = 0;
-// Perform series of 1040 byte writes (this is a multiple of 26 since
-// we want to detect data splicing in the output stream)
 static const uint32_t writeSize = 1040;
 uint8_t data[writeSize];
-
-// These are for starting the writing process, and handling the sending 
-// socket's notification upcalls (events).  These two together more or less
-// implement a sending "Application", although not a proper ns3::Application
-// subclass.
 
 void StartFlow (Ptr<Socket>, Ipv4Address, uint16_t);
 void WriteUntilBufferFull (Ptr<Socket>, uint32_t);
@@ -135,14 +114,6 @@ main (int argc, char *argv[])
 
 /*------Simulation---------------------------*/
 
-
-  // Create a source to send packets from n0.  Instead of a full Application
-  // and the helper APIs you might see in other example files, this example
-  // will use sockets directly and register some socket callbacks as a sending
-  // "Application".
-
-
-
   /* set up a server */
   uint16_t sinkPort = 8080;
   //Address sinkAddress (InetSocketAddress (interfacesCD.GetAddress (1), sinkPort));
@@ -161,14 +132,6 @@ main (int argc, char *argv[])
   // ns3::Application subclass would do internally.
   Simulator::ScheduleNow (&StartFlow, ns3TcpSocket,
                           interfacesCD.GetAddress (1), sinkPort);
-  //sinkApps->SetStartTime (Seconds (1.));
-  //sinkApps->SetStopTime (Seconds (200.));
-
-  // One can toggle the comment for the following line on or off to see the
-  // effects of finite send buffer modelling.  One can also change the size of
-  // said buffer.
-
-  //localSocket->SetAttribute("SndBufSize", UintegerValue(4096));
 
  //  tracing
   //Ask for ASCII and pcap traces of network traffic
