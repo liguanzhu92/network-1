@@ -1,7 +1,7 @@
 ## README
-# Author
+### Author
 Guanzhu Li, Jiabei Xu
-# Network Topology
+### Network Topology
 
 
            1Mb/s, 10ms       1Mb/s, 10ms       1Mb/s, 10ms
@@ -15,13 +15,13 @@ Guanzhu Li, Jiabei Xu
  numbers respectively
 
 
-# File Location:
+### File Location:
 	NS3_root/scratch/tcp_transfer.cc
 
-# Run:
+### Run:
  	NS3_root/waf --run "tcp_transfer"
 
-# Transimission Info:
+### Transimission Info:
 	tcp-large-transfer.tr
 	/usr/sbin/tcpdump -nn -tt -v -K -r  tcp-large-transfer-0-0.pcap
 	/usr/sbin/tcpdump -nn -tt -v -K -r  tcp-large-transfer-1-0.pcap
@@ -31,7 +31,7 @@ Guanzhu Li, Jiabei Xu
 	/usr/sbin/tcpdump -nn -tt -v -K -r  tcp-large-transfer-2-0.pcap
 
 
-# Graph:
+### Graph:
 1. Plot the transmitted sequence number vs. time
   1. export the transimission Info at server
 
