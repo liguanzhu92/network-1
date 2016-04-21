@@ -76,7 +76,7 @@ main (int argc, char *argv[])
       data[i] = m;
     }
 
-  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpFixed::GetTypeId()));
+  //Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpFixed::GetTypeId()));
   /* p2p nodes A--B */
   NodeContainer nodesAB;
   nodesAB.Create (2);
