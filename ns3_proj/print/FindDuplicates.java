@@ -9,7 +9,7 @@ public class FindDuplicates {
     public static void main(String[] args) {
         Set<String> set = new HashSet<String>();
         try {
-            FileInputStream fstream = new FileInputStream("tcp_seq");
+            FileInputStream fstream = new FileInputStream("seq_num");
             BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
 
             String strLine;

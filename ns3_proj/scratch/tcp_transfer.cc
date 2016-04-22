@@ -42,10 +42,8 @@ main (int argc, char *argv[])
     }
   }
   Time::SetResolution (Time::NS);
-  LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
-  LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
   if(enableVerbose) {
-    LogComponentEnableAll(LOG_LEVEL_INFO);
+    LogComponentEnableAll(LOG_LEVEL_LOGIC);
   }
 
   // initialize the tx buffer.
